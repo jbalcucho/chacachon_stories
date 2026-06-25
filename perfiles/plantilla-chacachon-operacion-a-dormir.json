@@ -1,0 +1,41 @@
+{
+  "cuento_slug": "familia-chacachon-operacion-a-dormir",
+  "descripcion": "Cuento de prueba aterrizado: apartamento en Bogotá, colegio El Rosario, familia real.",
+  "fragmentos": [
+    {
+      "id": "intro",
+      "titulo": "La familia",
+      "plantilla": "En {{ciudad}} vivía la familia {{apellido_hogar}}: {{papa_nombre}}, a quien todos llaman {{papa_apodo}}; {{mama_nombre}}, o {{mama_apodo}}; y los niños {{niño_1_nombre}} —{{niño_1}}— y {{niño_2_nombre}} —{{niño_2}}—. Bogotá, parce, siempre tiene buses y TransMilenio. Estaban en el colegio {{colegio_actual}}, aunque todavía hablaban del {{colegio_anterior}} con nostalgia. En {{hogar}}, {{detalle_casa_1}}. {{detalle_casa_3}}. También vive Josefina, la aspiradora robot. Con ellos estaban {{mascota_1}}, {{mascota_1_trait}}, y {{mascota_2}}, {{mascota_2_trait}}."
+    },
+    {
+      "id": "manana",
+      "titulo": "La mañana difícil",
+      "plantilla": "Esa mañana {{mascota_1}} había ladrado tan duro que {{mama_apodo}} llegó al desayuno diciendo: —{{frase_mama}}—. Y —{{frase_mama_2}}—. {{papa_apodo}} murmuró: —No me saquen la piedra, temprano—. Había que ir al {{colegio_actual}} — bus, trancon, a veces TransMilenio — con el uniforme que siempre organiza {{mama_apodo}}. {{mama_apodo}} y {{papa_apodo}} otra vez peleando porque {{niño_1}} y {{niño_2}} querían andar descalzos."
+    },
+    {
+      "id": "noche-tablet",
+      "titulo": "La tablet otra vez",
+      "plantilla": "Por la noche, en el apartamento, {{niño_1}} y {{niño_2}} tenían la {{pantalla_que_usan}} prendida: {{juego_favorito}} y YouTube otra vez. {{mama_apodo}} los miró cansada: —Parces, pilas: ya es hora de ir a dormir—. {{papa_apodo}} dijo: —{{frase_papa}}, mijo—. Y después: —{{frase_papa_2}}—. {{niño_1}} dijo: —¿En serio, bro?—. {{niño_2}} respondió que sonaba chimba cuando papá amenazaba."
+    },
+    {
+      "id": "perros-josefina",
+      "titulo": "Bingo, Mora y Josefina",
+      "plantilla": "{{mascota_1}} olfateó las chanclas — pónganse chanclas, que ya les dije — y casi se robó un snack. {{mascota_2}} se escondió cuando sonó el timbre. Josefina pasó zumbando y casi les pisa los dedos. {{papa_apodo}} suspiró: los perros son cosa de {{mama_apodo}}. Ella, doblando un uniforme del {{colegio_actual}}, dijo: —{{frase_mama_3}}—."
+    },
+    {
+      "id": "rutina-noche",
+      "titulo": "La lucha de cada noche",
+      "plantilla": "En la familia {{apellido_hogar}} la noche siempre era la misma batalla. {{mama_apodo}} y {{papa_apodo}} repetían: apagar el televisor y la tablet; empijamarse; cepillarse los dientes; hacer chichi; no tomar tanta agua — porque después se orinan —; chanclas puestas, no descalzos; arreglar la habitación; tender la cama. {{niño_1}} y {{niño_2}} lo sabían de memoria… y aun así lo dejaban para después."
+    },
+    {
+      "id": "mision",
+      "titulo": "Operación a dormir",
+      "plantilla": "{{papa_apodo}} se hizo el chistoso pero firme: —Escuchen, parces: Operación A Dormir. Checklist: apaguen televisor y tablet, pijama, dientes, chichi, poquita agua, chanclas, habitación recogida, cama tendida—. {{niño_1}} apagó la tablet… y se fue a dar vueltas. {{niño_2}} abrazó un peluche. —De una —dijeron—. Quedó melo, parce. Quedó chimba."
+    },
+    {
+      "id": "cierre",
+      "titulo": "Buenas noches",
+      "plantilla": "Al ratito {{niño_1}} y {{niño_2}} ya dormían. {{mascota_1}} se acurrucó en su camita. {{mascota_2}} se metió bajo una cobija. Josefina volvió solita a su base. {{mama_apodo}} recogió la tablet. Afuera un bus de Bogotá pasó lejos. La abuela {{abuela_nombre}} cocinaba en el mismo edificio que {{abuelo_nombre}}. Buenas noches, {{niño_1}}. Buenas noches, {{niño_2}}."
+    }
+  ]
+}

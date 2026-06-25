@@ -1,0 +1,117 @@
+{
+  "nombre_display": "Familia García",
+  "schema_version": 1,
+  "completitud": 78,
+  "notas": "Segundo perfil de prueba: familia más terrenal, sin apodos espaciales. Misma plantilla Balcutron, otro sabor.",
+  "perfil": {
+    "meta": {
+      "ciudad": "Bogotá",
+      "barrio": "Teusaquillo",
+      "codigo_acento": "bogota_ninos",
+      "como_le_dicen_al_hogar": "el apartamento",
+      "apellido_hogar": "García"
+    },
+    "adultos": [
+      {
+        "id": "adulto-papa",
+        "rol": "papa",
+        "nombre": "Andrés",
+        "apodo": "papá Andrés",
+        "frases_tipicas": [
+          "Última vuelta y a la cama",
+          "Mañana te duele la cabeza si no duermes"
+        ]
+      },
+      {
+        "id": "adulto-mama",
+        "rol": "mama",
+        "nombre": "Julie",
+        "apodo": "mamá Julie",
+        "frases_tipicas": [
+          "Parces, ya fue con la tablet",
+          "Pijama, dientes, cama. En ese orden"
+        ]
+      }
+    ],
+    "ninos": [
+      {
+        "id": "nino-mayor",
+        "nombre": "Mateo",
+        "orden": 1,
+        "fecha_nacimiento": "2017-11-03",
+        "gustos": {
+          "juegos": ["Minecraft", "fútbol en el parque"],
+          "comida": ["arepa con queso", "helado de mora"],
+          "amigos": ["Santi", "Juanpi"]
+        },
+        "no_le_gusta": {
+          "dormir": "quiere ver un video más de YouTube y revisar si mañana hay excursión"
+        },
+        "pantallas": {
+          "le_cuesta_soltar": true,
+          "que_usa": "tablet",
+          "juego_favorito": "Minecraft"
+        }
+      },
+      {
+        "id": "nino-menor",
+        "nombre": "Sofía",
+        "orden": 2,
+        "fecha_nacimiento": "2019-05-18",
+        "gustos": {
+          "juegos": ["Roblox", "dibujar unicornios"],
+          "peliculas": ["Encanto"]
+        },
+        "no_le_gusta": {
+          "dormir": "dice que tiene sed, después otra sed, y que el osito también tiene sed"
+        },
+        "pantallas": {
+          "le_cuesta_soltar": true,
+          "que_usa": "celular de mamá",
+          "juego_favorito": "Roblox"
+        }
+      }
+    ],
+    "cercanos": [
+      {
+        "id": "cercano-abuela",
+        "relacion": "abuela",
+        "nombre": "Nena",
+        "apodo": "la abuela Nena",
+        "vive_cerca": true,
+        "aparece_en_cuentos": true,
+        "extra": {
+          "detalle": "vive dos calles más abajo, a veces sube con sopa en la noche"
+        }
+      },
+      {
+        "id": "cercano-tio",
+        "relacion": "tio",
+        "nombre": "Pipe",
+        "vive_cerca": false,
+        "aparece_en_cuentos": false
+      }
+    ],
+    "mascotas": [
+      {
+        "id": "mascota-gato",
+        "nombre": "Luna",
+        "tipo": "gato",
+        "origen": "adoptada en la veterinaria del barrio",
+        "personalidad": "se acuesta en la laptop cuando alguien trabaja"
+      }
+    ],
+    "casa": {
+      "detalles": [
+        "el apartamento huele a café cuando papá cocina",
+        "hay zapatos regados en la entrada y mamá los ordena sin parar",
+        "los niños se quitan los zapatos en la sala"
+      ],
+      "olores": ["café", "detergente", "pan del barrio"]
+    },
+    "extra": {
+      "transporte": "bus del SITP en hora pico",
+      "colegio": "colegio del barrio"
+    }
+  }
+}

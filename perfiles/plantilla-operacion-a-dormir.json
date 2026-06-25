@@ -1,0 +1,31 @@
+{
+  "cuento_slug": "familia-balcutron-operacion-a-dormir",
+  "descripcion": "Fragmentos del cuento con variables. El perfil familiar rellena los huecos.",
+  "fragmentos": [
+    {
+      "id": "intro-familia",
+      "titulo": "Presentación de la familia",
+      "plantilla": "Vivía la Familia {{apellido_hogar}} en {{ciudad}}. En {{hogar}} {{detalle_casa_1}}. {{papa_apodo}} reparaba de todo; {{mama_apodo}} {{detalle_casa_2}}. Los niños, {{niño_1}} y {{niño_2}}, iban pegados a la {{pantalla_que_usan}}, como cuando no sueltan el celular ni para cenar. Con ellos vivían {{mascota_1}}, {{mascota_1_descripcion}}, y {{mascota_2}}, {{mascota_2_descripcion}}."
+    },
+    {
+      "id": "trancón-tablets",
+      "titulo": "Trancón y pantallas",
+      "plantilla": "Atrás, {{niño_1}} y {{niño_2}} tenían la {{pantalla_que_usan}} prendida, viendo {{juego_favorito}} otra vez. De repente {{mama}} dijo: —{{frase_mama}}—. {{papa}} respondió: —{{frase_papa}}—."
+    },
+    {
+      "id": "llegada-casa",
+      "titulo": "Llegada a casa",
+      "plantilla": "Cuando llegaron a {{hogar}}, {{mascota_1}} corrió a olfatear todo. {{mascota_2}} se pegó a la pierna de {{mama}}. —Listo —dijo {{mama}}—: pijama, cepillo, cama. {{detalle_casa_3}}—. {{niño_1}} apagó la {{pantalla_que_usan}}… y se puso a dar vueltas. {{niño_2}}, en cambio, declaró: —{{excusa_dormir_niño_2}}—."
+    },
+    {
+      "id": "mision-dormir",
+      "titulo": "Operación a dormir",
+      "plantilla": "{{papa_apodo}} se arrodilló frente a {{niño_1}} y {{niño_2}}: —Escuchen, parces: la misión de hoy es ir a dormir. Sin {{pantalla_que_usan}}, sin {{juego_favorito}}—. {{mama}} guiñó un ojo: —Mañana escogen el desayuno—. —De una —dijeron los dos."
+    },
+    {
+      "id": "cierre-noche",
+      "titulo": "Buenas noches",
+      "plantilla": "{{niño_1}} y {{niño_2}} ya dormían. {{mascota_1}} se acurrucó en su camita. {{mascota_2}}, por fin tranquila, se escondió bajo la cama. Por la ventana se veía {{lugar_cercano}}. Buenas noches, {{niño_1}}. Buenas noches, {{niño_2}}."
+    }
+  ]
+}

@@ -28,7 +28,7 @@ Modelo de Datos Relacional: Se abandona el almacenamiento de "texto plano". La b
 
 Motores de IA Optimizados:
 
-Texto: Se utilizará Claude 3.5 Sonnet por su insuperable capacidad para mantener la coherencia en jergas locales a un costo operativo bajísimo.
+Texto: Se utilizará Claude 3.5 Sonnet por su insuperable capacidad para mantener la coherencia en jergas locales a un costo operativo bajísimo. La curación dialectal se rige por [GuiaAcentos.md](./GuiaAcentos.md) (glosario por `codigo_acento`, tiers 1–3 y reglas anti-caricatura).
 
 Imágenes: Para garantizar que los personajes luzcan exactamente iguales desde la página 1 hasta el final, se descarta Midjourney en favor de modelos Flux + LoRAs (entrenamiento de redes neuronales específicas para cada personaje).
 

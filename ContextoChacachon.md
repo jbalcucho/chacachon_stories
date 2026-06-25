@@ -17,7 +17,7 @@ Para evitar problemas de derechos de autor con franquicias establecidas, se desa
 | Personaje Original | Inspiración Nostálgica | Concepto y Moraleja Principal |
 | :---- | :---- | :---- |
 | El Capitán Sancocho | Popeye | Un capitán de barco de río que obtiene poder de platos tradicionales (sopas, verduras). Ideal para enseñar sobre buena alimentación. |
-| La Familia Órbita | Los Supersónicos | Familia futurista lidiando con trancones espaciales y problemas mundanos. Ideal para hábitos de sueño y manejo de tecnología. |
+| La Familia Balcutron | Los Supersónicos | Familia futurista lidiando con trancones espaciales y problemas mundanos. Ideal para hábitos de sueño y manejo de tecnología. |
 | El Escuadrón Recreo | Los Magníficos | Equipo táctico escolar que resuelve problemas en el colegio. Excelente para abordar el bullying y la frustración académica. |
 
 ## **3\. Arquitectura Tecnológica y Stack**
@@ -75,15 +75,15 @@ A continuación se detallan los prompts recomendados para inicializar la IA (gen
 `3. Utiliza la jerga, los modismos y el humor de la región solicitada SIN caer en lo vulgar o inapropiado para niños.`  
 `4. Diseña la historia para que el padre se ría de la cotidianidad mientras los niños aprenden la lección.`
 
-### **B. Ejemplo Práctico: "La Familia Órbita" (Problema: Ir a dormir)**
+### **B. Ejemplo Práctico: "La Familia Balcutron" (Problema: Ir a dormir)**
 
 | Versión Neutra (Estándar) | Versión Bogotana (Humor Local) |
 | :---- | :---- |
-| En el año 3026, la Familia Órbita viajaba por el espacio. Los dos niños pequeños no querían apagar sus visores holográficos para ir a dormir, ignorando a sus padres mientras navegaban por la Vía Láctea. | En el año 3026, la Familia Órbita estaba atascada en un trancón intergaláctico monumental por la calle 100 espacial. Los dos chinitos menores no querían apagar sus visores holográficos para ir a hacer nono, ignorando a sus papás mientras el taxista de un platillo volador les pitaba con luces láser. |
+| En el año 3026, la Familia Balcutron viajaba por el espacio. Los dos niños pequeños no querían apagar sus tablets de juego para ir a dormir, ignorando a sus padres mientras navegaban por la Vía Láctea. | En el año 3026, la Familia Balcutron estaba atascada en un trancón intergaláctico monumental por la calle 100 espacial. Los dos chinitos menores no querían apagar sus tablets de juego para ir a hacer nono, ignorando a sus papás mientras el taxista de un platillo volador les pitaba con luces láser. |
 
 ### **C. Prompts Visuales (Para Midjourney)**
 
 Estos prompts garantizan un estilo visual premium y constante a lo largo de los cuentos.
 
 * **Estilo Pixar (Capitán Sancocho):** 3D render in Pixar animation style, a funny, slightly muscular river boat captain holding a glowing bowl of traditional Colombian soup, comic expression, vibrant colors, cinematic lighting, ultra-detailed, 8k.  
-* **Estilo Panini/Sticker (La Familia Órbita):** 3D illustration in Panini collectible sticker style, a retro-futuristic family with two children inside a flying car stuck in floating space traffic, frustrated but funny expressions, neon colors, glossy finish, highly detailed.
+* **Estilo Panini/Sticker (La Familia Balcutron):** 3D illustration in Panini collectible sticker style, a retro-futuristic family with two children inside a flying car stuck in floating space traffic, frustrated but funny expressions, neon colors, glossy finish, highly detailed.

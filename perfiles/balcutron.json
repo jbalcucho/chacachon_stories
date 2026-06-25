@@ -1,0 +1,144 @@
+{
+  "nombre_display": "Familia Balcutron",
+  "schema_version": 1,
+  "completitud": 92,
+  "notas": "Perfil de prueba basado en el cuento piloto. Sirve para validar el esquema antes del SQL.",
+  "perfil": {
+    "meta": {
+      "ciudad": "Bogotá",
+      "barrio": "cerca del Campín y del Movistar Arena",
+      "codigo_acento": "bogota_ninos",
+      "como_le_dicen_al_hogar": "la casa-nave",
+      "apellido_hogar": "Balcutron"
+    },
+    "adultos": [
+      {
+        "id": "adulto-papa",
+        "rol": "papa",
+        "nombre": "Raka",
+        "apodo": "Comandante Raka",
+        "frases_tipicas": [
+          "Tu cerebro mañana te lo va a agradecer",
+          "De una",
+          "En serio, parce"
+        ],
+        "extra": {
+          "trabajo": "piloto del platillo naranja",
+          "hobby": "experimentos y arreglar cosas con alambre"
+        }
+      },
+      {
+        "id": "adulto-mama",
+        "rol": "mama",
+        "nombre": "Pauleta",
+        "apodo": "Teniente Pauleta",
+        "frases_tipicas": [
+          "Parces, pilas: ya es hora de ir a dormir",
+          "Orden de misión",
+          "Y descalzos, que ya les dije"
+        ],
+        "extra": {
+          "trabajo": "ingeniera de la nave",
+          "manias": ["dobla ropa en la sala", "pelea para que anden descalzos"]
+        }
+      }
+    ],
+    "ninos": [
+      {
+        "id": "nino-mayor",
+        "nombre": "Nicolai",
+        "orden": 1,
+        "fecha_nacimiento": "2018-03-14",
+        "frases_tipicas": ["Pilas, parce, que vamos ganando"],
+        "gustos": {
+          "juegos": ["Capitán Nebulosa"],
+          "comida": ["pancakes espaciales", "cereal de luna"]
+        },
+        "no_le_gusta": {
+          "dormir": "pide agua, otro poquito de agua, y revisar si mañana llueve en el planeta 7"
+        },
+        "pantallas": {
+          "le_cuesta_soltar": true,
+          "que_usa": "tablet",
+          "juego_favorito": "Capitán Nebulosa"
+        },
+        "extra": {
+          "colegio": "colegio espacial",
+          "excusa_clasica": "da vueltas por la casa antes de ir a la cama"
+        }
+      },
+      {
+        "id": "nino-menor",
+        "nombre": "Chimonchin",
+        "orden": 2,
+        "fecha_nacimiento": "2020-07-22",
+        "frases_tipicas": ["Parce, solo cinco minuticos más"],
+        "gustos": {
+          "juegos": ["Capitán Nebulosa", "gravedad cero en educación física"]
+        },
+        "no_le_gusta": {
+          "dormir": "dice que no tiene sueño. Ninguno. Cero. Revisado dos veces"
+        },
+        "pantallas": {
+          "le_cuesta_soltar": true,
+          "que_usa": "tablet",
+          "juego_favorito": "Capitán Nebulosa"
+        },
+        "extra": {
+          "personalidad": "se planta en el piso y declara con solemnidad de juez"
+        }
+      }
+    ],
+    "cercanos": [
+      {
+        "id": "cercano-abuelos",
+        "relacion": "abuelos",
+        "apodo": "los abuelos",
+        "vive_cerca": true,
+        "aparece_en_cuentos": true,
+        "extra": {
+          "detalle": "viven en una nave parecida, se ven las luces de su cocina desde el domo"
+        }
+      }
+    ],
+    "mascotas": [
+      {
+        "id": "mascota-perro-temu",
+        "nombre": "Bingochon",
+        "tipo": "perro",
+        "origen": "Temu",
+        "personalidad": "parece de peluche barato pero ladra de verdad, a veces al aire, a veces a la pared",
+        "extra": {
+          "duerme_en": "camita de Temu"
+        }
+      },
+      {
+        "id": "mascota-perra-calle",
+        "nombre": "Mora",
+        "tipo": "perro",
+        "origen": "callejera",
+        "personalidad": "miedosa, se esconde detrás de las piernas de mamá, tembla con ruidos raros",
+        "extra": {
+          "como_llego": "apareció un día en el pasillo flotante y nunca se fue"
+        }
+      }
+    ],
+    "casa": {
+      "detalles": [
+        "la nave es color mora, morada por fuera y suave por dentro",
+        "mamá dobla ropa en la sala aunque ya haya robots",
+        "papá arregla tuberías, pantallas y paneles con alambre y mucha fe",
+        "los niños deben andar descalzos porque los pies necesitan sentir el piso"
+      ],
+      "olores": ["cena reciente", "pijama cerca", "olor a empanada en la esquina (cuando Bogotá estaba en el suelo)"]
+    },
+    "extra": {
+      "robot_casa": {
+        "nombre": "Sietecito",
+        "nombre_fabrica": "Unit-7",
+        "personalidad": "ayuda con buena intención pero casi siempre la embarraba"
+      },
+      "vehiculo_familia": "platillo naranja"
+    }
+  }
+}

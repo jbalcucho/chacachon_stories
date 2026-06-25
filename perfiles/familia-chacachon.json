@@ -1,0 +1,285 @@
+{
+  "nombre_display": "Familia Chacachón (José y Julie)",
+  "schema_version": 1,
+  "completitud": 98,
+  "plantilla": "perfiles/plantilla-chacachon-operacion-a-dormir.json",
+  "notas": "Perfil real. Papá Chacachón/Raka, mamá Julie/Pauleta, Nico, Simónchin, Bingo y Mora.",
+  "perfil": {
+    "meta": {
+      "ciudad": "Bogotá",
+      "barrio": "mismo edificio que los abuelos maternos",
+      "codigo_acento": "bogota_ninos",
+      "como_le_dicen_al_hogar": "el apartamento",
+      "apellido_hogar": "Chacachón"
+    },
+    "adultos": [
+      {
+        "id": "adulto-papa",
+        "rol": "papa",
+        "nombre": "José",
+        "apodo": "Chacachón",
+        "frases_tipicas": [
+          "Duérmanse o les apago",
+          "Ya no más tablet",
+          "Acuéstense o les apago",
+          "No jodás",
+          "No me saquen la piedra"
+        ],
+        "extra": {
+          "edad": 38,
+          "otros_apodos": ["Raka"],
+          "profesion": "ingeniero electrónico",
+          "hobbies": ["fútbol", "cerveza", "bailar", "música", "carros"],
+          "rol_en_casa": "el chistoso; disciplina; juega fútbol con los niños; arregla la casa; cocina a veces",
+          "perros": "no quiere los perros; viene del campo, no es muy cercano a ellos"
+        }
+      },
+      {
+        "id": "adulto-mama",
+        "rol": "mama",
+        "nombre": "Julie",
+        "apodo": "Pauleta",
+        "frases_tipicas": [
+          "Fuera pereza fuera",
+          "Hagan caso",
+          "Los voy a castigar si no hacen caso",
+          "Estoy mamada",
+          "Tengo sueño"
+        ],
+        "extra": {
+          "edad": 42,
+          "otros_apodos": ["gordita"],
+          "profesion": "ingeniera de sistemas",
+          "hobbies": ["ver series", "música", "cerveza", "chisme"],
+          "rol_en_casa": "organiza ropa, uniformes, perros y todo el colegio",
+          "frases_momento": "al amanecer, al levantarlos"
+        }
+      }
+    ],
+    "ninos": [
+      {
+        "id": "nino-mayor",
+        "nombre": "Nicolás",
+        "apodo": "Nico",
+        "orden": 1,
+        "fecha_nacimiento": "2016-01-01",
+        "frases_tipicas": ["Se va de jeta", "Ah juemadre"],
+        "gustos": {
+          "juegos": ["videojuegos", "YouTube", "fútbol"]
+        },
+        "no_le_gusta": {
+          "dormir": "no suelta la tablet cuando papá dice ya no más; da vueltas pidiendo un video más"
+        },
+        "pantallas": {
+          "le_cuesta_soltar": true,
+          "que_usa": "tablet",
+          "juego_favorito": "videojuegos"
+        },
+        "extra": {
+          "edad": 10,
+          "otros_apodos": ["Gordolai"],
+          "colegio_anterior": "Jardín Miska Muska",
+          "colegio_actual": "El Rosario",
+          "hobbies": ["música", "ir a piscina en vacaciones"]
+        }
+      },
+      {
+        "id": "nino-menor",
+        "nombre": "Simón",
+        "apodo": "Simónchin",
+        "orden": 2,
+        "fecha_nacimiento": "2021-01-01",
+        "frases_tipicas": ["Se va de culo", "Ah juemadre"],
+        "gustos": {
+          "juegos": ["Legos", "carros", "peluches", "tapas de botellas", "fútbol"]
+        },
+        "no_le_gusta": {
+          "dormir": "se enreda con peluches y carros y dice que todavía no tiene sueño"
+        },
+        "pantallas": {
+          "le_cuesta_soltar": false,
+          "que_usa": "tablet"
+        },
+        "extra": {
+          "edad": 5,
+          "otros_apodos": ["Moncho", "Chaca", "Limón"],
+          "colegio_anterior": "Jardín Miska Muska",
+          "colegio_actual": "El Rosario",
+          "hobbies": ["bailar", "ir a piscina en vacaciones"]
+        }
+      }
+    ],
+    "cercanos": [
+      {
+        "id": "abuela-betty",
+        "relacion": "abuela",
+        "nombre": "Betty",
+        "vive_cerca": true,
+        "aparece_en_cuentos": true,
+        "extra": {
+          "lado": "materno",
+          "mismo_edificio": true,
+          "gustos": ["plantas", "orquídeas", "los perros", "cocinar"],
+          "detalle": "adora cocinar; a veces huele a sopa desde el pasillo del edificio"
+        }
+      },
+      {
+        "id": "abuelo-orlando",
+        "relacion": "abuelo",
+        "nombre": "Orlando",
+        "vive_cerca": true,
+        "aparece_en_cuentos": true,
+        "extra": {
+          "lado": "materno",
+          "mismo_edificio": true,
+          "situacion": "pensionado",
+          "gustos": ["ver fútbol", "cerveza", "viajar"]
+        }
+      }
+    ],
+    "mascotas": [
+      {
+        "id": "mascota-bingo",
+        "nombre": "Bingo",
+        "tipo": "perro",
+        "personalidad": "gordo y perezoso; tierno pero grosero si le quitan la comida",
+        "extra": {
+          "edad": 5,
+          "apodos": ["Bingui", "Chando", "Chandoso", "Domingo"],
+          "manana": "ladra duro en las mañanas y a veces no deja dormir",
+          "travesuras": ["abrir puertas", "garosear la comida", "botar pelo", "jugar con las visitas"]
+        }
+      },
+      {
+        "id": "mascota-mora",
+        "nombre": "Mora",
+        "tipo": "perro",
+        "personalidad": "miedosa; no le gusta salir a la calle",
+        "extra": {
+          "edad": 3,
+          "apodos": ["Mogui", "Chanda", "Morita"],
+          "travesuras": ["cazar palomas", "jugar con pelotas", "dañar colchones"]
+        }
+      }
+    ],
+    "casa": {
+      "detalles": [
+        "mamá Pauleta organiza la ropa, los uniformes del Rosario y todo lo del colegio",
+        "papá Chacachón arregla cosas del apartamento y a veces cocina",
+        "mamá y papá pelean para que los niños no anden descalzos por el apartamento",
+        "tienen una aspiradora robot que se llama Josefina",
+        "Bingo ladra tan fuerte en la mañana que a veces despierta a todos",
+        "en el mismo edificio viven la abuela Betty y el abuelo Orlando"
+      ],
+      "olores": ["comida de la abuela Betty subiendo por el edificio"],
+      "transporte_bogota": ["buses", "TransMilenio", "trancones", "SITP"]
+    },
+    "extra": {
+      "colegio": {
+        "anterior": "Jardín Miska Muska",
+        "actual": "El Rosario",
+        "nota": "los dos niños cambiaron de colegio; todavía extrañan cosas del Miska Muska"
+      },
+      "josefina": {
+        "tipo": "aspiradora robot",
+        "nombre": "Josefina",
+        "nota": "barre sola; a veces choca con los perros o los niños descalzos"
+      },
+      "bogota": {
+        "referencias": ["buses", "TransMilenio", "trancones", "oleaje en estación"],
+        "paradero_cerca": true
+      },
+      "jerga_familia": {
+        "parce": "común en Bogotá",
+        "parceero": "variante",
+        "mijo": "cariño de papás a los niños",
+        "bro": "entre hermanos o amigos jóvenes",
+        "bacano_o_chimba": "chimba puede reemplazar bacano"
+      },
+      "frases_familia": ["se va de jeta", "se va de culo", "ah juemadre"],
+      "rutina_noche": {
+        "descripcion": "Cada noche es la misma lucha. Los papás repiten lo mismo una y otra vez.",
+        "batallas": [
+          {
+            "id": "cepillar_dientes",
+            "texto": "cepillarse los dientes",
+            "nota": "se escapan, lo hacen a medias o dicen que ya lo hicieron"
+          },
+          {
+            "id": "pijama",
+            "texto": "empijamarse",
+            "nota": "siguen en ropa del colegio o en calzoncillos dando vueltas"
+          },
+          {
+            "id": "chichi",
+            "texto": "hacer chichi antes de acostarse",
+            "nota": "dicen que no tienen; después piden ir al baño a medianoche"
+          },
+          {
+            "id": "apagar_pantallas",
+            "texto": "apagar televisor y tablet",
+            "nota": "un round más, un video más, cinco minuticos"
+          },
+          {
+            "id": "poca_agua",
+            "texto": "no tomar tanta agua de noche",
+            "nota": "piden vasos y vasos; después se orinan en la cama"
+          },
+          {
+            "id": "chanclas",
+            "texto": "no andar descalzos",
+            "nota": "se quitan las chanclas en cuanto papá no mira"
+          },
+          {
+            "id": "habitacion",
+            "texto": "arreglar la habitación",
+            "nota": "Legos, carros, peluches y tapas por el piso"
+          },
+          {
+            "id": "tender_cama",
+            "texto": "tender la cama",
+            "nota": "se tiran encima sin tenderla o la deshacen jugando"
+          }
+        ],
+        "frases_papas": [
+          "¿Ya se cepillaron?",
+          "Pónganse el pijama",
+          "Vayan a hacer chichi",
+          "No más agua",
+          "Apaguen ese televisor",
+          "Chanclas puestas",
+          "Recojan esa habitación",
+          "Tiendan la cama"
+        ]
+      },
+      "cuentos": [
+        {
+          "slug": "operacion-a-dormir",
+          "archivo": "cuentos/familia-chacachon-operacion-a-dormir.md",
+          "moraleja": "ir a dormir a tiempo y la rutina de la noche"
+        },
+        {
+          "slug": "cerditos-caperucita",
+          "archivo": "cuentos/familia-chacachon-cerditos-caperucita.md",
+          "variante": "apartamento-guion",
+          "moraleja": "no decir groserías ni contestar feo a los papás",
+          "roles_clasicos": {
+            "cerdito_paja": "Simónchin",
+            "cerdito_palos": "Nico",
+            "cerdito_ladrillo": "Chacachón",
+            "caperucita": "Pauleta",
+            "lobo": "Bingo",
+            "abuelita": "Betty"
+          }
+        },
+        {
+          "slug": "el-lobo-y-las-palabras",
+          "archivo": "cuentos/familia-chacachon-el-lobo-y-las-palabras.md",
+          "variante": "narrativo-clasico",
+          "escenario": "vereda, bosque de eucaliptos, casitas en la loma",
+          "moraleja": "no decir groserías ni contestar feo a los papás"
+        }
+      ]
+    }
+  }
+}

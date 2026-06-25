@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Los Tres Cerditos del Apartamento · Familia Chacachón</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #1c1410;
+      --bg-card: #2a1f18;
+      --text: #fff5ee;
+      --text-soft: #d4b8a8;
+      --accent: #e85d4c;
+      --accent-soft: #f4a582;
+      --brick: #c4734a;
+      --capa: #b83232;
+      --font-size: 1.35rem;
+      --line: 1.85;
+      --max-width: 56rem;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      font-size: 18px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Literata", Georgia, "Times New Roman", serif;
+      font-size: var(--font-size);
+      line-height: var(--line);
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 100% 60% at 50% -10%, rgba(232, 93, 76, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 85% 20%, rgba(196, 115, 74, 0.12) 0%, transparent 35%),
+        radial-gradient(circle at 10% 80%, rgba(184, 50, 50, 0.08) 0%, transparent 40%),
+        var(--bg-deep);
+    }
+
+    .pattern {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: repeating-linear-gradient(
+        -12deg,
+        transparent,
+        transparent 40px,
+        rgba(255, 255, 255, 0.5) 40px,
+        rgba(255, 255, 255, 0.5) 41px
+      );
+      z-index: 0;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      background: rgba(28, 20, 16, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.95rem;
+    }
+
+    .toolbar span { color: var(--text-soft); }
+
+    .toolbar button {
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 700;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 1px solid rgba(232, 93, 76, 0.4);
+      border-radius: 50%;
+      background: rgba(232, 93, 76, 0.12);
+      color: var(--accent-soft);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .toolbar button:hover { background: rgba(232, 93, 76, 0.22); }
+    .toolbar button:active { transform: scale(0.96); }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+      background: rgba(232, 93, 76, 0.18);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: clamp(1.6rem, 4.5vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0 0 0.75rem;
+      color: #fff;
+    }
+
+    .subtitle {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 1rem;
+      color: var(--text-soft);
+      margin: 0 0 0.5rem;
+    }
+
+    .moraleja {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.9rem;
+      color: var(--brick);
+      margin: 0;
+      font-style: italic;
+    }
+
+    article p {
+      margin: 0 0 1.6em;
+      text-align: left;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+
+    article h2 {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent-soft);
+      margin: 2.5rem 0 1rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    article h3 {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--brick);
+      margin: 1.75rem 0 0.75rem;
+    }
+
+    article p.fin {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--accent-soft);
+      font-weight: 600;
+      text-align: center;
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    article em { font-style: italic; color: #ffe8dc; }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      opacity: 0.7;
+    }
+
+    @media (min-width: 768px) {
+      html { font-size: 20px; }
+      main { padding: 3rem 2rem 5rem; }
+    }
+
+    @media print {
+      body { background: white; color: #111; }
+      .pattern, .toolbar { display: none; }
+      main { max-width: none; padding: 1rem; }
+      header { border-color: #ccc; }
+      h1 { color: #111; }
+      article h2, article p.fin { color: #333; }
+    }
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+
+  <nav class="toolbar" aria-label="Tamaño de letra">
+    <button type="button" id="smaller" title="Letra más pequeña" aria-label="Letra más pequeña">A−</button>
+    <span id="size-label">Letra amplia</span>
+    <button type="button" id="larger" title="Letra más grande" aria-label="Letra más grande">A+</button>
+  </nav>
+
+  <main>
+    <header>
+      <div class="badge">Chacachón · Familia Chacachón</div>
+      <h1>Los Tres Cerditos del Apartamento y la Caperucita del Edificio</h1>
+      <p class="subtitle">Para leer en voz alta · Nico, Simónchin y Bingo el lobo</p>
+      <p class="moraleja">Moraleja: cuidar las palabras y no contestarle feo a mamá y papá</p>
+    </header>
+
+    <article id="story">
+      <p>Había una vez — bueno, en realidad es <em>ahora</em>, parce — una familia en Bogotá que vivía en un apartamento con buses por la avenida, TransMilenio lejos haciendo <em>brrrr</em> cuando frenaba, y un edificio donde casi siempre olía a café o a sopa de la abuela del piso de abajo.</p>
+
+      <p>Era la familia <strong>Chacachón</strong>.</p>
+
+      <p>Ahí vivían tres cerditos muy especiales. El primero era <strong>Nico</strong>, el mayor, experto en videojuegos y en decir <em>bro</em> para todo. El segundo era <strong>Simónchin</strong>, el pequeño, que bailaba, jugaba con peluches y tenía una colección de tapas de botellas digna de museo. Y el tercero no era un niño: era <strong>papá Chacachón</strong>, ingeniero electrónico, arreglador de enchufes y hacedor de chistes en momentos no oportunos.</p>
+
+      <p>—¿Cómo que papá es un cerdito? —preguntó Simónchin, con cara de no estar de acuerdo.</p>
+
+      <p>—Mijo, en este cuento los tres somos cerditos —dijo Chacachón—. Yo soy el cerdito que sabe usar el taladro.</p>
+
+      <p>—Ah, bueno. De una —dijo Simónchin.</p>
+
+      <p>También vivían <strong>Pauleta</strong>, la mamá — que en este cuento se convertía en <strong>Caperucita Roja</strong>, aunque su capa era una chaqueta de polar roja contra el frío de Bogotá —, la abuela <strong>Betty</strong>, que era la <strong>Abuelita</strong> del final del cuento, con sus orquídeas y su olla mágica, y el abuelo <strong>Orlando</strong>, que miraba fútbol y no se metía en nada.</p>
+
+      <p>Y estaban <strong>Bingo</strong>, el perro gordo y perezoso, y <strong>Mora</strong>, la perrita miedosa.</p>
+
+      <p>En este cuento, Bingo iba a hacer de <strong>lobo</strong>.</p>
+
+      <p>—¡Injusto! —dijo Nico—. Bingo es bobo.</p>
+
+      <p>—El lobo es un personaje, parce —explicó Pauleta—. No es Bingo de verdad. Es Bingo <em>actuando</em>.</p>
+
+      <p>Bingo ladró al aire, como diciendo que aceptaba el papel.</p>
+
+      <h2>El problema del sábado</h2>
+
+      <p>Todo empezó un sábado por la mañana, cuando Pauleta pidió algo simple:</p>
+
+      <p>—Parces, pilas: recojan la habitación. Tiendan la cama. Chanclas puestas.</p>
+
+      <p>Nico, desde la tablet, sin mirarla:</p>
+
+      <p>—Ay, qué <strong>boleta</strong> tan temprano…</p>
+
+      <p>Simónchin, tirando un Lego al piso:</p>
+
+      <p>—Es que <strong>se va de culo</strong> este cuarto, mamá. No es mi culpa.</p>
+
+      <p>Chacachón, desde la cocina:</p>
+
+      <p>—No me saquen la piedra, niños. Hagan caso.</p>
+
+      <p>Nico suspiró tan fuerte que parecía bus de subida.</p>
+
+      <p>—Ustedes siempre… en serio… ya voy.</p>
+
+      <p>Pero no iba.</p>
+
+      <p>Pauleta se quedó quieta un segundo. Respiró. Contó hasta tres. Los papás de verdad saben ese conteo: es el conteo de <em>no me hagas repetir lo que sigue</em>.</p>
+
+      <p>—Escuchen —dijo—. Última vez que les digo bonito. No me contesten feo. Y no me salgan con palabras que no van en esta casa.</p>
+
+      <p>—¿Qué palabras? —preguntó Simónchin, inocente.</p>
+
+      <p>—Ya sabes cuáles —dijo Pauleta.</p>
+
+      <p>Chacachón se asomó con la espátula.</p>
+
+      <p>—Mijo, las palabras feas son como Bingo garoseando la comida: parecen chistosas un segundo y después hay boleta para todos.</p>
+
+      <p>—¿Qué hacemos entonces? —preguntó Nico.</p>
+
+      <p>Pauleta y Chacachón se miraron. Chacachón sonrió con cara de travesura.</p>
+
+      <p>—Hoy vamos a jugar al cuento —dijo—. Ustedes dos y yo somos los tres cerditos. Mamá es Caperucita. Bingo es el lobo. La abuela Betty es la abuelita. Y al final aprendemos algo sin que duela el culo del cuento.</p>
+
+      <p>Simónchin estalló en risa.</p>
+
+      <p>—Dijo <em>culo</em>.</p>
+
+      <p>—¡Simónchin! —dijeron los tres a la vez.</p>
+
+      <p>—Bueno —dijo el niño—. Palabra no permitida. Entendido.</p>
+
+      <h2>Los tres cerditos construyen sus casas</h2>
+
+      <p>La misión del día era construir <strong>tres casas</strong> dentro del apartamento.</p>
+
+      <h3>La casa de paja (Simónchin)</h3>
+
+      <p>Simónchin armó su fortaleza con <strong>almohadas, una frazada y una caja de zapatos</strong>. Le puso bandera de tapa de gaseosa.</p>
+
+      <p>—Lista —anunció—. Mi casa de paja es <strong>chimba</strong>.</p>
+
+      <p>Josefina, la aspiradora robot, pasó zumbando y le chocó una esquina. La casa de paja se fue al piso.</p>
+
+      <p>—¡Juemad…! —empezó Simónchin.</p>
+
+      <p>Pauleta levantó un dedo.</p>
+
+      <p>El niño corrigió solo:</p>
+
+      <p>—¡Juem… qué rabia! ¡La Josefina me tumba todo!</p>
+
+      <p>—Mejor —dijo Pauleta—. Rabia se puede decir. Lo otro no.</p>
+
+      <h3>La casa de palos (Nico)</h3>
+
+      <p>Nico construyó con <strong>Legos y unas cajas de cereal</strong>. Más resistente. Le puso un letrero: <em>PROHIBIDO EL LOBO</em>.</p>
+
+      <p>—El lobo es Bingo —dijo.</p>
+
+      <p>—Actuando —corrigió Pauleta.</p>
+
+      <p>—Sí, mamá. Actuando.</p>
+
+      <p>Mora pasó corriendo persiguiendo una pelota, tropezó, y la torre de palos quedó como trancón en la Autopista Norte: todo quieto y mal parqueado.</p>
+
+      <p>—Bro —dijo Nico a la torre caída—. Quedaste en boleta.</p>
+
+      <h3>La casa de ladrillo (papá Chacachón)</h3>
+
+      <p>Chacachón, con Nico ayudando un poco, montó la casa fuerte: <strong>sillas apiladas, una tabla, cajas de herramientas reales y mucha cinta gris de la buena</strong>.</p>
+
+      <p>—Esto es ingeniería —dijo Chacachón—. Ladrillo, parce.</p>
+
+      <p>—Parece taller del abuelo —dijo Simónchin, admirado.</p>
+
+      <p>—El cerdito papá estudió electrónica, no cerámica —dijo Chacachón—. Pero la idea es la misma: que no se caiga.</p>
+
+      <p>La casa de ladrillo aguantó cuando Bingo la olfateó y se sentó al lado, gordo, sin querer moverse.</p>
+
+      <h2>Caperucita va con la abuelita</h2>
+
+      <p>Al mediodía, Pauleta se puso la chaqueta roja de polar.</p>
+
+      <p>—Yo soy <strong>Caperucita</strong> —anunció—. Voy a llevarle algo a la abuelita Betty. Vivimos en el <strong>mismo edificio</strong>, parce, pero igual hay que bajar el pasillo, esperar el ascensor — que siempre huele a perro mojado — y tocar el timbre.</p>
+
+      <p>En la canasta llevaba pan del barrio, fruta y un recipiente con caldo que olía tan rico que hasta Josefina hubiera girado si tuviera nariz.</p>
+
+      <p>—Cuidado con el lobo —dijo Simónchin, dramático.</p>
+
+      <p>Bingo levantó las orejas.</p>
+
+      <p>—El lobo huele esto —dijo Chacachón, señalando la canasta— y pierde la cabeza.</p>
+
+      <p>—Como siempre —murmuró Pauleta.</p>
+
+      <p>Bajaron en ascensor. Afuera, un bus pitó. TransMilenio pasó lejos. Bogotá seguía siendo Bogotá.</p>
+
+      <p>Pauleta tocó el timbre de la abuelita.</p>
+
+      <p>Betty abrió con delantal y una orquídea en la ventana detrás.</p>
+
+      <p>—¡Mi Caperucita! —dijo—. Qué bueno. Entra, entra. Orlando está viendo el partido.</p>
+
+      <p>—Solo paso un ratico, mamá —dijo Pauleta—. Traje caldo.</p>
+
+      <p>—Qué rico, mija.</p>
+
+      <p>Pero en ese momento, desde el pasillo del piso de arriba, se oyó un ladrido enorme.</p>
+
+      <p>—¡GUAU GUAU GUAU GUAU!</p>
+
+      <p>Era Bingo. El <strong>lobo del edificio</strong>.</p>
+
+      <h2>El lobo Bingo y la persecución</h2>
+
+      <p>Resulta que Bingo había olfateado el caldo desde el apartamento de los Chacachón. Se escapó cuando Chacachón abrió la puerta para sacar la basura. Mora, miedosa, se quedó escondida debajo de la mesa.</p>
+
+      <p>Bingo subió corriendo por las escaleras — porque a veces el ascensor es muy lento — ladrando, con la lengua afuera, gordo pero rápido cuando huele comida.</p>
+
+      <p>—¡El lobo! —gritó Simónchin desde arriba—. ¡Viene por la canasta!</p>
+
+      <p>Nico abrió la puerta del apartamento.</p>
+
+      <p>—¡Pilas, bro! ¡A las casas!</p>
+
+      <p>Corrieron cada uno a su fortaleza. Bingo llegó al piso de los Chacachón como tornado con patas.</p>
+
+      <h3>Soplando la casa de paja</h3>
+
+      <p>Entró a la habitación de Simónchin. Ladró tan fuerte que las almohadas volaron. La caja de zapatos rodó hasta el pasillo.</p>
+
+      <p>Simónchin salió corriendo en chanclas — porque los papás siempre ganan la batalla del descalzo — hacia la casa de Nico.</p>
+
+      <p>—¡Se cayó mi paja! —gritó—. ¡Se va de… de mal! ¡Se va muy mal!</p>
+
+      <p>—Bien —dijo Pauleta, subiendo en el ascensor de regreso—. Casi lo dices feo. Mejor así.</p>
+
+      <h3>Soplando la casa de palos</h3>
+
+      <p>Bingo entró a la zona de Legos. Nico defendió su torre con una espátula de juguete.</p>
+
+      <p>—¡Atrás, lobo! ¡No pasará!</p>
+
+      <p>La torre de palos se esparció por el piso. Un Lego clavó en el pie de Chacachón, descalzo un segundo.</p>
+
+      <p>—¡Ayyy! —saltó papá—. Mijo, <strong>chanclas</strong>. Y el lobo no muerde: ladra.</p>
+
+      <p>Nico y Simónchin corrieron a la casa de ladrillo del papá.</p>
+
+      <h3>El lobo contra la casa de ladrillo</h3>
+
+      <p>Bingo se plantó frente a la fortaleza de sillas y tablas. Ladró. Olfateó. Intentó meter la cabeza.</p>
+
+      <p>Chacachón, desde adentro:</p>
+
+      <p>—Aquí no, parce lobo. Esta casa tiene cinta gris y responsabilidad.</p>
+
+      <p>Bingo se sentó. Movió la cola. Miró con cara de <em>pero el caldo</em>.</p>
+
+      <p>Pauleta llegó por fin al apartamento, chaqueta roja y todo.</p>
+
+      <p>—¡Bingo! —dijo—. Tú no eres un lobo malo. Eres un perro comelón. La canasta es de la abuelita.</p>
+
+      <p>Bingo la miró con ojos de Chandoso. Ladro suave, como pidiendo perdón.</p>
+
+      <h2>La abuelita no se come al lobo (ni al revés)</h2>
+
+      <p>Bajaron todos — menos Mora, que seguía bajo la mesa — al apartamento de Betty.</p>
+
+      <p>La abuelita no estaba en peligro. Estaba cocinando con orquídeas al lado y el partido en la tele.</p>
+
+      <p>—Abuelita —dijo Simónchin—. ¿El lobo te comió?</p>
+
+      <p>Betty se rió.</p>
+
+      <p>—No, mijo. El lobo me ladró en la puerta, le di un pedacito de pan sin sal y ya quedó pilo. Los lobos de verdad no usan chanclas. Los perros sí, si ustedes les ponen.</p>
+
+      <p>Orlando, desde el sofá:</p>
+
+      <p>—¿Qué pasó arriba? Sonó como construcción.</p>
+
+      <p>—Tres cerditos —dijo Chacachón—. Un lobo. Ingeniería civil doméstica.</p>
+
+      <p>Orlando asintió como quien ve un gol repetido y no le importa el contexto.</p>
+
+      <p>Betty sirvió caldo. Todos sentados. Bingo garoseó su pan con educación mínima.</p>
+
+      <p>Pauleta miró a Nico y Simónchin.</p>
+
+      <p>—Ahora sí. Hablemos de lo importante.</p>
+
+      <p>Los niños se quedaron quietos.</p>
+
+      <h2>La moraleja sin sermón</h2>
+
+      <p>—Hoy —dijo Pauleta— ustedes contestaron feo cuando les pedí recoger. Dijeron cosas con mala cara, y casi salió una palabra que no repetimos.</p>
+
+      <p>—Yo dije <em>se va de mal</em> —dijo Simónchin, orgulloso.</p>
+
+      <p>—Y eso está mejor —dijo Pauleta—. Porque las palabras son como las casas, parces. Unas son de <strong>paja</strong>: salen volando y hieren. Unas son de <strong>palos</strong>: se caen y hacen ruido. Otras son de <strong>ladrillo</strong>: aguantan y no le hacen daño a nadie.</p>
+
+      <p>Chacachón agregó:</p>
+
+      <p>—Cuando le contestan feo a mamá o a papá, es como si el lobo soplará adentro de la casa. Todo se desordena. Después hay boleta de ánimo, boleta de castigo, boleta de madrugar mal.</p>
+
+      <p>Nico bajó la cabeza.</p>
+
+      <p>—Perdón, mamá. De verdad. Estaba enredado en el juego.</p>
+
+      <p>—Perdón —dijo Simónchin—. Es que me da rabia recoger. Pero no te voy a contestar feo otra vez.</p>
+
+      <p>—Yo también —dijo Nico—. Y voy a cuidar las palabras. Sin groserías. Sin hacerle el feo a ustedes.</p>
+
+      <p>Pauleta los abrazó.</p>
+
+      <p>—De una. Eso sí es chimba.</p>
+
+      <p>Chacachón levantó el vaso de jugo.</p>
+
+      <p>—Y recuerden: el lobo Bingo solo quiere caldo. Los papás queremos respeto. Y las chanclas puestas.</p>
+
+      <p>—¡Papá! —dijeron los dos.</p>
+
+      <p>Betty, desde la cocina:</p>
+
+      <p>—Y visitar a la abuelita. Que el edificio es corto pero el cariño es largo.</p>
+
+      <p>Orlando:</p>
+
+      <p>—Amén. ¿Alguien vio el penal?</p>
+
+      <h2>De regreso al apartamento</h2>
+
+      <p>Subieron por el ascensor otra vez. Bogotá afuera con buses, bocinas, tarde movida.</p>
+
+      <p>En el apartamento recogieron los tres tipos de casa. Simónchin guardó almohadas y tapas. Nico ordenó Legos en una caja — más o menos, parce. Chacachón desmontó la fortaleza de ladrillo y guardó la cinta gris.</p>
+
+      <p>Josefina pasó y barrió los restos de la casa de paja. Mora salió de debajo de la mesa. Bingo se acostó en su camita, gordo, perezoso, ya sin olor a lobo, solo a perro que aprendió.</p>
+
+      <p>Esa noche, cuando llegó la Operación A Dormir de siempre — pijama, dientes, chichi, poquita agua, chanclas, habitación, cama —, Nico y Simónchin hicieron caso sin contestar feo.</p>
+
+      <p>Y cuando Simónchin tropezó con un Lego y casi dijo algo prohibido, se mordió la lengua, respiró, y dijo:</p>
+
+      <p>—Qué rabia, bro. Pero melo. Lo recojo.</p>
+
+      <p>Pauleta, desde la puerta, sonrió. Chacachón apagó la luz.</p>
+
+      <p>—Buenas noches, cerditos —susurró.</p>
+
+      <p>—Buenas noches, Caperucita —respondieron.</p>
+
+      <p>—Buenas noches, lobo —dijo Simónchin.</p>
+
+      <p>Bingo ladró suave. Una vez. Al aire. Como siempre.</p>
+
+      <p>Y en el edificio, mientras un bus pasaba lejos y el TransMilenio sonaba como dragón de metal, la familia Chacachón aprendió que <strong>las palabras también son casas</strong>: conviene construirlas fuerte, con respeto, y sin dejar que el lobo de las groserías las tumbe.</p>
+
+      <p class="fin">Fin · Buenas noches, Nico y Simónchin</p>
+    </article>
+
+    <footer>Chacachón · Cerditos + Caperucita · Bogotá</footer>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const labels = ["Pequeña", "Normal", "Amplia", "Muy amplia", "Extra grande"];
+    const sizes = ["1.1rem", "1.35rem", "1.55rem", "1.75rem", "2rem"];
+    let index = 1;
+
+    function updateSize() {
+      root.style.setProperty("--font-size", sizes[index]);
+      document.getElementById("size-label").textContent = "Letra " + labels[index].toLowerCase();
+    }
+
+    document.getElementById("larger").addEventListener("click", () => {
+      if (index < sizes.length - 1) { index++; updateSize(); }
+    });
+
+    document.getElementById("smaller").addEventListener("click", () => {
+      if (index > 0) { index--; updateSize(); }
+    });
+  </script>
+</body>
+</html>

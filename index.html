@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cuentos infantiles hiperlocalizados para leer en familia. Humor bogotano, personajes de la familia Chacachón.">
+  <title>Las historias de Chacachón</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #12141c;
+      --bg-card: #1c2030;
+      --bg-card-hover: #242a3d;
+      --text: #f4f0ea;
+      --text-soft: #a8a4b8;
+      --gold: #e8c47a;
+      --gold-soft: #f5dfa8;
+      --coral: #e86a5a;
+      --coral-soft: #f4a090;
+      --violet: #8b7cf6;
+      --forest: #6aab62;
+      --radius: 1.25rem;
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Nunito", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -30%, rgba(139, 124, 246, 0.18) 0%, transparent 55%),
+        radial-gradient(circle at 15% 85%, rgba(232, 106, 90, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 90% 60%, rgba(106, 171, 98, 0.08) 0%, transparent 35%),
+        var(--bg);
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.35;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+        radial-gradient(1px 1px at 30% 65%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1.5px 1.5px at 55% 15%, #fff, transparent),
+        radial-gradient(1px 1px at 72% 42%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 88% 78%, #fff, transparent),
+        radial-gradient(1px 1px at 45% 88%, rgba(255,255,255,0.5), transparent);
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 52rem;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-top: 1rem;
+    }
+
+    .moon {
+      font-size: 2.75rem;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+      filter: drop-shadow(0 0 20px rgba(232, 196, 122, 0.35));
+    }
+
+    h1 {
+      font-size: clamp(2rem, 6vw, 2.85rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 0 0 0.75rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--gold-soft) 0%, var(--coral-soft) 50%, var(--violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      font-family: "Literata", Georgia, serif;
+      font-size: 1.1rem;
+      color: var(--text-soft);
+      margin: 0 auto 1.25rem;
+      max-width: 28rem;
+      line-height: 1.6;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--gold-soft);
+      border: 1px solid rgba(232, 196, 122, 0.2);
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin: 0 0 1rem 0.25rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    @media (min-width: 640px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .card--wide { grid-column: 1 / -1; }
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: var(--radius);
+      padding: 1.35rem 1.35rem 1.15rem;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    }
+
+    a.card:hover {
+      transform: translateY(-3px);
+      background: var(--bg-card-hover);
+      border-color: rgba(232, 196, 122, 0.25);
+    }
+
+    a.card:active { transform: translateY(-1px); }
+
+    .card--soon {
+      opacity: 0.72;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .card-icon {
+      font-size: 1.75rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin: 0;
+      color: #fff;
+    }
+
+    .badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .badge--forest { background: rgba(106, 171, 98, 0.2); color: #a8d8a2; }
+    .badge--coral { background: rgba(232, 106, 90, 0.2); color: var(--coral-soft); }
+    .badge--muted { background: rgba(255, 255, 255, 0.08); color: var(--text-soft); }
+
+    .card p {
+      font-family: "Literata", Georgia, serif;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: var(--text-soft);
+      margin: 0 0 1rem;
+      flex-grow: 1;
+    }
+
+    .moraleja {
+      font-size: 0.8rem;
+      font-style: italic;
+      color: var(--gold);
+      margin-bottom: 0.85rem;
+    }
+
+    .cta {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--coral-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    a.card:hover .cta { color: var(--gold-soft); }
+
+    footer {
+      text-align: center;
+      margin-top: 3.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      line-height: 1.6;
+    }
+
+    footer strong { color: var(--text); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="moon" aria-hidden="true">🌙</div>
+      <h1>Las historias de Chacachón</h1>
+      <p class="tagline">
+        Cuentos para leer en voz alta con Nico, Simónchin, Pauleta y toda la familia.
+        Bogotá, humor rolo y lecciones sin sermón.
+      </p>
+      <div class="pill-row">
+        <span class="pill">Bogotá</span>
+        <span class="pill">Letra amplia</span>
+        <span class="pill">Para leer en familia</span>
+      </div>
+    </header>
+
+    <p class="section-label">Biblioteca</p>
+
+    <div class="grid">
+      <a class="card" href="cuentos/familia-chacachon-el-lobo-y-las-palabras.html">
+        <div class="card-top">
+          <span class="card-icon" aria-hidden="true">🌲</span>
+          <span class="badge badge--forest">Narrativo</span>
+        </div>
+        <h2>El lobo de las palabras feas</h2>
+        <p class="moraleja">Cuidar las palabras y no contestarle feo a mamá y papá.</p>
+        <p>Vereda, bosque de eucaliptos y tres casitas. Bingo es el lobo, Betty la abuelita. Pauleta va con su capa roja por el sendero.</p>
+        <span class="cta">Leer cuento →</span>
+      </a>
+
+      <a class="card" href="cuentos/familia-chacachon-cerditos-caperucita.html">
+        <div class="card-top">
+          <span class="card-icon" aria-hidden="true">🏢</span>
+          <span class="badge badge--coral">Apartamento</span>
+        </div>
+        <h2>Los Tres Cerditos del Edificio</h2>
+        <p class="moraleja">Las palabras feas alimentan al lobo; el respeto protege la casa.</p>
+        <p>Misma moraleja, pero en el apartamento: ascensor, mismo piso que la abuelita Betty, y Bingo ladrando en el pasillo.</p>
+        <span class="cta">Leer cuento →</span>
+      </a>
+
+      <article class="card card--wide card--soon">
+        <div class="card-top">
+          <span class="card-icon" aria-hidden="true">🛏️</span>
+          <span class="badge badge--muted">Próximamente</span>
+        </div>
+        <h2>Operación A Dormir</h2>
+        <p class="moraleja">La rutina de noche: tablet, chanclas, chichi y la lista de Pauleta.</p>
+        <p>El cuento de la hora de dormir con Nico, Simónchin, Josefina la aspiradora y toda la batalla nocturna del apartamento.</p>
+        <span class="cta">En preparación</span>
+      </article>
+    </div>
+
+    <footer>
+      <p><strong>Chacachón</strong> · cuentos hiperlocalizados con amor familiar.</p>
+      <p>Hecho en Bogotá · Versión de prueba</p>
+    </footer>
+  </div>
+</body>
+</html>

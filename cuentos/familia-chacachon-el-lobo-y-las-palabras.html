@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El lobo de las palabras feas · Familia Chacachón</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0f1812;
+      --text: #f0f7ee;
+      --text-soft: #a8c4a0;
+      --accent: #c45c4a;
+      --accent-soft: #e8a090;
+      --forest: #5a8f55;
+      --forest-soft: #8fbc8a;
+      --dusk: #d4a574;
+      --font-size: 1.35rem;
+      --line: 1.9;
+      --max-width: 56rem;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      font-size: 18px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Literata", Georgia, "Times New Roman", serif;
+      font-size: var(--font-size);
+      line-height: var(--line);
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 90% 50% at 50% 0%, rgba(90, 143, 85, 0.2) 0%, transparent 55%),
+        radial-gradient(circle at 20% 60%, rgba(196, 92, 74, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 90%, rgba(212, 165, 116, 0.1) 0%, transparent 35%),
+        var(--bg-deep);
+    }
+
+    .trees {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.06;
+      background-image:
+        radial-gradient(ellipse 3px 80px at 8% 100%, var(--forest-soft), transparent),
+        radial-gradient(ellipse 3px 100px at 22% 100%, var(--forest-soft), transparent),
+        radial-gradient(ellipse 3px 70px at 45% 100%, var(--forest-soft), transparent),
+        radial-gradient(ellipse 3px 90px at 68% 100%, var(--forest-soft), transparent),
+        radial-gradient(ellipse 3px 85px at 88% 100%, var(--forest-soft), transparent);
+      z-index: 0;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      background: rgba(15, 24, 18, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.95rem;
+    }
+
+    .toolbar span { color: var(--text-soft); }
+
+    .toolbar button {
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 700;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 1px solid rgba(90, 143, 85, 0.45);
+      border-radius: 50%;
+      background: rgba(90, 143, 85, 0.15);
+      color: var(--forest-soft);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .toolbar button:hover { background: rgba(90, 143, 85, 0.28); }
+    .toolbar button:active { transform: scale(0.96); }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--forest-soft);
+      background: rgba(90, 143, 85, 0.2);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: clamp(1.55rem, 4.5vw, 2.15rem);
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0 0 0.75rem;
+      color: #fff;
+    }
+
+    .subtitle {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 1rem;
+      color: var(--text-soft);
+      margin: 0 0 0.5rem;
+    }
+
+    .moraleja {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.9rem;
+      color: var(--dusk);
+      margin: 0;
+      font-style: italic;
+    }
+
+    article p {
+      margin: 0 0 1.6em;
+      text-align: left;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+
+    article p.lead {
+      font-size: 1.05em;
+      color: #e8f0e6;
+    }
+
+    article h2 {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--forest-soft);
+      margin: 2.75rem 0 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    article h3 {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--dusk);
+      margin: 1.5rem 0 0.5rem;
+    }
+
+    article p.fin {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--forest-soft);
+      font-weight: 600;
+      text-align: center;
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    article em { font-style: italic; color: #dce8d8; }
+
+    article strong { font-weight: 600; color: #fff; }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      opacity: 0.7;
+    }
+
+    @media (min-width: 768px) {
+      html { font-size: 20px; }
+      main { padding: 3rem 2rem 5rem; }
+    }
+
+    @media print {
+      body { background: white; color: #111; }
+      .trees, .toolbar { display: none; }
+      main { max-width: none; padding: 1rem; }
+      header { border-color: #ccc; }
+      h1 { color: #111; }
+      article h2, article p.fin { color: #333; }
+      article em, article strong { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div class="trees" aria-hidden="true"></div>
+
+  <nav class="toolbar" aria-label="Tamaño de letra">
+    <button type="button" id="smaller" title="Letra más pequeña" aria-label="Letra más pequeña">A−</button>
+    <span id="size-label">Letra amplia</span>
+    <button type="button" id="larger" title="Letra más grande" aria-label="Letra más grande">A+</button>
+  </nav>
+
+  <main>
+    <header>
+      <div class="badge">Chacachón · Cuento narrativo</div>
+      <h1>El lobo de las palabras feas</h1>
+      <p class="subtitle">Vereda, bosque de eucaliptos y tres casitas · Nico, Simónchin y Bingo</p>
+      <p class="moraleja">Moraleja: cuidar las palabras y no contestarle feo a mamá y papá</p>
+    </header>
+
+    <article id="story">
+      <p class="lead">Había una vez, en una vereda cerquita de Bogotá — donde todavía se oía el bus en la loma y el viento traía olor a pino y a sopa lejana —, una mamá cerda llamada <strong>Pauleta</strong> que criaba a tres cerditos muy distintos entre sí. El mayor, <strong>Nico</strong>, era listo con las manos pero más listo aún para enredarse en cualquier cosa que brillara en una pantalla. El del medio no existía: el pequeño se llamaba <strong>Simónchin</strong>, y tenía más energía que un TransMilenio en hora pico. Y el tercer cerdito no era pequeño para nada: era <strong>Chacachón</strong>, el papá de la casa, corpulento, bueno para el taladro y para reírse cuando no tocaba.</p>
+
+      <p>Un día Pauleta los reunió en la cocina, con el delantal puesto y la chaqueta roja de polar colgando de la silla, porque ese día iba a caminar por el monte hasta la casita de su mamá <strong>Betty</strong>, la abuelita de orquídeas y caldo infinito.</p>
+
+      <p>—Oigan, parces —dijo—, ustedes tres van a construirse cada uno su casa aquí en la loma. Yo bajo al bosque de eucaliptos a llevarle algo a la abuelita. Y escuchen bien lo que les digo: en este monte anda un lobo.</p>
+
+      <p>—¿Un lobo de verdad? —preguntó Simónchin, con los ojos como platos.</p>
+
+      <p>—Un lobo de verdad —respondió Pauleta—, aunque en esta historia se llama <strong>Bingo</strong> y huele a croqueta. Ladra fuerte, roba comida y, lo que es peor, le encanta cuando los cerditos se dicen palabras feas y se contestan feo. Con cada grosería, parce, ese lobo se pone más grande.</p>
+
+      <p>Nico se encogió de hombros. —Ay, mamá, qué boleta… —Pauleta lo miró firme pero sin gritar: —No me contestes así. Las palabras también construyen casas. Las feas son de paja: se caen. Ya les hablé. Chacachón asintió, serio. Él venía del campo y sabía que una casa buena empieza por buen ánimo y buen cimiento, no por responderle mal a la mamá.</p>
+
+      <p>Pauleta se fue por el sendero con su canasta — pan, fruta, caldo en un recipiente que no se derramaba — y la capa roja puesta contra el frío de la tarde. El camino entraba entre eucaliptos altos, de esos que en Bogotá parecen columnas verdes, y más allá se veía el techo de la casita de Betty, con macetas en la ventana. Los tres cerditos se quedaron solos en la loma.</p>
+
+      <h2>Las tres casas</h2>
+
+      <h3>La casa de paja</h3>
+
+      <p>Simónchin quiso terminar rápido para ir a jugar. Armó su casita con paja seca del potrero, cartón de cajas, una frazada vieja y un montón de tapas de botellas clavadas como bandera, porque a él le parecía chimba así. —Lista —dijo—. La más bonita del monte. Nico pasó por ahí, arrastrando los pies: —Se va a caer, bro. —No te metas. —Solo digo. —¡Contéstame feo otra vez y le digo a mamá! Y ahí estaba: dos hermanos ya con el lobo creciendo un poquito en algún lado del bosque, sin que lo vieran, alimentado por esas palabras cortantes.</p>
+
+      <h3>La casa de palos</h3>
+
+      <p>Nico construyó más lejos, donde el monte empezaba a hacer sombra. Usó ramas, estacas y cajas de cereal atadas con cuerda. Le quedó parecida a un fuerte de Legos gigante, con un letrero que decía <em>Prohibido el lobo</em>. Era más resistente que la de Simónchin, pero la armó murmurando que era una boleta tener que trabajar un sábado, y eso tampoco ayudó.</p>
+
+      <h3>La casa de ladrillo</h3>
+
+      <p>Chacachón, al borde de la loma, donde el terreno era firme, trabajó sin prisa pero sin pausa. Ladrillos de verdad, cemento, una tabla bien puesta y cinta gris en los sitios que lo necesitaban. Nico lo ayudó un rato, sin quejarse tanto, y hasta Simónchin le llevó agua. —Esta casa aguanta —dijo Chacachón—. No por miedo al lobo nomás. Porque cuando uno habla bonito y trabaja con ganas, lo que construye no se cae tan fácil.</p>
+
+      <h2>Caperucita en el bosque</h2>
+
+      <p>Mientras tanto, Pauleta caminaba por el sendero. El bosque de eucaliptos hacía ese silencio raro, roto a ratos por un pájaro o por un motor lejano de la ciudad. Ella iba cantando bajito — no un canto de iglesia, sino esas canciones que las mamás se saben sin darse cuenta — y pensando en Betty, en el caldo, en que los niños hicieran caso.</p>
+
+      <p>De pronto, entre los troncos, aparecieron unos ojos brillantes. Era <strong>Bingo</strong>. No era un lobo de cuento europeo con capa negra. Era un perro gordo, perezoso, con la lengua afuera y el pelo erizado de correr. Pero en este relato era el lobo, y eso bastaba.</p>
+
+      <p>Pauleta entendió el mensaje en sus ojos de Chandoso: <em>¿Qué hay en la canasta?</em> —No es para ti —respondió—. Es para la abuelita Betty. Bingo ladró una vez, al aire, como siempre. —Tú sigue tu camino —dijo Pauleta, tranquila—. Yo no te insulto ni te provoco. Las palabras feas te hacen fuerte, y yo no te doy esa comida. El lobo gruñó, frustrado, y se metió entre los árboles. Pauleta siguió caminando. La capa roja se movía con el viento.</p>
+
+      <h2>El lobo en la loma</h2>
+
+      <p>En la loma, el lobo llegó primero a la casa de paja. Simónchin estaba adentro, contando tapas. Bingo olfateó, sopló con un aliento húmedo y ladró tan fuerte que la paja voló como confeti en cumpleaños mal planeado. La casita entera se vino abajo. Simónchin salió corriendo, en chanclas — porque hasta en los cuentos los papás de Bogotá ganan esa batalla —, y gritó: —¡Mamá tenía razón! ¡Se cayó!</p>
+
+      <p>Corrió hacia la casa de palos de Nico. El lobo fue detrás. La torre de ramas y cajas resistió un soplo, dos… pero al tercer ladrido, cuando Nico le gritó a Simónchin <em>¡deja de empujar, bro, la cagas!</em>, la casa de palos se deshizo como trancón un lunes: todo enredo y ruido.</p>
+
+      <p>Los dos hermanos corrieron, asustados de verdad ahora, hacia la luz que salía por la ventana de la casa de ladrillo. Chacachón abrió la puerta antes de que golpearan. —Entren —dijo—. Y dejen de decirse feo. El lobo se alimenta de eso.</p>
+
+      <p>Bingo llegó jadeando. Olfateó la pared de ladrillo. Empujó. Ladró. Intentó garosear la puerta como garosea la comida los domingos. Nada. —Aquí no, parce —dijo Chacachón desde adentro—. Esta casa tiene cimiento y respeto. Bingo se sentó en el umbral, derrotado por la ingeniería y por el buen trato.</p>
+
+      <h2>En la casita de la abuelita</h2>
+
+      <p>Pauleta llegó a la casita de Betty sin más sobresaltos. La abuelita abrió la puerta con delantal limpio y una orquídea al lado del reloj. —¡Mija! —dijo Betty—. Qué bueno verte. —Traje caldo, mamá.</p>
+
+      <p>Adentro, <strong>Orlando</strong> miraba fútbol con el volumen bajo, como quien no quiere perderse el partido ni la visita. Betty sirvió en tazas humeantes. Afuera, el monte seguía verde.</p>
+
+      <p>No pasó mucho cuando golpes apresurados sonaron en la puerta. Eran Nico y Simónchin, sin aliento, seguidos por Chacachón y, un poco más atrás, Bingo con la cola entre las patas — metafóricamente, porque la cola del perro seguía erguida.</p>
+
+      <p>—¡Abuelita! —jadeó Simónchin—. ¡El lobo nos tumba las casas! Betty miró a Bingo, que parpadeó inocente. —Este lobo —dijo la abuelita— come pan sin sal y ladra a la puerta. No se come abuelas. Las abuelas de Bogotá sabemos defendernos.</p>
+
+      <h2>La moraleja sin sermón</h2>
+
+      <p>Todos sentaron en la mesa. El caldo calmó los ánimos. Pauleta miró a sus cerditos. —Ahora sí —dijo—. Cuéntenme qué pasó en la loma.</p>
+
+      <p>Nico bajó la cabeza: —Contesté feo a Simónchin. Y antes le contesté feo a usted, mamá. —Yo también —dijo Simónchin—. Y casi dije una palabra que no va.</p>
+
+      <p>Pauleta asintió. —El lobo no es solo Bingo. Es todo lo que sale cuando ustedes hablan sin cuidado. Las palabras de paja vuelan y hieren. Las de palos hacen ruido y tumban cosas. Las de ladrillo —señaló a Chacachón— aguantan y protegen.</p>
+
+      <p>Chacachón tomó el jugo. —En esta familia construimos con respeto. El lobo Bingo quiere caldo. Los papás queremos hijos que no nos contesten feo. Y las chanclas puestas, por si acaso. —¡Papá! —dijeron los niños, pero riéndose ya.</p>
+
+      <p>Betty levantó su taza. —Y venir a ver a la abuelita. El camino es corto si se camina con buenas palabras. Orlando, sin quitar los ojos del partido: —Amén. ¿Alguien vio el penal?</p>
+
+      <h2>El regreso</h2>
+
+      <p>Al atardecer volvieron todos juntos por el sendero de eucaliptos. Bogotá brillaba lejos, con buses como luciérnagas en la loma. En la casa de ladrillo, que ya era de todos, encendieron una luz.</p>
+
+      <p>Simónchin, cansado, casi tropezó con una raíz. —Qué rabia —murmuró—… pero melo. Me agacho y sigo. Pauleta sonrió. Chacachón apagó el patio. —Buenas noches, cerditos —dijo. —Buenas noches, Caperucita —respondieron.</p>
+
+      <p>Bingo, atrás, ladró una sola vez al aire. Mora no salía en este cuento del monte, pero en la vereda de verdad seguía miedosa en la casa, esperando.</p>
+
+      <p>Y los tres cerditos aprendieron — sin que nadie les diera un sermón eterno — que las palabras son casas: conviene construirlas fuertes, con respeto, para que ningún lobo, ni siquiera uno gordo y comelón como Bingo, las pueda soplar.</p>
+
+      <p class="fin">Fin · Buenas noches, Nico y Simónchin</p>
+    </article>
+
+    <footer>Chacachón · Vereda y bosque · Versión narrativa</footer>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const labels = ["Pequeña", "Normal", "Amplia", "Muy amplia", "Extra grande"];
+    const sizes = ["1.1rem", "1.35rem", "1.55rem", "1.75rem", "2rem"];
+    let index = 1;
+
+    function updateSize() {
+      root.style.setProperty("--font-size", sizes[index]);
+      document.getElementById("size-label").textContent = "Letra " + labels[index].toLowerCase();
+    }
+
+    document.getElementById("larger").addEventListener("click", () => {
+      if (index < sizes.length - 1) { index++; updateSize(); }
+    });
+
+    document.getElementById("smaller").addEventListener("click", () => {
+      if (index > 0) { index--; updateSize(); }
+    });
+  </script>
+</body>
+</html>

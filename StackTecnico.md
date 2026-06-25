@@ -164,12 +164,12 @@ chacachon/
 
 Sin RLS, la `NEXT_PUBLIC_SUPABASE_ANON_KEY` expone toda la BD.
 
-- `usuarios`, `perfiles_ninos`, `suscripciones`, `lecturas`: cada user solo ve sus datos.
+- `usuarios`, `perfiles_familia`, `perfiles_familia_versiones`, `suscripciones`, `lecturas`: cada user solo ve sus datos.
 - `cuentos`, `paginas`, `textos_localizados`: lectura pública solo si `estado = 'publicado'`.
 
 ### Habeas Data (Ley 1581 Colombia)
 
-- Solo recolectar nombre y fecha de nacimiento del niño.
+- Solo recolectar datos del perfil familiar necesarios para personalizar cuentos (ver [PerfilFamiliar.md](./PerfilFamiliar.md)).
 - Consentimiento parental explícito al registrarse.
 - Botón "eliminar cuenta y datos" (derecho al olvido).
 - No trackear datos de niños en analytics.
@@ -236,7 +236,7 @@ A 5.000 usuarios × $3 USD/mes = $15.000 ingresos → margen bruto ~95%.
 | Sprint | Duración | Entregable |
 |---|---|---|
 | 0 — Setup | 3–5 días | Repo, Supabase, SQL+RLS, Vercel, PostHog, Sentry |
-| 1 — Auth | 1 semana | Login, perfiles de niños |
+| Sprint 1 — Auth + familia | 1–2 semanas | Login, perfil familiar (JSONB), onboarding capa 1 |
 | 2 — Reader | 2 semanas | Biblioteca, reader paginado, acento, audio, nombres |
 | 3 — Pagos | 1–2 semanas | Wompi, gating premium, precios |
 | 4 — Sharing | 1 semana | WhatsApp OG tags, preview personalizado |
