@@ -24,7 +24,7 @@ El Negocio Real (Upsell Físico): Impresión bajo demanda (Print-on-Demand) de l
 3. La Solución en Términos Técnicos (Arquitectura de Datos y Stack)
 La plataforma se estructurará con el rigor, la seguridad y la escalabilidad que exigen los entornos de datos transaccionales y corporativos, asegurando tiempos de respuesta de milisegundos.
 
-Modelo de Datos Relacional: Se abandona el almacenamiento de "texto plano". La base de datos (PostgreSQL en Supabase) modelará entidades separadas: Personajes, Páginas, Acentos, Telemetría e Interpolación de variables (para insertar los nombres exactos en la historia de forma dinámica).
+Modelo de Datos Relacional: Se abandona el almacenamiento de "texto plano". La base de datos (**PostgreSQL en Neon** + Prisma) modelará entidades separadas: Personajes, Páginas, Acentos, Telemetría e Interpolación de variables (para insertar los nombres exactos en la historia de forma dinámica). Ver [StackTecnico.md](./StackTecnico.md) y [docs/database.md](./docs/database.md) para el schema Sprint 0.
 
 Motores de IA Optimizados:
 

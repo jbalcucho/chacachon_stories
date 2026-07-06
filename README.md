@@ -2,68 +2,56 @@
 
 Plataforma web de cuentos infantiles hiperlocalizados con IA. Cuentos con humor regional (bogotano, costeño, etc.), lecciones de crianza y personajes originales inspirados en la nostalgia de los 80 y 90.
 
-## Documentación
+## App (Sprint 0)
 
-| Documento | Descripción |
-|---|---|
-| [ContextoChacachon.md](./ContextoChacachon.md) | Plan de negocio original: concepto, IP, stack inicial, BD básica, GTM, presupuesto y prompts |
-| [contextonew.md](./contextonew.md) | Contexto enriquecido: negocio, monetización, schema SQL, flujo de producto y DDL |
-| [GuiaAcentos.md](./GuiaAcentos.md) | Glosario de acentos y registros (rolo, gomelo, ñero), frases bogotanas, tiers y reglas anti-caricatura |
-| [cuentos/familia-balcutron-operacion-a-dormir.html](./cuentos/familia-balcutron-operacion-a-dormir.html) | Cuento en HTML para leer en pantalla (letra amplia, estilo nocturno) |
-| [cuentos/familia-chacachon-operacion-a-dormir.md](./cuentos/familia-chacachon-operacion-a-dormir.md) | Cuento de prueba personalizado (familia real, El Rosario, apartamento Bogotá) |
-| [cuentos/familia-chacachon-cerditos-caperucita.md](./cuentos/familia-chacachon-cerditos-caperucita.md) | Cerditos + Caperucita · versión apartamento (estilo guion) |
-| [cuentos/familia-chacachon-el-lobo-y-las-palabras.md](./cuentos/familia-chacachon-el-lobo-y-las-palabras.md) | **Versión narrativa** · monte, vereda, casitas clásicas · misma moraleja |
-| [cuentos/familia-chacachon-el-lobo-y-las-palabras.html](./cuentos/familia-chacachon-el-lobo-y-las-palabras.html) | Misma historia narrativa en HTML (tema vereda/bosque, letra amplia) |
-| [cuentos/familia-chacachon-cerditos-caperucita.html](./cuentos/familia-chacachon-cerditos-caperucita.html) | Versión apartamento en HTML para leer en pantalla |
-| [cuentos/familia-balcutron-operacion-a-dormir.md](./cuentos/familia-balcutron-operacion-a-dormir.md) | Cuento piloto Balcutron en prosa fluida (versión niños) |
-| [cuentos/familia-balcutron-hora-del-nono.md](./cuentos/familia-balcutron-hora-del-nono.md) | Cuento piloto técnico: 10 páginas, todas las variantes de acento |
-| [StackTecnico.md](./StackTecnico.md) | Stack recomendado, arquitectura, seguridad, costos, roadmap y checklist pre-launch |
-| [PerfilFamiliar.md](./PerfilFamiliar.md) | Perfil familiar flexible (JSONB), onboarding por capas, interpolación y persistencia |
-| [perfiles/](./perfiles/) | Perfiles JSON de prueba + plantilla con variables para validar el esquema |
-
-## Resumen del producto
-
-- **Qué es:** app web (PWA) de co-lectura nocturna para familias latinoamericanas.
-- **Diferenciador:** "Stand-up Comedy Narrativo" — el padre se ríe con la jerga local, el niño aprende la moraleja.
-- **Personajes:** Capitán Sancocho, Familia Balcutron, Escuadrón Recreo (IP propia).
-- **MVP:** cuentos pregenerados en BD con cambio de acento instantáneo, interpolación de nombres (`{{niño_1}}`, `{{niño_2}}`) y **perfil familiar** editable (documento JSONB por hogar — ver [PerfilFamiliar.md](./PerfilFamiliar.md)).
-
-## Stack (MVP)
-
-- **Frontend/Backend:** Next.js 15 + TypeScript + Tailwind + shadcn/ui
-- **BD/Auth:** Supabase (PostgreSQL + RLS)
-- **Hosting:** Vercel
-- **Assets:** Cloudflare R2
-- **IA texto:** Claude Sonnet 4.5 (pregenerado)
-- **IA imagen:** Flux + LoRAs (fal.ai)
-- **TTS:** ElevenLabs
-- **Pagos:** Wompi (CO) + Mercado Pago (LatAm)
-
-## Clonar en otro equipo
+Next.js 15 + Neon Postgres + Prisma + NextAuth — mismo patrón que rotatudisfraz.
 
 ```bash
 git clone https://github.com/jbalcucho/chacachon_stories.git
 cd chacachon_stories
+npm install
+cp .env.example .env.local   # completar variables
+npm run dev                  # http://localhost:3000
 ```
 
-## Sitio estático (Vercel)
+| Ruta | Descripción |
+|------|-------------|
+| `/` | Biblioteca **Las historias de Chacachón** |
+| `/login` | Entrar con Google |
+| `/privacidad` | Política de privacidad (piloto) |
+| `/cuentos/*.html` | Readers HTML (letra amplia) |
 
-Índice en la raíz del repo para probar deploy:
+### Base de datos
 
-| Archivo | Descripción |
+```bash
+npm run setup:neon           # Neon env + migrate + seed (requiere neonctl)
+npm run db:studio
+```
+
+Ver [docs/database.md](./docs/database.md) y [docs/architecture.md](./docs/architecture.md).
+
+## Documentación
+
+| Documento | Descripción |
 |---|---|
-| [index.html](./index.html) | **Las historias de Chacachón** — biblioteca con enlaces a los cuentos |
-| [vercel.json](./vercel.json) | Configuración mínima para Vercel (sitio estático) |
+| [docs/architecture.md](./docs/architecture.md) | Arquitectura Sprint 0, rutas, decisiones |
+| [docs/database.md](./docs/database.md) | Schema Prisma, seed, migraciones |
+| [StackTecnico.md](./StackTecnico.md) | Stack completo, roadmap, seguridad |
+| [PerfilFamiliar.md](./PerfilFamiliar.md) | Perfil familiar JSONB, onboarding, interpolación |
+| [GuiaAcentos.md](./GuiaAcentos.md) | Acentos, tiers, reglas anti-caricatura |
+| [ContextoChacachon.md](./ContextoChacachon.md) | Plan de negocio, IP, GTM |
+| [contextonew.md](./contextonew.md) | Schema relacional futuro (páginas, acentos) |
+| [cuentos/](./cuentos/) | Fuentes editoriales (.md) y HTML legacy |
+| [perfiles/](./perfiles/) | JSON de prueba + plantillas |
 
-### Publicar en Vercel
+## Stack (MVP)
 
-1. Push del repo a GitHub.
-2. [vercel.com/new](https://vercel.com/new) → Importar `chacachon_stories`.
-3. Framework Preset: **Other** (sin build; Vercel sirve `index.html` y `cuentos/`).
-4. Deploy.
-
-La URL quedará tipo `https://chacachon-stories.vercel.app`.
+- **Frontend/Backend:** Next.js 15 + TypeScript + Tailwind 4
+- **BD:** Neon Postgres + Prisma
+- **Auth:** NextAuth v4 + Google OAuth
+- **Hosting:** Vercel (`iad1`)
+- **Assets (futuro):** Cloudflare R2 · **IA:** Claude, Flux, ElevenLabs
 
 ## Estado del proyecto
 
-Fase de documentación + **sitio estático de prueba**. La app Next.js + Supabase aún no está en el repo.
+**Sprint 0** — App Next.js con biblioteca, auth Google, schema Prisma y readers HTML en `public/cuentos/`. Siguiente: perfil familiar + interpolación en TypeScript.

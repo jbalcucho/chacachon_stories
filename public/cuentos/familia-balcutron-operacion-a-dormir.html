@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Familia Balcutron: Operación A Dormir</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0f1423;
+      --bg-card: #171e32;
+      --text: #eef2ff;
+      --text-soft: #b8c4e8;
+      --accent: #ff8c42;
+      --accent-soft: #ffb86a;
+      --star: rgba(255, 255, 255, 0.55);
+      --font-size: 1.35rem;
+      --line: 1.85;
+      --max-width: 56rem;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 18px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Literata", Georgia, "Times New Roman", serif;
+      font-size: var(--font-size);
+      line-height: var(--line);
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, #2a3560 0%, transparent 55%),
+        radial-gradient(circle at 20% 30%, rgba(255, 140, 66, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(120, 160, 255, 0.06) 0%, transparent 35%),
+        var(--bg-deep);
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, var(--star), transparent),
+        radial-gradient(1px 1px at 30% 65%, var(--star), transparent),
+        radial-gradient(1.5px 1.5px at 55% 15%, var(--star), transparent),
+        radial-gradient(1px 1px at 70% 45%, var(--star), transparent),
+        radial-gradient(1px 1px at 85% 80%, var(--star), transparent),
+        radial-gradient(1.5px 1.5px at 15% 85%, var(--star), transparent),
+        radial-gradient(1px 1px at 92% 12%, var(--star), transparent),
+        radial-gradient(1px 1px at 48% 88%, var(--star), transparent);
+      opacity: 0.7;
+      z-index: 0;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      background: rgba(15, 20, 35, 0.88);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.95rem;
+    }
+
+    .toolbar span {
+      color: var(--text-soft);
+    }
+
+    .toolbar button {
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 700;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 1px solid rgba(255, 140, 66, 0.35);
+      border-radius: 50%;
+      background: rgba(255, 140, 66, 0.12);
+      color: var(--accent-soft);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .toolbar button:hover {
+      background: rgba(255, 140, 66, 0.22);
+    }
+
+    .toolbar button:active {
+      transform: scale(0.96);
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+      background: rgba(255, 140, 66, 0.15);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: clamp(1.75rem, 5vw, 2.35rem);
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0 0 0.75rem;
+      color: #fff;
+    }
+
+    .subtitle {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 1rem;
+      color: var(--text-soft);
+      margin: 0;
+    }
+
+    article p {
+      margin: 0 0 1.6em;
+      text-align: left;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+
+    article p:last-child {
+      margin-bottom: 0;
+      padding-top: 0.5rem;
+      color: var(--accent-soft);
+      font-weight: 600;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      opacity: 0.7;
+    }
+
+    @media (min-width: 768px) {
+      html {
+        font-size: 20px;
+      }
+
+      main {
+        padding: 3rem 2rem 5rem;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: #111;
+      }
+
+      .stars,
+      .toolbar {
+        display: none;
+      }
+
+      main {
+        max-width: none;
+        padding: 1rem;
+      }
+
+      header {
+        border-color: #ccc;
+      }
+
+      h1 {
+        color: #111;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <nav class="toolbar" aria-label="Tamaño de letra">
+    <button type="button" id="smaller" title="Letra más pequeña" aria-label="Letra más pequeña">A−</button>
+    <span id="size-label">Letra amplia</span>
+    <button type="button" id="larger" title="Letra más grande" aria-label="Letra más grande">A+</button>
+  </nav>
+
+  <main>
+    <header>
+      <div class="badge">Chacachón · Familia Balcutron</div>
+      <h1>Operación A Dormir</h1>
+      <p class="subtitle">Para leer en voz alta · Nicolai y Chimonchin</p>
+    </header>
+
+    <article id="story">
+      <p>En el año 3026, muy lejos pero también muy cerca de nosotros, vivía la Familia Balcutron en una ciudad que alguna vez se llamó Bogotá. Hace muchísimo tiempo — tanto que ya casi nadie lo cuenta — esa Bogotá despegó entre las estrellas y se quedó flotando en la Vía Láctea, con sus barrios, sus trancones y sus familias adentro. La casa-nave de los Balcutron estaba justo donde antes quedaba un barrio cerca del Campín y del Movistar Arena, cuando todavía había buses, lluvia de las cinco y olor a empanada en la esquina. Era una nave color mora — morada por fuera, suave por dentro — y a un saltito espacial vivían los abuelos, en otra nave parecida, tan cerca que a veces se veían las luces de la cocina de ellos parpadear al otro lado del domo. El papá se llamaba Comandante Raka. Pilotaba el platillo naranja, reparaba de todo en la casa — una tubería, una pantalla, un panel suelto — y en su taller del fondo siempre tenía un experimento medio raro prendido, burbujeando o haciendo chispas con buena intención. La mamá se llamaba Teniente Pauleta. Era ingeniera de la nave y la jefa de la casa: se la pasaba doblando ropa en la sala aunque ya existieran robots para eso, y peleaba cada noche para que Nicolai y Chimonchin anduvieran descalzos por la nave, porque decía que los pies necesitan sentir el piso para dormir mejor. Los niños eran Nicolai y Chimonchin: hermanos, parces de pelea y de risa, pegados a sus tablets de juego, como cuando no sueltan el celular ni para cenar. Y vivían con dos mascotas: Bingochon, un perro comprado en Temu que parecía de peluche barato pero ladraba de verdad — a veces al aire, a veces a la pared — y Mora, una perrita callejera miedosa que un día apareció en el pasillo flotante y nunca se fue; se escondía detrás de las piernas de mamá cuando oía ruidos raros. También estaba Sietecito, el robot de la casa — Unit-7, decía su nombre de fábrica, pero nadie lo llamaba así — que ayudaba con la cena, las toallas y las alarmas, y casi siempre la embarraba con buena intención.</p>
+
+      <p>Ese día, en particular, había sido largo. Nicolai volvió del colegio espacial con tarea de matemáticas galácticas y cara de cansancio, aunque negaba tener sueño desde las seis de la tarde. Chimonchin estuvo en práctica de gravedad cero en educación física y llegó diciendo que el planeta morado del juego Capitán Nebulosa era lo único importante del universo. Comandante Raka cerró un turno doble y después arregló el panel de la puerta del baño con un alambre y mucha fe. Teniente Pauleta arregló una fuga miniatura en la nave mientras doblaba pijamas en la mesa de la sala. Y Sietecito intentó servir la sopa sin derramarla — lo logró a medias. Bingochon durmió casi todo el día en su camita de Temu. Mora, en cambio, no paró de temblar porque papá probó un experimento que hacía un zumbido raro en el pasillo. Cuando por fin subieron todos al platillo naranja para volver a casa, ya eran las ocho y media, y el cielo por la ventana se veía morado, bonito, igual que se veía el atardecer sobre Bogotá cuando Bogotá todavía estaba en el suelo — papá decía que por el Campín, cerca del Movistar Arena, el cielo se ponía así mismo antes de que la ciudad volara.</p>
+
+      <p>Pero el platillo no avanzaba, parce. Iba muy despacio. Más lento que cuando el bus va lleno un lunes a la hora pico. Había un trancón intergaláctico en la salida 14 de la Vía Láctea: naves de un lado, naves del otro, luces rojas parpadeando, y un taxista espacial atrás pitando con un claxon que sonaba a robot enojado. Comandante Raka suspiró y apretó el volante. Teniente Pauleta miró el reloj flotante. Y atrás, Nicolai y Chimonchin ni piro la ventana ni el atardecer morado: tenían los tablets de juego prendidos, viendo el mismo juego otra vez, y otra vez, y otra vez, como si el trancón no existiera. Nicolai murmuraba estrategias en voz baja. Chimonchin se mordía el labio en la parte difícil. De repente mamá se inclinó hacia atrás y dijo con voz de capitana: —Parces, pilas: ya es hora de ir a dormir. Cuando lleguemos a la casa-nave, apagan los tablets y van directo a la cama. Sin negociación espacial—. Nicolai levantó la vista un segundo, como quien prueba su suerte: —¿En serio? ¿Aunque el trancón tarde mucho? ¿Aunque el Capitán Nebulosa esté a un golpe de ganar?—. Papá Comandante Raka no quitó los ojos del camino: —En serio, parce. Sobre todo si tarda mucho. Tu cerebro mañana te lo va a agradecer—. Y en ese instante, como si hubiera esperado su turno en un concurso, Chimonchin levantó un dedito y dijo: —Parce, solo cinco minuticos más. Es que si apago ahora, pierdo la partida y me quedo bravo toda la semana—. Sietecito, desde su rincón entre las bolsas del mercado, activó una luz y soltó con voz grave de robot convencido: —Cinco minutos aquí son muchísimo en la Tierra. Confirmado científicamente—. Nadie le había pedido opinión. Nicolai le susurró a Chimonchin: —No le haga caso; ese robot dice lo mismo de todo—. Chimonchin respondió: —Pero suena bacano—.</p>
+
+      <p>Cuando por fin llegaron a la casa-nave — después de lo que pareció una hora pero fueron veinte minutos —, los niños bajaron del platillo arrastrando los pies, descalzos como a mamá le gustaba. Teniente Pauleta encendió las luces suaves del domo mora. Comandante Raka colgó las chaquetas espaciales. Bingochon corrió a olfatearlos, ladró dos veces al platillo y una al sofá. Mora se pegó a la pierna de mamá y no soltó. Olía a cena reciente y a pijama cerca. —Listo —dijo mamá, doblando una toalla sin parar—: pijama, cepillo de dientes, cama. Orden de misión. Y descalzos, que ya les dije—. Nicolai apagó el tablet… y en lugar de ir al cuarto se puso a dar vueltas: miró la nevera, abrió un cajón, fue al baño, volvió a la sala, revisó si había mensajes en la pantalla de la pared, como si de pronto hubiera mil cosas urgentes que hacer antes de dormir. No hacía caso. Pilas, parce, ya era hora. Chimonchin, en cambio, se plantó en el piso de la sala, cruzó los brazos, frunció el ceño y declaró con la solemnidad de un juez: —No tengo sueño. Ninguno. Cero. Revisado dos veces—. Quedó bravo, molesto, como cuando le cambian el final de un cuento favorito. —Yo sí tengo harto sueño —dijo Nicolai, pero no se movía hacia la cama—. Pero primero necesito agua. Y después tal vez otro poquito de agua. Y ver si mañana llueve en el planeta 7—. Mamá Teniente Pauleta respiró hondo, contando hasta tres en silencio. Papá Comandante Raka se frotó la cara con la mano, la misma mano cansada del volante.</p>
+
+      <p>Sietecito detectó emergencia doméstica — sus luces parpadearon en amarillo — y decidió salvar la noche. Primero activó el Modo Monstruo de Susto para que los niños tuvieran miedo y corrieran solitos a la cama. Apareció flotando en el aire un monstruo gigante hecho de luz… pero salió con ojos redondos, sonrisa torcida y una vocecita que decía “¡Buu!” como si tuviera miedo de sí mismo. Mora se metió debajo de la mesa y tembló. Bingochon ladró al monstruo de luz, que no le tenía miedo a nada porque no entendía bien. Nicolai y Chimonchin se miraron. Estallaron en risa. Se agarraron la panza. Casi se caen sentados. —¿En serio? —dijo mamá—. ¡Qué boleta! Eso no ayuda, Sietecito—. El robot inclinó la cabeza: —¿No desean tener miedo? Puedo intentar de nuevo—. —No —dijeron los cuatro a la vez—. Entonces Sietecito probó plan B: puso música de dormir espacial a volumen alto, una canción lenta con zumbidos y estrellas, tan fuerte que vibró la taza del té en la mesa. Chimonchin se tapó los oídos. Nicolai dijo: —Parce, parece una licuadora triste—. Papá apagó la música. Sietecito parpadeó, confundido otra vez, y murmuró: —Registro: los humanos pequeños son impredecibles—</p>
+
+      <p>Fue entonces cuando Comandante Raka, en lugar de enojarse más, se arrodilló a la altura de Nicolai y Chimonchin. Tenía ojeras, pero también una chispa de travesura, como cuando un papá cansado se convierte en cómplice. —Escuchen, parces exploradores —dijo en voz baja—. La situación es grave. El enemigo se llama Sueño Retrasado. Si no lo vencen esta noche, mañana están lentos en el colegio, bravos en el desayuno, y el Capitán Nebulosa también se va a enojar porque ustedes no van a ver bien. Así que la misión de hoy se llama Operación A Dormir. Reglas: sin tablets, sin juegos, pijama puesto, dientes cepillados — ya lo hicieron, ¿cierto? — Chimonchin asintió rápido aunque mamá lo miró con cara de duda — y deben llegar a sus cápsulas-cama antes de que Sietecito cuente hasta cien. Si lo logran, ganan la Medalla del Cometa Dormilón. Es dorada. Brilla en la oscuridad. Y es de verdad, no es de chocolate—. Nicolai se inclinó, interesado de verdad: —¿Y cuál es el premio aparte de la medalla?—. Teniente Pauleta guiñó un ojo: —Mañana escogen el desayuno. Pancakes espaciales, fruta o cereal de luna. Lo que quieran—. Nicolai y Chimonchin se miraron. —De una —dijeron los dos—. —De una —repitió papá—. Sietecito, cuenta—. El robot enderezó los hombros, modo oficial: —Iniciando conteo regresivo. Diez… once…—. —Desde el uno —dijo mamá—. —Uno… dos… tres…—</p>
+
+      <p>Corrieron despacito hacia el pasillo de las cápsulas, Nicolai y Chimonchin descalzos en pijama espacial con estrellas, sin tablets, sin juegos, mientras Bingochon los seguía ladrando al aire y Mora los miraba desde lejos, sin atreverse a entrar al pasillo oscuro. —…cuarenta y siete… cuarenta y ocho…— Chimonchin tropezó con la alfombra y casi cae; Nicolai lo sostuvo del brazo: —Pilas, parce, que vamos ganando—. En el baño, Nicolai casi se devuelve a ver un mensaje en la pared, pero mamá dijo: —Negativo, explorador; siga la misión—. —…setenta y ocho… setenta y nueve…— Chimonchin saltó dentro de su cápsula-cama como quien se lanza a una piscina de mantas. Nicolai se metió en la suya justo cuando el robot abrió mucho los ojos de luz y gritó: —¡NOVENTA Y NUEVE… CIEN! Misión cumplida—. Quedó melo, parce. Quedó bacano. Papá les colgó en el pecho las medallas doradas que en realidad eran círculos de cartón brillante que Teniente Pauleta había preparado esa tarde, pero bajo esa luz suave parecían tesoros de verdad.</p>
+
+      <p>Al ratito, Nicolai y Chimonchin ya dormían profundo. Bingochon se acurrucó en su camita de Temu. Mora, por fin tranquila, se metió debajo de la cama de Chimonchin con solo la nariz afuera. Comandante Raka apagó las luces del pasillo. Teniente Pauleta recogió los tablets, dejó una pila de ropa doblada en la silla y susurró: —Operación A Dormir: lista—. Papá le tomó la mano. Por la ventana del domo se veía la nave de los abuelos, cerquita cerquita, con una luz tenue en la sala — ellos también ya se iban a dormir. Afuera pasaban estrellas lentas y el trancón de la Vía Láctea seguía, lejos, en otro lado del cielo, como un problema para otro día.</p>
+
+      <p>Y esa noche los dos parces aprendieron — aunque ya estuvieran dormidos y soñando con planetas morados — lo que mamá y papá sabían desde hace rato: ir a dormir no es aburrido, no es perderse la diversión, no es perder contra el juego. Es recargar energía para lo que viene. Para el trancón de mañana, para la tarea difícil, para la risa en el desayuno, para otra vuelta en el platillo naranja, para otra aventura en el espacio y otra noche en la casa-nave, cuando otra vez la familia entera, cansada y junta, descubra que dormir a tiempo también puede ser una misión bacana. Buenas noches, parce. Buenas noches, Nicolai. Buenas noches, Chimonchin. Que mañana amanezcan con pilas.</p>
+    </article>
+
+    <footer>Chacachón · Familia Balcutron</footer>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const labels = ["Pequeña", "Normal", "Amplia", "Muy amplia", "Extra grande"];
+    const sizes = ["1.1rem", "1.35rem", "1.55rem", "1.75rem", "2rem"];
+    let index = 1;
+
+    function updateSize() {
+      root.style.setProperty("--font-size", sizes[index]);
+      document.getElementById("size-label").textContent = "Letra " + labels[index].toLowerCase();
+    }
+
+    document.getElementById("larger").addEventListener("click", () => {
+      if (index < sizes.length - 1) {
+        index++;
+        updateSize();
+      }
+    });
+
+    document.getElementById("smaller").addEventListener("click", () => {
+      if (index > 0) {
+        index--;
+        updateSize();
+      }
+    });
+  </script>
+</body>
+</html>

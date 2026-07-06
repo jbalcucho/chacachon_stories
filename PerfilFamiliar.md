@@ -27,7 +27,7 @@ Este documento define qué es el perfil familiar, cómo se estructura, y **cómo
 2. **Campos abiertos.** Cada familia es distinta; no forzar el mismo formulario para todos.
 3. **Separar plantilla de familia.** El catálogo de cuentos (`cuentos`, `paginas`, `textos_localizados`) sigue relacional y estable. El perfil familiar es flexible.
 4. **Validar en la app, no en 40 tablas SQL.** Zod + moderación de texto; la BD guarda un documento versionado.
-5. **Privacidad primero.** Datos de menores; RLS estricta; exportar y borrar cuenta.
+5. **Privacidad primero.** Datos de menores; autorización en app por `userId`; exportar y borrar cuenta.
 
 ---
 
@@ -44,17 +44,17 @@ Este documento define qué es el perfil familiar, cómo se estructura, y **cómo
 **MongoDB (u otra BD documental aparte)** solo para el perfil:
 
 - Segundo sistema que operar (backups, auth, costos, consistencia).
-- Supabase ya está elegido en [StackTecnico.md](./StackTecnico.md).
-- RLS y joins con cuentos/lecturas se complican.
+- El stack elegido es **Neon Postgres + Prisma** (ver [StackTecnico.md](./StackTecnico.md)), alineado con rotatudisfraz.
+- La autorización de datos familiares se hace en la aplicación (sesión + queries), no con RLS de Supabase.
 
 ### Recomendación: **PostgreSQL + JSONB** (estilo Mongo, sin Mongo)
 
-Postgres en Supabase soporta `JSONB` con índices GIN, operadores `->`, `->>`, `@>`, y validación opcional con `CHECK (jsonb_typeof(...))`.
+Postgres en Neon soporta `JSONB` con índices GIN, operadores `->`, `->>`, `@>`, y validación opcional con `CHECK (jsonb_typeof(...))`.
 
 | Ventaja | Detalle |
 |---|---|
 | Flexibilidad tipo documento | Un solo `perfil` JSON evoluciona sin `ALTER TABLE` por cada campo nuevo |
-| Un solo stack | Misma BD que catálogo, auth y RLS |
+| Un solo stack | Misma BD que catálogo y auth (Neon + Prisma) |
 | Consultas híbridas | `perfil->'ninos'->0->>'nombre'` si hace falta buscar o indexar |
 | Versionado | Tabla `perfiles_familia_versiones` con snapshots del JSON |
 | Tipado en app | TypeScript + Zod validan la forma; la BD no encierra el esquema |
@@ -124,10 +124,8 @@ CREATE TABLE perfiles_familia_versiones (
 CREATE INDEX idx_perfil_ninos_nombres ON perfiles_familia
     USING GIN ((perfil -> 'ninos'));
 
--- RLS: cada usuario solo ve su perfil
-ALTER TABLE perfiles_familia ENABLE ROW LEVEL SECURITY;
-CREATE POLICY perfil_familia_own ON perfiles_familia
-    FOR ALL USING (auth.uid() = usuario_id);
+-- Autorización: en la app (Prisma + sesión), no RLS Supabase.
+-- Equivalente Prisma Sprint 0: model FamilyProfile { userId String @unique ... }
 ```
 
 ### Evolución de `perfiles_ninos`
@@ -360,13 +358,13 @@ PATCH /api/familia/perfil
 { "merge": { "casa": { "detalles": ["andamos descalzos"] } } }
 ```
 
-Implementación en Postgres:
+Implementación en Prisma (Sprint 1):
 
-```sql
-UPDATE perfiles_familia
-SET perfil = perfil || $1::jsonb,  -- merge top-level
-    actualizado_en = NOW()
-WHERE usuario_id = auth.uid();
+```typescript
+await prisma.familyProfile.update({
+  where: { userId: session.user.id },
+  data: { perfil: mergedPerfil },
+});
 ```
 
 Para paths anidados, usar `jsonb_set` en una función SQL o merge en Node antes del UPDATE.
@@ -455,7 +453,7 @@ Solo si más adelante:
 - Millones de documentos con sharding horizontal independiente del catálogo.
 - Equipo separado que ya opera Atlas con SLAs distintos.
 
-Hasta ~50k familias con JSONB de unos pocos KB cada una, Postgres en Supabase sobra.
+Hasta ~50k familias con JSONB de unos pocos KB cada una, Postgres en Neon sobra.
 
 ---
 

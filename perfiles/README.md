@@ -28,6 +28,7 @@ node scripts/resolver-perfil.mjs perfiles/garcia-bogota.json
 
 # Solo variables, sin fragmentos del cuento
 node scripts/resolver-perfil.mjs perfiles/balcutron.json --solo-variables
+```
 
 ## Qué revisar
 
@@ -53,4 +54,4 @@ node scripts/resolver-perfil.mjs perfiles/balcutron.json --solo-variables
 }
 ```
 
-Cuando migremos a Supabase, solo la parte `perfil` (más metadata) irá a la columna JSONB.
+En producción, la parte `perfil` (más metadata) vive en `family_profiles.perfil` (JSONB) vía Prisma — ver [docs/database.md](../docs/database.md).
