@@ -73,9 +73,10 @@ Documentación relacionada: [StackTecnico.md](../StackTecnico.md) · [database.m
 |------|------|-------------|
 | `/` | Page | Biblioteca «Las historias de Chacachón» |
 | `/leer/[slug]` | Page | Lector personalizado (paginado, perfil interpolado) |
+| `/leer/generado/[id]` | Page | Lector de cuentos generados por IA (`/crear`) |
 | `/crear` | Page | Hub crear cuento (3 caminos + medidor de perfil) |
 | `/crear/plantillas` | Page | Cuento tradicional → adaptar |
-| `/crear/adaptar` | Page | Receta interactiva (tap/drag) |
+| `/crear/adaptar` | Page | Receta interactiva → generar cuento |
 | `/familia` | Page | Perfil familiar (login) |
 | `/login` | Page | Entrar con Google |
 | `/privacidad` | Page | Política de privacidad (piloto) |
@@ -83,6 +84,9 @@ Documentación relacionada: [StackTecnico.md](../StackTecnico.md) · [database.m
 | `/opengraph-image` | OG | Tarjeta de preview del sitio (ilustración + título) |
 | `/leer/[slug]/opengraph-image` | OG | Preview por cuento |
 | `/api/auth/*` | API | NextAuth handlers |
+| `/api/cuentos/generar` | API | POST — receta → cuento (Gemini/Claude/mock) → `generated_stories` |
+
+Generación IA: ver [docs/ia-generacion.md](./ia-generacion.md).
 
 Rutas protegidas (middleware): `/familia/*`, `/admin/*` (Sprint 1+).
 

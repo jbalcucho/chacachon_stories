@@ -42,6 +42,22 @@ Catálogo de cuentos. En Sprint 0 el contenido largo vive en HTML estático; la 
 | status | DRAFT \| PUBLISHED | |
 | sort_order | int | Orden en biblioteca |
 
+### `generated_stories`
+
+Cuentos creados por el flujo `/crear` (IA o plantilla mock). Migración
+`20260709000000_generated_stories`.
+
+| Campo | Tipo | Notas |
+|-------|------|-------|
+| id | UUID | PK — URL `/leer/generado/[id]` |
+| user_id | UUID? | FK opcional → users |
+| title | string | Título del cuento |
+| body_markdown | text | Cuento en Markdown |
+| recipe | JSONB | Selección de la receta |
+| source | string | `gemini` \| `claude` \| `mock` |
+| model | string? | ej. `gemini-3.1-flash-lite-preview` |
+| created_at | timestamp | |
+
 ---
 
 ## Migraciones
@@ -52,7 +68,10 @@ npm run db:deploy     # producción / Vercel build hook
 npm run db:seed       # cuentos iniciales
 ```
 
-Archivo inicial: `prisma/migrations/20260706000000_init/`
+Archivos:
+
+- `prisma/migrations/20260706000000_init/` — users, family_profiles, stories
+- `prisma/migrations/20260709000000_generated_stories/` — cuentos generados por IA
 
 ---
 
@@ -100,4 +119,4 @@ Ver `.env.example`.
 
 ---
 
-*Última actualización: Sprint 0 — Julio 2026*
+*Última actualización: julio 2026 — tabla `generated_stories` para IA.*

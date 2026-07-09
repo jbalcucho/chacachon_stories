@@ -1,6 +1,6 @@
 # Flujo «Crear cuento» — estado actual
 
-> Julio 2026 · Sprint 1 (UI lista, IA pendiente)
+> Julio 2026 · Sprint 1 (UI + generación IA en POC)
 
 Documenta lo construido hasta aquí en el hub `/crear`, el asistente de receta y la marca visual asociada.
 
@@ -14,7 +14,7 @@ Documenta lo construido hasta aquí en el hub `/crear`, el asistente de receta y
 | Plantillas clásicas | ✅ Listado | `/crear/plantillas` |
 | Receta interactiva | ✅ Tap + drag (desktop) | `/crear/adaptar` · `StoryRecipeBuilder.tsx` |
 | Perfil familiar | ✅ JSONB + completitud % | `/familia` · `family-profile-completion.ts` |
-| Generación IA | ⏳ Botón placeholder | «Crear mi cuento» avisa que viene en siguiente fase |
+| Generación IA | ✅ Gemini (POC gratis) + fallback mock | `POST /api/cuentos/generar` · `/leer/generado/[id]` · [docs/ia-generacion.md](./ia-generacion.md) |
 | Marca luna + libro | ✅ Ilustración en header, home, footer, crear, OG, favicon | `BrandIllustration.tsx` · `public/images/brand/hero-luna-chacachon.{png,webp}` |
 
 ---
@@ -129,9 +129,10 @@ Schema: `familyProfileEssentialSchema` en `src/lib/family-profile-schema.ts`.
 
 ## Próximos pasos (producto)
 
-1. Conectar **API de generación IA** al botón «Crear mi cuento» (payload = selección de receta + perfil).
+1. ~~Conectar **API de generación IA** al botón «Crear mi cuento»~~ ✅ (jul 2026 — ver [ia-generacion.md](./ia-generacion.md)).
 2. Pasar `?plantilla=slug` desde plantillas a la receta (pre-rellenar molde clásico).
-3. CI en GitHub Actions — archivo `.github/workflows/ci.yml` listo localmente; requiere push con scope `workflow` en GitHub.
+3. Moderación de «+ Otro», freemium por usuario y listado de cuentos generados en biblioteca.
+4. CI en GitHub Actions — archivo `.github/workflows/ci.yml` listo localmente; requiere push con scope `workflow` en GitHub.
 
 ---
 
@@ -158,11 +159,18 @@ src/lib/
   story-recipe-custom.test.ts
   recipe-synopsis.test.ts
   recipe-wizard-nav.test.ts
+  recipe-selection.ts
+  story-generation.server.ts
+  story-prompt.ts
+  story-mock.ts
+  generated-stories.server.ts
   brand-illustration.ts
   brand-illustration-server.ts
-  book-carousel.ts
+src/app/api/cuentos/generar/route.ts
+src/app/(reader)/leer/generado/[id]/page.tsx
+docs/ia-generacion.md
 ```
 
 ---
 
-*Última actualización: julio 2026 — hero más compacto y footer alineado al header.*
+*Última actualización: julio 2026 — generación IA (Gemini POC) y lector de cuentos generados.*
