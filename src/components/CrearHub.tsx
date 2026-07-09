@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useState, type CSSProperties } from "react";
+import CrearProgress from "@/components/CrearProgress";
 
 export type CrearHubOption = {
   id: string;
@@ -42,28 +43,7 @@ export default function CrearHub({
 
   return (
     <>
-      <nav className="crear-progress" aria-label="Pasos para crear tu cuento">
-        <ol className="crear-progress__list">
-          <li className="crear-progress__item crear-progress__item--active">
-            <span className="crear-progress__dot" aria-hidden="true">
-              1
-            </span>
-            <span className="crear-progress__label">Elige el camino</span>
-          </li>
-          <li className="crear-progress__item" aria-current={false}>
-            <span className="crear-progress__dot" aria-hidden="true">
-              2
-            </span>
-            <span className="crear-progress__label">Arma la receta</span>
-          </li>
-          <li className="crear-progress__item">
-            <span className="crear-progress__dot" aria-hidden="true">
-              3
-            </span>
-            <span className="crear-progress__label">Tu cuento</span>
-          </li>
-        </ol>
-      </nav>
+      <CrearProgress activeStep={1} />
 
       {completion ? (
         <Link

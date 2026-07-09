@@ -1,15 +1,31 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import BrandMark from "@/components/BrandMark";
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import type {
   RecipeIngredient,
   RecipeIngredients,
   RecipeKind,
 } from "@/lib/story-recipe";
+import {
+  buildInitialRecipeSelection,
+  buildRecipeChecklist,
+  buildRecipeSynopsis,
+  buildRecipeTitle,
+  countChecklistDone,
+  getRecipeBlocker,
+  getRecipeSuggestion,
+  hasPlantillaMolde,
+  personAvatarHue,
+  personAvatarInitial,
+  RECIPE_GUIDED_STORAGE_KEY,
+  type RecipeSelectionSlice,
+} from "@/lib/recipe-summary";
 
 type Props = {
   ingredients: RecipeIngredients;
   profileSource: "user" | "demo";
+  plantillaSlug?: string | null;
 };
 
 type ZoneKey =
@@ -38,7 +54,7 @@ const ZONES: ZoneConfig[] = [
   {
     key: "heroes",
     title: "Héroes",
-    hint: "Toca o arrastra · hasta 3",
+    hint: "Toca cada chip · hasta 3",
     empty: "¿Quiénes protagonizan?",
     accepts: ["persona"],
     max: 3,
@@ -127,7 +143,7 @@ const ZONES: ZoneConfig[] = [
   },
 ];
 
-type Selection = Record<ZoneKey, RecipeIngredient[]>;
+type Selection = RecipeSelectionSlice;
 
 type ZoneBlockProps = {
   config: ZoneConfig;
@@ -135,6 +151,7 @@ type ZoneBlockProps = {
   selection: RecipeIngredient[];
   activeKind: RecipeKind | null;
   dragEnabled: boolean;
+  pulseTokenId: string | null;
   onToggle: (zone: ZoneKey, ing: RecipeIngredient) => void;
   onRemove: (zone: ZoneKey, id: string) => void;
   onDropIngredient: (zone: ZoneKey, id: string) => void;
@@ -156,12 +173,43 @@ function useFinePointer(): boolean {
   return fine;
 }
 
+function usePreferGuided(): boolean {
+  const [prefer, setPrefer] = useState(false);
+
+  useEffect(() => {
+    const done = window.localStorage.getItem(RECIPE_GUIDED_STORAGE_KEY);
+    const narrow = window.matchMedia("(max-width: 619px)").matches;
+    setPrefer(!done && narrow);
+  }, []);
+
+  return prefer;
+}
+
+function IngredientIcon({ ing }: { ing: RecipeIngredient }) {
+  if (ing.kind === "persona") {
+    const initial = personAvatarInitial(ing.label);
+    const hue = personAvatarHue(ing.id);
+    return (
+      <span
+        className="recipe-chip__avatar"
+        style={{ "--avatar-hue": hue } as CSSProperties}
+        aria-hidden="true"
+      >
+        {initial}
+      </span>
+    );
+  }
+
+  return <span aria-hidden="true">{ing.emoji}</span>;
+}
+
 function ZoneBlock({
   config,
   ingredients,
   selection,
   activeKind,
   dragEnabled,
+  pulseTokenId,
   onToggle,
   onRemove,
   onDropIngredient,
@@ -202,11 +250,11 @@ function ZoneBlock({
               <button
                 key={item.id}
                 type="button"
-                className="recipe-token"
+                className={`recipe-token${pulseTokenId === item.id ? " recipe-token--enter" : ""}`}
                 onClick={() => onRemove(config.key, item.id)}
                 aria-label={`Quitar ${item.label}`}
               >
-                <span aria-hidden="true">{item.emoji}</span>
+                <IngredientIcon ing={item} />
                 {item.label}
                 <span className="recipe-token__x" aria-hidden="true">
                   ×
@@ -236,7 +284,7 @@ function ZoneBlock({
               aria-pressed={selected}
               title={opt.hint}
             >
-              <span aria-hidden="true">{opt.emoji}</span>
+              <IngredientIcon ing={opt} />
               {opt.label}
             </button>
           );
@@ -246,31 +294,30 @@ function ZoneBlock({
   );
 }
 
-function joinNames(items: RecipeIngredient[]): string {
-  if (items.length === 0) return "";
-  if (items.length === 1) return items[0].label;
-  return `${items.slice(0, -1).map((i) => i.label).join(", ")} y ${items[items.length - 1].label}`;
-}
-
 export default function StoryRecipeBuilder({
   ingredients,
   profileSource,
+  plantillaSlug = null,
 }: Props) {
-  const [selection, setSelection] = useState<Selection>(() => ({
-    heroes: ingredients.personas.slice(0, 1),
-    reto: ingredients.dilemas.filter((d) => d.id === "dil-dormir"),
-    aprenden: ingredients.emociones.filter((e) => e.id === "emo-responsabilidad"),
-    lugar: ingredients.lugares.filter((l) => l.id === "lug-apartamento"),
-    mascota: [],
-    acompanantes: [],
-    rolReto: [],
-    objeto: [],
-    molde: [],
-  }));
-  const [activeKind, setActiveKind] = useState<RecipeKind | null>(null);
-  const [showMore, setShowMore] = useState(false);
-  const [notice, setNotice] = useState<string | null>(null);
+  const promoteMolde = hasPlantillaMolde(plantillaSlug);
   const dragEnabled = useFinePointer();
+  const preferGuided = usePreferGuided();
+
+  const [selection, setSelection] = useState<Selection>(() =>
+    buildInitialRecipeSelection(ingredients, plantillaSlug),
+  );
+  const [activeKind, setActiveKind] = useState<RecipeKind | null>(null);
+  const [showMore, setShowMore] = useState(
+    () => promoteMolde || Boolean(plantillaSlug),
+  );
+  const [notice, setNotice] = useState<string | null>(null);
+  const [pulseTokenId, setPulseTokenId] = useState<string | null>(null);
+  const [guidedActive, setGuidedActive] = useState(false);
+  const [guidedStep, setGuidedStep] = useState(0);
+
+  useEffect(() => {
+    if (preferGuided) setGuidedActive(true);
+  }, [preferGuided]);
 
   const allById = useMemo(() => {
     const map = new Map<string, RecipeIngredient>();
@@ -286,9 +333,27 @@ export default function StoryRecipeBuilder({
     return map;
   }, []);
 
+  const coreZoneKeys = useMemo((): ZoneKey[] => {
+    const base: ZoneKey[] = ["heroes", "reto", "aprenden", "lugar"];
+    if (promoteMolde) base.push("molde");
+    return base;
+  }, [promoteMolde]);
+
+  const guidedZoneKeys = coreZoneKeys;
+
   const flashNotice = useCallback((message: string) => {
     setNotice(message);
     window.setTimeout(() => setNotice(null), 2400);
+  }, []);
+
+  const pulseToken = useCallback((id: string) => {
+    setPulseTokenId(id);
+    window.setTimeout(() => setPulseTokenId(null), 320);
+  }, []);
+
+  const exitGuided = useCallback(() => {
+    setGuidedActive(false);
+    window.localStorage.setItem(RECIPE_GUIDED_STORAGE_KEY, "done");
   }, []);
 
   const toggle = useCallback(
@@ -301,15 +366,17 @@ export default function StoryRecipeBuilder({
         }
         if (current.length >= max) {
           if (max === 1) {
+            pulseToken(ing.id);
             return { ...prev, [zone]: [ing] };
           }
           flashNotice(`Máximo ${max} en “${zoneMax[zone].title}”.`);
           return prev;
         }
+        pulseToken(ing.id);
         return { ...prev, [zone]: [...current, ing] };
       });
     },
-    [flashNotice, zoneMax],
+    [flashNotice, pulseToken, zoneMax],
   );
 
   const remove = useCallback((zone: ZoneKey, id: string) => {
@@ -329,103 +396,184 @@ export default function StoryRecipeBuilder({
         if (current.some((i) => i.id === id)) return prev;
         if (current.length >= max) {
           if (max === 1) {
+            pulseToken(ing.id);
             return { ...prev, [zone]: [ing] };
           }
           flashNotice(`Máximo ${max} en “${zoneMax[zone].title}”.`);
           return prev;
         }
+        pulseToken(ing.id);
         return { ...prev, [zone]: [...current, ing] };
       });
     },
-    [allById, flashNotice, zoneMax],
+    [allById, flashNotice, pulseToken, zoneMax],
   );
 
-  const summary = useMemo(() => {
-    const heroes = selection.heroes;
-    const reto = selection.reto[0];
-    if (heroes.length === 0 || !reto) return null;
+  const checklist = useMemo(
+    () => buildRecipeChecklist(selection),
+    [selection],
+  );
+  const checklistDone = countChecklistDone(checklist);
+  const title = useMemo(() => buildRecipeTitle(selection), [selection]);
+  const synopsis = useMemo(() => buildRecipeSynopsis(selection), [selection]);
+  const suggestion = useMemo(() => getRecipeSuggestion(selection), [selection]);
+  const blocker = getRecipeBlocker(selection);
+  const canGenerate = blocker === null;
 
-    const names = joinNames(heroes);
-    const companions =
-      selection.acompanantes.length > 0
-        ? ` junto a ${joinNames(selection.acompanantes)}`
-        : selection.mascota.length > 0
-          ? ` junto a ${selection.mascota[0].label}`
-          : "";
-    const place = selection.lugar[0] ? ` en ${selection.lugar[0].label.toLowerCase()}` : "";
-    const lesson =
-      selection.aprenden.length > 0
-        ? ` aprendiendo sobre ${selection.aprenden.map((e) => e.label.toLowerCase()).join(" y ")}`
-        : "";
-    const villain = selection.rolReto[0]
-      ? `, con ${selection.rolReto[0].label} en el papel del reto`
-      : "";
-    const mold = selection.molde[0]
-      ? ` Inspirado en ${selection.molde[0].label}.`
-      : "";
+  const coreZones = useMemo(() => {
+    return ZONES.filter((z) => coreZoneKeys.includes(z.key));
+  }, [coreZoneKeys]);
 
-    return `Un cuento donde ${names}${companions} enfrentan ${reto.label.toLowerCase()}${place}${lesson}${villain}.${mold}`;
-  }, [selection]);
+  const optionalZones = useMemo(() => {
+    const optionalKeys: ZoneKey[] = promoteMolde
+      ? ["mascota", "acompanantes", "rolReto", "objeto"]
+      : ["mascota", "acompanantes", "rolReto", "objeto", "molde"];
+    return ZONES.filter((z) => optionalKeys.includes(z.key));
+  }, [promoteMolde]);
 
-  const canGenerate = selection.heroes.length > 0 && selection.reto.length > 0;
+  const zonesToRender = useMemo(() => {
+    if (!guidedActive) return coreZones;
+    const key = guidedZoneKeys[guidedStep];
+    return coreZones.filter((z) => z.key === key);
+  }, [coreZones, guidedActive, guidedStep, guidedZoneKeys]);
 
-  const coreZones = ZONES.filter((z) => z.core);
-  const optionalZones = ZONES.filter((z) => !z.core);
+  const guidedZoneConfig = guidedActive
+    ? zoneMax[guidedZoneKeys[guidedStep]]
+    : null;
+
+  const zoneBlockProps = {
+    ingredients,
+    activeKind,
+    dragEnabled,
+    pulseTokenId,
+    onToggle: toggle,
+    onRemove: remove,
+    onDropIngredient: dropIngredient,
+    onDragStart: setActiveKind,
+    onDragEnd: () => setActiveKind(null),
+  };
 
   return (
     <div className="recipe-builder">
       {profileSource === "demo" ? (
         <p className="crear-banner crear-banner--info">
           Estás viendo la familia demo Chacachón. Entra y completa tu perfil para
-          arrastrar a tu propia familia.
+          usar los nombres de tu casa.
         </p>
       ) : null}
 
-      <div className="recipe-board">
-        {coreZones.map((zone) => (
+      {plantillaSlug && selection.molde[0] ? (
+        <p className="recipe-plantilla-badge" role="status">
+          Plantilla: <strong>{selection.molde[0].label}</strong> — puedes ajustar
+          la receta abajo.
+        </p>
+      ) : null}
+
+      {guidedActive ? (
+        <div className="recipe-guided">
+          <p className="recipe-guided__label">
+            Paso {guidedStep + 1} de {guidedZoneKeys.length}
+            {guidedZoneConfig ? ` · ${guidedZoneConfig.title}` : ""}
+          </p>
+          <div className="recipe-guided__actions">
+            <button
+              type="button"
+              className="recipe-guided__btn"
+              disabled={guidedStep === 0}
+              onClick={() => setGuidedStep((s) => Math.max(0, s - 1))}
+            >
+              ← Atrás
+            </button>
+            {guidedStep < guidedZoneKeys.length - 1 ? (
+              <button
+                type="button"
+                className="recipe-guided__btn recipe-guided__btn--primary"
+                onClick={() =>
+                  setGuidedStep((s) =>
+                    Math.min(guidedZoneKeys.length - 1, s + 1),
+                  )
+                }
+              >
+                Siguiente →
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="recipe-guided__btn recipe-guided__btn--primary"
+                onClick={exitGuided}
+              >
+                Ver receta completa
+              </button>
+            )}
+            <button
+              type="button"
+              className="recipe-guided__btn recipe-guided__btn--ghost"
+              onClick={exitGuided}
+            >
+              Saltar guía
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="recipe-guided-toggle"
+          onClick={() => {
+            setGuidedActive(true);
+            setGuidedStep(0);
+          }}
+        >
+          ⊕ Modo guiado paso a paso
+        </button>
+      )}
+
+      <div
+        className={`recipe-board${guidedActive ? " recipe-board--guided" : ""}`}
+      >
+        {zonesToRender.map((zone) => (
           <ZoneBlock
             key={zone.key}
             config={zone}
-            ingredients={ingredients}
             selection={selection[zone.key]}
-            activeKind={activeKind}
-            dragEnabled={dragEnabled}
-            onToggle={toggle}
-            onRemove={remove}
-            onDropIngredient={dropIngredient}
-            onDragStart={setActiveKind}
-            onDragEnd={() => setActiveKind(null)}
+            {...zoneBlockProps}
           />
         ))}
       </div>
 
-      <button
-        type="button"
-        className="recipe-more"
-        onClick={() => setShowMore((v) => !v)}
-        aria-expanded={showMore}
-      >
-        {showMore ? "− Menos opciones" : "➕ Agregar más (mascota, lugar de reto, objeto, molde…)"}
-      </button>
+      {!guidedActive ? (
+        <>
+          <button
+            type="button"
+            className="recipe-more"
+            onClick={() => setShowMore((v) => !v)}
+            aria-expanded={showMore}
+          >
+            {showMore
+              ? "− Menos opciones"
+              : promoteMolde
+                ? "➕ Agregar más (mascota, acompañantes, objeto…)"
+                : "➕ Agregar más (mascota, molde clásico, objeto…)"}
+          </button>
 
-      {showMore ? (
-        <div className="recipe-board recipe-board--optional">
-          {optionalZones.map((zone) => (
-            <ZoneBlock
-              key={zone.key}
-              config={zone}
-              ingredients={ingredients}
-              selection={selection[zone.key]}
-              activeKind={activeKind}
-              dragEnabled={dragEnabled}
-              onToggle={toggle}
-              onRemove={remove}
-              onDropIngredient={dropIngredient}
-              onDragStart={setActiveKind}
-              onDragEnd={() => setActiveKind(null)}
-            />
-          ))}
-        </div>
+          {showMore ? (
+            <div className="recipe-board recipe-board--optional">
+              {optionalZones.map((zone) => (
+                <ZoneBlock
+                  key={zone.key}
+                  config={zone}
+                  selection={selection[zone.key]}
+                  {...zoneBlockProps}
+                />
+              ))}
+            </div>
+          ) : null}
+        </>
+      ) : null}
+
+      {suggestion ? (
+        <p className="recipe-suggestion" role="note">
+          💡 {suggestion}
+        </p>
       ) : null}
 
       {notice ? (
@@ -434,25 +582,57 @@ export default function StoryRecipeBuilder({
         </p>
       ) : null}
 
+      <div className="recipe-checklist" aria-label="Progreso de la receta">
+        <div className="recipe-checklist__head">
+          <span className="recipe-checklist__title">Tu receta</span>
+          <span className="recipe-checklist__count">
+            {checklistDone}/{checklist.length}
+          </span>
+        </div>
+        <ul className="recipe-checklist__list">
+          {checklist.map((item) => (
+            <li
+              key={item.key}
+              className={`recipe-checklist__item${item.done ? " recipe-checklist__item--done" : ""}`}
+            >
+              <span className="recipe-checklist__mark" aria-hidden="true">
+                {item.done ? "✓" : "○"}
+              </span>
+              {item.label}
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="recipe-summary">
-        <p className="recipe-summary__label">Tu cuento</p>
-        <p className="recipe-summary__text">
-          {summary ?? "Agrega al menos un héroe y un reto para ver la idea."}
-        </p>
+        <div className="recipe-summary__cover" aria-hidden="true">
+          <BrandMark id="brand-mark-recipe" variant="compact" />
+        </div>
+        <div className="recipe-summary__body">
+          <p className="recipe-summary__label">Tu cuento</p>
+          {title ? (
+            <h2 className="recipe-summary__title">{title}</h2>
+          ) : null}
+          <p className="recipe-summary__text">
+            {synopsis ??
+              "Elige al menos un héroe y un reto para ver la idea del cuento."}
+          </p>
+        </div>
       </div>
 
       <button
         type="button"
-        className="recipe-generate"
+        className={`recipe-generate${canGenerate ? " recipe-generate--ready" : ""}`}
         disabled={!canGenerate}
+        aria-disabled={!canGenerate}
         onClick={() =>
           flashNotice("La generación con IA llega en la siguiente fase ✨")
         }
       >
-        ✨ Crear mi cuento
+        {canGenerate ? "✨ Crear mi cuento" : blocker}
       </button>
       <p className="crear-footnote mt-3 text-center text-xs">
-        Vista previa de la interacción · la IA aún no está conectada.
+        La IA escribe pronto · hoy puedes armar y guardar la receta.
       </p>
     </div>
   );

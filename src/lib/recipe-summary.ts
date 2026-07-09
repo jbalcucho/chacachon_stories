@@ -1,0 +1,234 @@
+import type { RecipeIngredient } from "@/lib/story-recipe";
+
+export type RecipeSelectionSlice = {
+  heroes: RecipeIngredient[];
+  reto: RecipeIngredient[];
+  aprenden: RecipeIngredient[];
+  lugar: RecipeIngredient[];
+  mascota: RecipeIngredient[];
+  acompanantes: RecipeIngredient[];
+  rolReto: RecipeIngredient[];
+  objeto: RecipeIngredient[];
+  molde: RecipeIngredient[];
+};
+
+export type RecipeChecklistItem = {
+  key: string;
+  label: string;
+  done: boolean;
+};
+
+const PLANTILLA_TO_MOLDE: Record<string, string> = {
+  "cerditos-del-edificio": "mol-cerditos",
+  "el-lobo-y-las-palabras": "mol-caperucita",
+};
+
+const PLANTILLA_TO_DILEMA: Record<string, string> = {
+  "operacion-a-dormir": "dil-dormir",
+  "nico-dia-sin-pantallas": "dil-pantallas",
+  "cerditos-del-edificio": "dil-miedos",
+  "el-lobo-y-las-palabras": "dil-respeto",
+};
+
+export function plantillaSlugToMoldeId(slug: string): string | null {
+  return PLANTILLA_TO_MOLDE[slug] ?? null;
+}
+
+export function plantillaSlugToDilemaId(slug: string): string | null {
+  return PLANTILLA_TO_DILEMA[slug] ?? null;
+}
+
+export function hasPlantillaMolde(slug: string | null | undefined): boolean {
+  if (!slug) return false;
+  return slug in PLANTILLA_TO_MOLDE;
+}
+
+function joinNames(items: RecipeIngredient[]): string {
+  if (items.length === 0) return "";
+  if (items.length === 1) return items[0].label;
+  return `${items.slice(0, -1).map((i) => i.label).join(", ")} y ${items[items.length - 1].label}`;
+}
+
+export function buildRecipeChecklist(
+  selection: RecipeSelectionSlice,
+): RecipeChecklistItem[] {
+  return [
+    { key: "heroes", label: "Héroes", done: selection.heroes.length > 0 },
+    { key: "reto", label: "Reto", done: selection.reto.length > 0 },
+    {
+      key: "aprenden",
+      label: "Lección",
+      done: selection.aprenden.length > 0,
+    },
+    { key: "lugar", label: "Lugar", done: selection.lugar.length > 0 },
+  ];
+}
+
+export function countChecklistDone(items: RecipeChecklistItem[]): number {
+  return items.filter((i) => i.done).length;
+}
+
+export function getRecipeBlocker(selection: RecipeSelectionSlice): string | null {
+  if (selection.heroes.length === 0) {
+    return "Falta: elige al menos un héroe";
+  }
+  if (selection.reto.length === 0) {
+    return "Falta: elige el reto del cuento";
+  }
+  return null;
+}
+
+export function buildRecipeTitle(selection: RecipeSelectionSlice): string | null {
+  const hero = selection.heroes[0];
+  const reto = selection.reto[0];
+  if (!hero || !reto) return null;
+
+  if (selection.molde[0]) {
+    return `${selection.molde[0].label} con ${hero.label}`;
+  }
+
+  return `La aventura de ${hero.label}: ${reto.label}`;
+}
+
+export function buildRecipeSynopsis(
+  selection: RecipeSelectionSlice,
+): string | null {
+  const heroes = selection.heroes;
+  const reto = selection.reto[0];
+  if (heroes.length === 0 || !reto) return null;
+
+  const names = joinNames(heroes);
+  const companions =
+    selection.acompanantes.length > 0
+      ? ` junto a ${joinNames(selection.acompanantes)}`
+      : selection.mascota.length > 0
+        ? ` junto a ${selection.mascota[0].label}`
+        : "";
+  const place = selection.lugar[0]
+    ? ` en ${selection.lugar[0].label.toLowerCase()}`
+    : "";
+  const lesson =
+    selection.aprenden.length > 0
+      ? `, y aprenden sobre ${selection.aprenden.map((e) => e.label.toLowerCase()).join(" y ")}`
+      : "";
+  const villain = selection.rolReto[0]
+    ? `, con ${selection.rolReto[0].label} en el papel del reto`
+    : "";
+  const mold = selection.molde[0]
+    ? ` Todo con el sabor de ${selection.molde[0].label}.`
+    : "";
+
+  return `Esta noche, ${names}${companions} enfrentan ${reto.label.toLowerCase()}${place}${lesson}${villain}.${mold}`;
+}
+
+type SuggestionRule = {
+  retoId: string;
+  lessonIds: string[];
+  text: string;
+};
+
+const SUGGESTION_RULES: SuggestionRule[] = [
+  {
+    retoId: "dil-dormir",
+    lessonIds: ["emo-paciencia", "emo-calma"],
+    text: "Muchas familias combinan «ir a dormir» con paciencia o calma.",
+  },
+  {
+    retoId: "dil-pantallas",
+    lessonIds: ["emo-responsabilidad", "emo-paciencia"],
+    text: "Para soltar la pantalla suele ayudar hablar de responsabilidad y paciencia.",
+  },
+  {
+    retoId: "dil-respeto",
+    lessonIds: ["emo-respeto", "emo-honestidad"],
+    text: "Si el reto es hablar bonito, respeto e honestidad van muy bien juntos.",
+  },
+  {
+    retoId: "dil-miedos",
+    lessonIds: ["emo-valentia", "emo-calma"],
+    text: "Para vencer un miedo, valentía y calma son una buena mezcla.",
+  },
+  {
+    retoId: "dil-compartir",
+    lessonIds: ["emo-generosidad", "emo-respeto"],
+    text: "Cuando toca compartir, generosidad y respeto suelen acompañarse.",
+  },
+];
+
+export function getRecipeSuggestion(
+  selection: RecipeSelectionSlice,
+): string | null {
+  const retoId = selection.reto[0]?.id;
+  if (!retoId) return null;
+
+  const rule = SUGGESTION_RULES.find((r) => r.retoId === retoId);
+  if (!rule) return null;
+
+  const hasLesson = selection.aprenden.some((e) =>
+    rule.lessonIds.includes(e.id),
+  );
+  if (hasLesson) return null;
+
+  const labels = rule.lessonIds
+    .map((id) => selection.aprenden.find((e) => e.id === id)?.label)
+    .filter(Boolean);
+  if (labels.length > 0) return null;
+
+  return rule.text;
+}
+
+export function personAvatarInitial(label: string): string {
+  const trimmed = label.trim();
+  if (!trimmed) return "?";
+  return trimmed.charAt(0).toUpperCase();
+}
+
+export function personAvatarHue(id: string): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash << 5) - hash + id.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash) % 360;
+}
+
+export const RECIPE_GUIDED_STORAGE_KEY = "chacachon-recipe-guided-v1";
+
+export function buildInitialRecipeSelection(
+  ingredients: {
+    personas: RecipeIngredient[];
+    dilemas: RecipeIngredient[];
+    emociones: RecipeIngredient[];
+    lugares: RecipeIngredient[];
+    moldes: RecipeIngredient[];
+  },
+  plantillaSlug?: string | null,
+): RecipeSelectionSlice {
+  const selection: RecipeSelectionSlice = {
+    heroes: ingredients.personas.slice(0, 1),
+    reto: ingredients.dilemas.filter((d) => d.id === "dil-dormir"),
+    aprenden: ingredients.emociones.filter((e) => e.id === "emo-responsabilidad"),
+    lugar: ingredients.lugares.filter((l) => l.id === "lug-apartamento"),
+    mascota: [],
+    acompanantes: [],
+    rolReto: [],
+    objeto: [],
+    molde: [],
+  };
+
+  if (plantillaSlug) {
+    const dilemaId = plantillaSlugToDilemaId(plantillaSlug);
+    if (dilemaId) {
+      const dilema = ingredients.dilemas.find((d) => d.id === dilemaId);
+      if (dilema) selection.reto = [dilema];
+    }
+
+    const moldeId = plantillaSlugToMoldeId(plantillaSlug);
+    if (moldeId) {
+      const molde = ingredients.moldes.find((m) => m.id === moldeId);
+      if (molde) selection.molde = [molde];
+    }
+  }
+
+  return selection;
+}

@@ -63,8 +63,15 @@ Salen del perfil familiar vía `buildRecipeIngredients()` en `src/lib/story-reci
 
 - **Tap** en chip → añade/quita en la zona.
 - **Drag** en desktop (`pointer: fine`) → arrastrar chip a la zona.
-- Zonas de **máximo 1**: al elegir otro ítem, **reemplaza** el anterior (no muestra error de cupo lleno).
+- Zonas de **máximo 1**: al elegir otro ítem, **reemplaza** el anterior.
 - Chips seleccionados comparten el mismo estilo (borde + sombra miel) en móvil y desktop.
+- **Modo guiado** (primera visita en móvil): una zona core a la vez; `localStorage` `chacachon-recipe-guided-v1`.
+- **Checklist** 4 ítems (héroes, reto, lección, lugar) + contador.
+- **Sugerencias** por combinación reto/lección (reglas estáticas).
+- **`?plantilla=slug`**: pre-rellena dilema y molde; molde en bloque core si aplica.
+- **Avatares con inicial** para personas en chips/tokens.
+- **Resumen** con título + sinopsis narrativa + mini portada (BrandMark).
+- **Paso 2 de 3** en header + `CrearProgress` compartido con `/crear`.
 
 ### Defaults de demo
 
