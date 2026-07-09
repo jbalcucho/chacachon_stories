@@ -432,17 +432,27 @@ body::before {
   width: 1.34em;
   height: 1.34em;
   vertical-align: -0.34em;
-  margin-right: -0.18em;
+  margin-right: -0.42em;
   margin-left: -0.08em;
-  animation: moon-float 3.8s ease-in-out infinite;
+  animation: brand-moon-float 4.4s ease-in-out infinite;
 }
 
 .brand-moon--compact {
   width: 1.12em;
   height: 1.12em;
   vertical-align: -0.22em;
-  margin-right: -0.1em;
+  margin-right: -0.34em;
   margin-left: -0.03em;
+}
+
+@keyframes brand-moon-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-0.05em) rotate(2deg);
+  }
 }
 
 .brand-moon__svg {
