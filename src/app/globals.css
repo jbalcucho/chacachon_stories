@@ -3104,13 +3104,37 @@ body::before {
 .recipe-board {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.65rem;
+  gap: 1rem;
 }
 
-@media (min-width: 560px) {
+@media (min-width: 620px) {
   .recipe-board {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+.recipe-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.recipe-more {
+  align-self: center;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px dashed rgba(255, 233, 184, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-cream);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.recipe-more:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 233, 184, 0.55);
 }
 
 .recipe-zone {
@@ -3197,19 +3221,6 @@ body::before {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--color-honey-glow);
-}
-
-.recipe-palettes {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.recipe-palette__title {
-  margin: 0 0 0.4rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--color-cream);
 }
 
 .recipe-palette__chips {
