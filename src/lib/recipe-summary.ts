@@ -141,10 +141,47 @@ export function isWizardStepDone(
   return selection[step.zoneKey].length > 0;
 }
 
+/** Paso confirmado al pulsar Siguiente (no solo por tener chips por defecto). */
+export function isWizardStepConfirmed(
+  stepIndex: number,
+  furthestConfirmedIndex: number,
+): boolean {
+  return stepIndex <= furthestConfirmedIndex;
+}
+
+/** Solo se puede volver a pasos ya confirmados. */
+export function canNavigateToWizardStep(
+  targetIndex: number,
+  currentIndex: number,
+  furthestConfirmedIndex: number,
+): boolean {
+  return (
+    targetIndex !== currentIndex &&
+    targetIndex >= 0 &&
+    targetIndex <= furthestConfirmedIndex
+  );
+}
+
 function joinNames(items: RecipeIngredient[]): string {
   if (items.length === 0) return "";
   if (items.length === 1) return items[0].label;
   return `${items.slice(0, -1).map((i) => i.label).join(", ")} y ${items[items.length - 1].label}`;
+}
+
+function formatPlacePhrase(label: string): string {
+  const trimmed = label.trim();
+  if (/^(el|la|los|las|un|una)\s/i.test(trimmed)) {
+    return trimmed.charAt(0).toLowerCase() + trimmed.slice(1);
+  }
+  return trimmed.toLowerCase();
+}
+
+function formatRetoPhrase(label: string): string {
+  const trimmed = label.trim().toLowerCase();
+  if (/^(ir a|no |solta|vencer|hablar|ordenar|comer|compartir)/.test(trimmed)) {
+    return trimmed;
+  }
+  return `el reto de ${trimmed}`;
 }
 
 export function buildRecipeChecklist(
@@ -196,27 +233,61 @@ export function buildRecipeSynopsis(
   if (heroes.length === 0 || !reto) return null;
 
   const names = joinNames(heroes);
-  const companions =
-    selection.acompanantes.length > 0
-      ? ` junto a ${joinNames(selection.acompanantes)}`
-      : selection.mascota.length > 0
-        ? ` junto a ${selection.mascota[0].label}`
-        : "";
-  const place = selection.lugar[0]
-    ? ` en ${selection.lugar[0].label.toLowerCase()}`
-    : "";
-  const lesson =
-    selection.aprenden.length > 0
-      ? `, y aprenden sobre ${selection.aprenden.map((e) => e.label.toLowerCase()).join(" y ")}`
-      : "";
-  const villain = selection.rolReto[0]
-    ? `, con ${selection.rolReto[0].label} en el papel del reto`
-    : "";
-  const mold = selection.molde[0]
-    ? ` Todo con el sabor de ${selection.molde[0].label}.`
-    : "";
+  const verb = heroes.length === 1 ? "protagoniza" : "protagonizan";
+  const parts: string[] = [];
 
-  return `Esta noche, ${names}${companions} enfrentan ${reto.label.toLowerCase()}${place}${lesson}${villain}.${mold}`;
+  let opener = `Esta noche ${names} ${verb} un cuento para leer en familia`;
+  if (selection.lugar[0]) {
+    opener += `, con escenario en ${formatPlacePhrase(selection.lugar[0].label)}`;
+  }
+  parts.push(`${opener}.`);
+
+  let conflict = `La historia gira en torno a ${formatRetoPhrase(reto.label)}`;
+  if (selection.aprenden.length > 0) {
+    const lessons = selection.aprenden
+      .map((e) => e.label.toLowerCase())
+      .join(" y ");
+    conflict += `, y al cerrar la lectura queda la idea de ${lessons}`;
+  }
+  parts.push(`${conflict}.`);
+
+  const extras: string[] = [];
+  if (selection.mascota.length > 0) {
+    extras.push(`${selection.mascota[0].label} también tiene su momento`);
+  }
+  if (selection.acompanantes.length > 0) {
+    const who = joinNames(selection.acompanantes);
+    extras.push(
+      selection.acompanantes.length === 1
+        ? `${who} acompaña la aventura`
+        : `${who} acompañan la aventura`,
+    );
+  }
+  if (selection.rolReto.length > 0) {
+    extras.push(
+      `${selection.rolReto[0].label} encarna el lado difícil del reto`,
+    );
+  }
+  if (selection.objeto.length > 0) {
+    const objs = joinNames(selection.objeto);
+    extras.push(
+      selection.objeto.length === 1
+        ? `${objs} aparece como detalle especial`
+        : `${objs} aparecen como detalles especiales`,
+    );
+  }
+  if (selection.molde.length > 0) {
+    extras.push(`todo con un guiño a «${selection.molde[0].label}»`);
+  }
+  if (extras.length > 0) {
+    parts.push(`${extras.join("; ")}.`);
+  }
+
+  parts.push(
+    "Humor bogotano, escenas concretas y una moraleja sin sermón — así lo imagina Chacachón.",
+  );
+
+  return parts.join(" ");
 }
 
 type SuggestionRule = {

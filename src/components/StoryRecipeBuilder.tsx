@@ -16,10 +16,12 @@ import {
   buildRecipeSynopsis,
   buildRecipeTitle,
   buildRecipeWizardSteps,
+  canNavigateToWizardStep,
   getRecipeBlocker,
   getRecipeSuggestion,
   getStepBlocker,
   hasPlantillaMolde,
+  isWizardStepConfirmed,
   personAvatarHue,
   personAvatarInitial,
   type RecipeSelectionSlice,
@@ -403,6 +405,7 @@ export default function StoryRecipeBuilder({
     buildInitialRecipeSelection(ingredients, plantillaSlug),
   );
   const [stepIndex, setStepIndex] = useState(0);
+  const [furthestConfirmedIndex, setFurthestConfirmedIndex] = useState(-1);
   const [activeKind, setActiveKind] = useState<RecipeKind | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pulseTokenId, setPulseTokenId] = useState<string | null>(null);
@@ -540,8 +543,9 @@ export default function StoryRecipeBuilder({
   }, [promoteMolde]);
 
   const goNext = useCallback(() => {
+    setFurthestConfirmedIndex((prev) => Math.max(prev, stepIndex));
     setStepIndex((i) => Math.min(wizardSteps.length - 1, i + 1));
-  }, [wizardSteps.length]);
+  }, [stepIndex, wizardSteps.length]);
 
   const goBack = useCallback(() => {
     setStepIndex((i) => Math.max(0, i - 1));
@@ -549,10 +553,12 @@ export default function StoryRecipeBuilder({
 
   const goToStep = useCallback(
     (index: number) => {
-      if (index > stepIndex) return;
+      if (!canNavigateToWizardStep(index, stepIndex, furthestConfirmedIndex)) {
+        return;
+      }
       setStepIndex(index);
     },
-    [stepIndex],
+    [furthestConfirmedIndex, stepIndex],
   );
 
   const currentOther =
@@ -598,15 +604,14 @@ export default function StoryRecipeBuilder({
         </div>
         <ol className="recipe-wizard__steps">
           {wizardSteps.map((step, index) => {
-            const passed = index < stepIndex;
-            const filled =
-              passed ||
-              (step.zoneKey
-                ? selection[step.zoneKey].length > 0
-                : step.id === "extras" || step.id === "review");
-            const done = passed || (index !== stepIndex && filled);
+            const confirmed = isWizardStepConfirmed(index, furthestConfirmedIndex);
             const active = index === stepIndex;
-            const clickable = index < stepIndex;
+            const clickable = canNavigateToWizardStep(
+              index,
+              stepIndex,
+              furthestConfirmedIndex,
+            );
+            const shortLabel = stepLabelShort(step);
 
             return (
               <li
@@ -614,7 +619,8 @@ export default function StoryRecipeBuilder({
                 className={[
                   "recipe-wizard__step",
                   active ? "recipe-wizard__step--active" : "",
-                  done ? "recipe-wizard__step--done" : "",
+                  confirmed ? "recipe-wizard__step--done" : "",
+                  clickable ? "recipe-wizard__step--clickable" : "",
                 ]
                   .filter(Boolean)
                   .join(" ")}
@@ -624,23 +630,22 @@ export default function StoryRecipeBuilder({
                     type="button"
                     className="recipe-wizard__step-btn"
                     onClick={() => goToStep(index)}
-                    aria-current={active ? "step" : undefined}
+                    aria-label={`Ir a ${shortLabel}`}
                   >
-                    <span className="recipe-wizard__step-num">
-                      {done && !active ? "✓" : index + 1}
+                    <span className="recipe-wizard__step-num" aria-hidden="true">
+                      ✓
                     </span>
-                    <span className="recipe-wizard__step-label">
-                      {stepLabelShort(step)}
-                    </span>
+                    <span className="recipe-wizard__step-label">{shortLabel}</span>
                   </button>
                 ) : (
-                  <span className="recipe-wizard__step-btn recipe-wizard__step-btn--static">
-                    <span className="recipe-wizard__step-num">
-                      {done && !active ? "✓" : index + 1}
+                  <span
+                    className="recipe-wizard__step-btn recipe-wizard__step-btn--static"
+                    aria-current={active ? "step" : undefined}
+                  >
+                    <span className="recipe-wizard__step-num" aria-hidden="true">
+                      {confirmed && !active ? "✓" : index + 1}
                     </span>
-                    <span className="recipe-wizard__step-label">
-                      {stepLabelShort(step)}
-                    </span>
+                    <span className="recipe-wizard__step-label">{shortLabel}</span>
                   </span>
                 )}
               </li>
@@ -675,7 +680,9 @@ export default function StoryRecipeBuilder({
                 <BrandIllustration variant="recipe" />
               </div>
               <div className="recipe-summary__body">
-                <p className="recipe-summary__label">Así quedará</p>
+                <p className="recipe-summary__label">
+                  Chacachón va a crear este cuento:
+                </p>
                 {title ? (
                   <h3 className="recipe-summary__title">{title}</h3>
                 ) : null}

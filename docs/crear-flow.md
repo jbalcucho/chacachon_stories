@@ -65,12 +65,22 @@ Flujo **siempre guiado** — una etapa visible a la vez:
 
 1. Protagonistas → 2. Reto → 3. Lección → 4. Lugar → (5. Clásico si viene de plantilla) → Extras opcionales → Revisar y crear.
 
-- Barra de progreso + chips de pasos (tocar pasos anteriores para editar).
+- Barra de progreso + chips de pasos: **verde solo tras pulsar Siguiente**; los confirmados son enlaces para volver a editar.
 - Panel con título y subtítulo claros por etapa.
 - En protagonistas: enlace **«¿Falta alguien fijo? Editar perfil»** → `/familia`.
 - **«+ Otro»** en los 4 pasos obligatorios (texto libre, máx. 40 caracteres) además de chips del perfil o listas curadas.
 - Navegación bajo el panel (no flotante): **← Volver/Atrás** · icono biblioteca → `/` · **Siguiente →** (u **Omitir** en opcionales).
-- Último paso: resumen, recap y **✨ Crear mi cuento**.
+- Último paso: encabezado **«Chacachón va a crear este cuento:»**, título generado, sinopsis enriquecida (`buildRecipeSynopsis`), recap por pasos y **✨ Crear mi cuento**.
+
+### Confirmación de pasos
+
+- Estado `furthestConfirmedIndex` en `StoryRecipeBuilder`: un paso solo pasa a verde al pulsar **Siguiente**, aunque venga pre-rellenado del perfil.
+- Los pasos confirmados son navegables (chip con ✓ y nombre subrayado en desktop).
+- Helpers: `isWizardStepConfirmed`, `canNavigateToWizardStep` en `recipe-summary.ts`.
+
+### Vista previa del cuento (revisión)
+
+`buildRecipeSynopsis()` arma un texto de varias frases: protagonistas y escenario, reto y lección, extras opcionales (mascota, acompañantes, objeto, clásico) y cierre con tono Chacachón (humor rolo, sin sermón).
 
 ### Defaults de demo
 
@@ -142,7 +152,10 @@ public/images/brand/
 src/lib/
   family-profile-completion.ts
   story-recipe.ts
+  recipe-summary.ts
   story-recipe-custom.test.ts
+  recipe-synopsis.test.ts
+  recipe-wizard-nav.test.ts
   brand-illustration.ts
   brand-illustration-server.ts
   book-carousel.ts
@@ -150,4 +163,4 @@ src/lib/
 
 ---
 
-*Última actualización: julio 2026 — ilustración de marca unificada + estante simétrico.*
+*Última actualización: julio 2026 — confirmación por paso, sinopsis enriquecida y «Chacachón va a crear este cuento».*
