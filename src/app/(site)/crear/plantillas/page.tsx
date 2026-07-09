@@ -21,10 +21,11 @@ export default async function CrearPlantillasPage() {
           Plantillas
         </p>
         <h1 className="title-display mt-2 text-2xl sm:text-3xl">
-          Elige un arquetipo
+          Cuento tradicional
         </h1>
         <p className="intro-copy mt-2 text-sm">
-          Cada plantilla se adaptará con tu familia y el dilema que elijas.
+          Elige un cuento conocido — tres cerditos, Caperucita, hombre de
+          jengibre y más. Lo adaptamos con tu familia y el dilema que elijas.
         </p>
       </header>
 

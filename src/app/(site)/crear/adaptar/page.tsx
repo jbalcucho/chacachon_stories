@@ -26,7 +26,7 @@ export default async function CrearAdaptarPage() {
         </h1>
         <p className="intro-copy mt-2 text-sm">
           Toca o arrastra los ingredientes a cada casilla. Cuando la receta esté
-          lista, la IA escribirá el cuento con tu acento y tus nombres.
+          lista, la IA escribirá el cuento con tus nombres y el tono de tu familia.
         </p>
       </header>
 

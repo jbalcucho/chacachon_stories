@@ -1,44 +1,126 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import BrandMark from "@/components/BrandMark";
+import CrearHub, { type CrearHubOption } from "@/components/CrearHub";
+import {
+  familyProfileEssentialSchema,
+  type FamilyProfileDocument,
+} from "@/lib/family-profile-schema";
+import {
+  buildCrearPreviews,
+  computeFamilyProfileCompletion,
+} from "@/lib/family-profile-completion";
 import { getSessionUser } from "@/lib/session";
 
 export const metadata: Metadata = {
   title: "Crear cuento",
   description:
-    "Crea un cuento personalizado con IA: plantillas, tu familia y humor bogotano.",
+    "Crea un cuento personalizado con IA: inspirado en tu vida, basado en un cuento tradicional o con tu perfil familiar.",
 };
 
-async function hasFamilyProfile(userId: string): Promise<boolean> {
-  if (!process.env.DATABASE_URL) return false;
+type FamilyState = {
+  perfil: FamilyProfileDocument | null;
+  profileReady: boolean;
+};
+
+async function getFamilyState(userId: string | null): Promise<FamilyState> {
+  if (!userId || !process.env.DATABASE_URL) {
+    return { perfil: null, profileReady: false };
+  }
   try {
     const { prisma } = await import("@/lib/prisma");
     const row = await prisma.familyProfile.findUnique({
       where: { userId },
       select: { perfil: true },
     });
-    return Boolean(row?.perfil);
+    if (!row?.perfil) {
+      return { perfil: null, profileReady: false };
+    }
+    const parsed = familyProfileEssentialSchema.safeParse(row.perfil);
+    if (!parsed.success) {
+      return { perfil: null, profileReady: false };
+    }
+    return { perfil: parsed.data, profileReady: true };
   } catch {
-    return false;
+    return { perfil: null, profileReady: false };
   }
+}
+
+function buildOptions(
+  user: boolean,
+  profileReady: boolean,
+  previews: ReturnType<typeof buildCrearPreviews>,
+): CrearHubOption[] {
+  const vida: CrearHubOption = {
+    id: "vida",
+    href: user && profileReady ? "/crear/adaptar" : "/familia",
+    primary: profileReady,
+    kicker: profileReady ? "Recomendado" : "Requiere perfil",
+    emoji: "✨",
+    title: "Inspirado en tu vida",
+    body: "Arma la receta con tu familia, el reto del día y —si quieres— un molde clásico. La IA escribe con sus nombres y su tono.",
+    cta: profileReady ? "Armar mi receta →" : "Completa tu familia →",
+    preview: previews.vida,
+    locked: user && !profileReady,
+  };
+
+  const tradicional: CrearHubOption = {
+    id: "tradicional",
+    href: "/crear/plantillas",
+    primary: false,
+    kicker: "Clásicos",
+    emoji: "📖",
+    title: "Basado en un cuento tradicional",
+    body: "Tres cerditos, Caperucita, el hombre de jengibre… Eliges el clásico; nosotros lo vestimos con tu hogar.",
+    cta: "Ver plantillas →",
+    preview: previews.tradicional,
+  };
+
+  const perfil: CrearHubOption = {
+    id: "perfil",
+    href: "/familia",
+    primary: !profileReady && user,
+    kicker: "Perfil",
+    emoji: "👤",
+    title: "Edita tu perfil de cuentos",
+    body: "Nombres, mascotas, frases y acento. Los cuentos del catálogo ya suenan a tu casa al leerlos.",
+    cta: "Ir a mi familia →",
+    preview: previews.perfil,
+  };
+
+  if (user && !profileReady) {
+    return [perfil, tradicional, vida];
+  }
+
+  return [vida, tradicional, perfil];
 }
 
 export default async function CrearPage() {
   const user = await getSessionUser();
-  const profileReady = user ? await hasFamilyProfile(user.id) : false;
+  const { perfil, profileReady } = await getFamilyState(user?.id ?? null);
+  const previews = buildCrearPreviews(perfil);
+  const options = buildOptions(Boolean(user), profileReady, previews);
+  const completion = user
+    ? computeFamilyProfileCompletion(perfil)
+    : null;
+  const defaultPreview =
+    options.find((o) => o.primary)?.preview ?? options[0].preview;
 
   return (
     <main className="crear-main mx-auto max-w-2xl px-4 py-6 pb-12 sm:px-6 sm:py-8">
-      <header className="text-center">
-        <p className="font-display text-sm font-semibold text-honey-glow/90">
-          ✨ Crear con IA
+      <header className="crear-hero text-center">
+        <div className="crear-hero__mark" aria-hidden="true">
+          <BrandMark id="brand-mark-crear" variant="compact" />
+        </div>
+        <p className="crear-hero__eyebrow">Crear con IA</p>
+        <h1 className="title-display crear-hero__title">Tu cuento, tu familia</h1>
+        <p className="intro-copy crear-hero__lead mx-auto max-w-lg">
+          Un cuento nuevo{" "}
+          <strong className="crear-hero__emph">inspirado en ti y tu familia</strong>
+          , o basado en un cuento clásico. Edita tu perfil de cuentos si lo
+          necesitas.
         </p>
-        <h1 className="title-display mt-2 text-3xl sm:text-4xl">
-          Tu cuento, tu familia
-        </h1>
-        <p className="intro-copy mx-auto mt-3 max-w-md text-sm sm:text-base">
-          Un cuento nuevo con los nombres de tu casa y humor de Bogotá. Primero
-          elige cómo quieres empezar.
-        </p>
+        <p className="crear-hero__step">¿Por dónde empezamos?</p>
       </header>
 
       {!user ? (
@@ -48,59 +130,16 @@ export default async function CrearPage() {
           </Link>{" "}
           para guardar tus cuentos y usar el perfil familiar.
         </p>
-      ) : !profileReady ? (
-        <p className="crear-banner crear-banner--warn mt-6" role="status">
-          Antes de crear,{" "}
-          <Link href="/familia" className="font-bold text-honey-glow underline">
-            completa tu familia
-          </Link>{" "}
-          (nombres, mascotas, frases).
-        </p>
       ) : null}
 
-      <div className="crear-grid mt-8">
-        <Link
-          href={user && profileReady ? "/crear/adaptar" : "/familia"}
-          className="crear-card crear-card--primary"
-        >
-          <span className="crear-card__emoji" aria-hidden="true">
-            👨‍👩‍👧‍👦
-          </span>
-          <h2 className="crear-card__title">Con mi familia</h2>
-          <p className="crear-card__body">
-            Elige un dilema (dormir, pantallas, respeto…) y adapta una plantilla
-            con IA.
-          </p>
-          <span className="crear-card__cta">Empezar adaptación →</span>
-        </Link>
-
-        <Link href="/crear/plantillas" className="crear-card">
-          <span className="crear-card__emoji" aria-hidden="true">
-            📚
-          </span>
-          <h2 className="crear-card__title">Desde una plantilla</h2>
-          <p className="crear-card__body">
-            Cerditos del edificio, Operación a dormir y más arquetipos
-            Chacachón.
-          </p>
-          <span className="crear-card__cta">Ver plantillas →</span>
-        </Link>
-
-        <Link href="/familia" className="crear-card">
-          <span className="crear-card__emoji" aria-hidden="true">
-            ✏️
-          </span>
-          <h2 className="crear-card__title">Solo personalizar</h2>
-          <p className="crear-card__body">
-            Los cuentos del catálogo ya llevan los nombres de tu hogar al leer.
-          </p>
-          <span className="crear-card__cta">Mi familia →</span>
-        </Link>
-      </div>
+      <CrearHub
+        options={options}
+        completion={completion}
+        defaultPreview={defaultPreview}
+      />
 
       <p className="crear-footnote mt-8 text-center text-xs text-cream-muted">
-        Vista previa del flujo · la generación con IA llegará en la siguiente
-        fase.
+        La IA escribe pronto · hoy puedes armar la receta y tu perfil.
       </p>
 
       <p className="mt-6 text-center">
