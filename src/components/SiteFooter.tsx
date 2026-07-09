@@ -6,9 +6,8 @@ export default function SiteFooter() {
       <p>
         <strong className="font-display font-semibold text-cream">Chacachón</strong>
         {" · "}
-        cuentos hiperlocalizados con amor familiar
+        Cuentos para leer en familia
       </p>
-      <p className="mt-1 font-serif italic">Hecho en Bogotá</p>
       <p className="mt-3">
         <Link
           href="/privacidad"

@@ -18,20 +18,20 @@ const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   title: {
-    default: "Las historias de Chacachón",
+    default: "Las historIAs de Chacachón",
     template: "%s | Chacachón",
   },
   description:
-    "Cuentos infantiles hiperlocalizados para leer en familia. Humor bogotano, personajes de la familia Chacachón.",
+    "Cuentos infantiles hiperlocalizados con IA para leer en familia. Humor bogotano, personajes de la familia Chacachón.",
   metadataBase: new URL(siteUrl),
   openGraph: {
     type: "website",
     locale: "es_CO",
     url: siteUrl,
     siteName: "Chacachón",
-    title: "Las historias de Chacachón",
+    title: "Las historIAs de Chacachón",
     description:
-      "Cuentos para leer en voz alta con humor rolo y lecciones sin sermón.",
+      "Cuentos para leer en familia con humor rolo y lecciones sin sermón.",
   },
 };
 

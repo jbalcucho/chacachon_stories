@@ -62,7 +62,7 @@ type Props = {
 
 export default function StoryBookshelf({
   stories,
-  label = "Estante de la familia",
+  label = "Mi biblioteca",
   initialSlug = null,
 }: Props) {
   const router = useRouter();

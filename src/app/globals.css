@@ -373,6 +373,15 @@ body::before {
 
 .site-header {
   background: rgba(42, 61, 110, 0.78);
+  transition: transform 0.28s ease, opacity 0.28s ease;
+}
+
+@media (max-width: 639px) {
+  .site-header--hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 .site-footer {
@@ -390,6 +399,38 @@ body::before {
   text-shadow:
     0 2px 28px rgba(255, 202, 92, 0.4),
     0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.title-ia {
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff4d6;
+  text-shadow:
+    0 0 18px rgba(255, 202, 92, 0.65),
+    0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.home-hero .hero-moon-wrap {
+  margin-bottom: 0.55rem;
+}
+
+@media (max-width: 639px) {
+  .home-hero .hero-moon {
+    width: 4.75rem;
+    height: 4.75rem;
+  }
+
+  .home-hero .hero-moon-star {
+    font-size: 0.85rem;
+  }
+
+  .bookshelf-header {
+    margin-bottom: 0.55rem;
+  }
+
+  .bookshelf-label {
+    font-size: 1.15rem;
+  }
 }
 
 .intro-copy {
