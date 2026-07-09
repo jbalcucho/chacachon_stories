@@ -63,7 +63,7 @@ Ver [docs/database.md](./docs/database.md) y [docs/architecture.md](./docs/archi
 
 **Lector personalizado activo** — biblioteca interactiva, auth Google, perfil familiar (JSONB) con interpolación en TypeScript y lector tipo libro (`/leer/[slug]`) con paginación real por DOM, temas de papel (Cuento/Cuaderno), tipografía Fredoka, soporte de listas/cursiva en Markdown, `prefers-reduced-motion`, retomar la última página leída y Open Graph por cuento. CSP en modo enforce.
 
-**Flujo crear (UI lista, IA pendiente)** — hub `/crear` con tres caminos, medidor de completitud del perfil, vista previa dinámica y receta interactiva en `/crear/adaptar` (zonas héroes, reto, lección, lugar + opcionales). Ilustración de marca (luna + cuento) en header, home, footer, crear y tarjetas OG/favicon. Estante con carrusel simétrico y libro destacado. Ver [docs/crear-flow.md](./docs/crear-flow.md).
+**Flujo crear (UI lista, IA pendiente)** — hub `/crear` con tres caminos, medidor de completitud del perfil, vista previa dinámica y receta interactiva en `/crear/adaptar` (protagonistas, reto, lección, lugar con chips y «+ Otro»). Ilustración de marca (luna + cuento) en header, home, footer, crear y tarjetas OG/favicon. Estante con carrusel simétrico y libro destacado. Ver [docs/crear-flow.md](./docs/crear-flow.md).
 
 **Cuentos publicados:** el lobo de las palabras, cerditos del edificio, operación a dormir, día sin pantallas de Nico. **En preparación (sin texto aún):** ascensor de las sorpresas, tren del bosque, misión Paloquemao, Chacachón en la luna — falta escribir el `.md` fuente antes de publicarlos.
 

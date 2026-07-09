@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import BrandIllustration from "@/components/BrandIllustration";
-import CrearPageActions from "@/components/CrearPageActions";
 import CrearProgress from "@/components/CrearProgress";
 import StoryRecipeBuilder from "@/components/StoryRecipeBuilder";
 import { getReaderProfile } from "@/lib/reader-profile";
@@ -51,8 +50,6 @@ export default async function CrearAdaptarPage({ searchParams }: PageProps) {
           plantillaSlug={plantillaSlug}
         />
       </div>
-
-      <CrearPageActions />
     </main>
   );
 }

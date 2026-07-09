@@ -1,11 +1,15 @@
 "use client";
 
 import BrandIllustration from "@/components/BrandIllustration";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
-import type {
-  RecipeIngredient,
-  RecipeIngredients,
-  RecipeKind,
+import {
+  buildCustomRecipeIngredient,
+  RECIPE_CUSTOM_LABEL_MAX,
+  type RecipeCustomZone,
+  type RecipeIngredient,
+  type RecipeIngredients,
+  type RecipeKind,
 } from "@/lib/story-recipe";
 import {
   buildInitialRecipeSelection,
@@ -43,9 +47,9 @@ type ZoneConfig = {
 const ZONE_CONFIGS: Record<ZoneKey, ZoneConfig> = {
   heroes: {
     key: "heroes",
-    title: "Héroes",
+    title: "Protagonistas",
     hint: "Toca para elegir · hasta 3",
-    empty: "Toca un nombre abajo",
+    empty: "Toca un nombre abajo o usa «+ Otro»",
     accepts: ["persona"],
     max: 3,
     options: (i) => i.personas,
@@ -54,7 +58,7 @@ const ZONE_CONFIGS: Record<ZoneKey, ZoneConfig> = {
     key: "reto",
     title: "El reto",
     hint: "Elige 1",
-    empty: "Toca un dilema abajo",
+    empty: "Toca un dilema abajo o usa «+ Otro»",
     accepts: ["dilema"],
     max: 1,
     options: (i) => i.dilemas,
@@ -63,7 +67,7 @@ const ZONE_CONFIGS: Record<ZoneKey, ZoneConfig> = {
     key: "aprenden",
     title: "Qué aprenden",
     hint: "Hasta 2",
-    empty: "Toca una lección abajo",
+    empty: "Toca una lección abajo o usa «+ Otro»",
     accepts: ["emocion"],
     max: 2,
     options: (i) => i.emociones,
@@ -72,7 +76,7 @@ const ZONE_CONFIGS: Record<ZoneKey, ZoneConfig> = {
     key: "lugar",
     title: "¿Dónde pasa?",
     hint: "Elige 1",
-    empty: "Toca un lugar abajo",
+    empty: "Toca un lugar abajo o usa «+ Otro»",
     accepts: ["lugar"],
     max: 1,
     options: (i) => i.lugares,
@@ -131,6 +135,24 @@ const EXTRA_ZONE_KEYS: ZoneKey[] = [
   "objeto",
 ];
 
+const OTHER_ZONE_CONFIG: Partial<
+  Record<ZoneKey, { placeholder: string; showProfileLink?: boolean }>
+> = {
+  heroes: {
+    placeholder: "Ej: la profe Diana",
+    showProfileLink: true,
+  },
+  reto: {
+    placeholder: "Ej: no querer bañarse",
+  },
+  aprenden: {
+    placeholder: "Ej: pedir perdón",
+  },
+  lugar: {
+    placeholder: "Ej: la casa de la tía",
+  },
+};
+
 type ZoneBlockProps = {
   config: ZoneConfig;
   ingredients: RecipeIngredients;
@@ -139,6 +161,8 @@ type ZoneBlockProps = {
   dragEnabled: boolean;
   pulseTokenId: string | null;
   compact?: boolean;
+  otherPlaceholder?: string;
+  onAddOther?: (label: string) => boolean;
   onToggle: (zone: ZoneKey, ing: RecipeIngredient) => void;
   onRemove: (zone: ZoneKey, id: string) => void;
   onDropIngredient: (zone: ZoneKey, id: string) => void;
@@ -178,6 +202,84 @@ function IngredientIcon({ ing }: { ing: RecipeIngredient }) {
   return <span aria-hidden="true">{ing.emoji}</span>;
 }
 
+function RecipeOtherField({
+  placeholder,
+  onAdd,
+}: {
+  placeholder: string;
+  onAdd: (label: string) => boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState("");
+
+  const submit = () => {
+    if (!draft.trim()) return;
+    const added = onAdd(draft);
+    if (added) {
+      setDraft("");
+      setOpen(false);
+    }
+  };
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        className="recipe-other__toggle"
+        onClick={() => setOpen(true)}
+      >
+        + Otro
+      </button>
+    );
+  }
+
+  return (
+    <div className="recipe-other">
+      <div className="recipe-other__row">
+        <input
+          className="recipe-other__input"
+          type="text"
+          maxLength={RECIPE_CUSTOM_LABEL_MAX}
+          placeholder={placeholder}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submit();
+            }
+            if (e.key === "Escape") {
+              setOpen(false);
+              setDraft("");
+            }
+          }}
+          aria-label={placeholder}
+          autoFocus
+        />
+        <button
+          type="button"
+          className="recipe-other__add"
+          onClick={submit}
+          disabled={!draft.trim()}
+        >
+          Agregar
+        </button>
+        <button
+          type="button"
+          className="recipe-other__cancel"
+          onClick={() => {
+            setOpen(false);
+            setDraft("");
+          }}
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function ZoneBlock({
   config,
   ingredients,
@@ -186,6 +288,8 @@ function ZoneBlock({
   dragEnabled,
   pulseTokenId,
   compact = false,
+  otherPlaceholder,
+  onAddOther,
   onToggle,
   onRemove,
   onDropIngredient,
@@ -275,6 +379,10 @@ function ZoneBlock({
           );
         })}
       </div>
+
+      {otherPlaceholder && onAddOther ? (
+        <RecipeOtherField placeholder={otherPlaceholder} onAdd={onAddOther} />
+      ) : null}
     </div>
   );
 }
@@ -353,6 +461,39 @@ export default function StoryRecipeBuilder({
     }));
   }, []);
 
+  const addCustom = useCallback(
+    (zone: ZoneKey, rawLabel: string): boolean => {
+      if (!(zone in OTHER_ZONE_CONFIG)) return false;
+
+      const config = ZONE_CONFIGS[zone];
+      const ing = buildCustomRecipeIngredient(zone as RecipeCustomZone, rawLabel);
+      if (!ing) return false;
+
+      let added = false;
+      setSelection((prev) => {
+        const current = prev[zone];
+        if (current.some((i) => i.id === ing.id)) {
+          added = true;
+          return prev;
+        }
+        if (current.length >= config.max) {
+          if (config.max === 1) {
+            pulseToken(ing.id);
+            added = true;
+            return { ...prev, [zone]: [ing] };
+          }
+          flashNotice(`Máximo ${config.max} en “${config.title}”.`);
+          return prev;
+        }
+        pulseToken(ing.id);
+        added = true;
+        return { ...prev, [zone]: [...current, ing] };
+      });
+      return added;
+    },
+    [flashNotice, pulseToken],
+  );
+
   const dropIngredient = useCallback(
     (zone: ZoneKey, id: string) => {
       const ing = allById.get(id);
@@ -413,6 +554,11 @@ export default function StoryRecipeBuilder({
     },
     [stepIndex],
   );
+
+  const currentOther =
+    currentStep.zoneKey != null
+      ? OTHER_ZONE_CONFIG[currentStep.zoneKey]
+      : undefined;
 
   const zoneBlockProps = {
     ingredients,
@@ -509,6 +655,11 @@ export default function StoryRecipeBuilder({
             {currentStep.title}
           </h2>
           <p className="recipe-wizard__subtitle">{currentStep.subtitle}</p>
+          {currentOther?.showProfileLink ? (
+            <p className="recipe-wizard__profile-link">
+              <Link href="/familia">¿Falta alguien fijo? Editar perfil</Link>
+            </p>
+          ) : null}
         </header>
 
         {isReviewStep ? (
@@ -553,6 +704,12 @@ export default function StoryRecipeBuilder({
           <ZoneBlock
             config={ZONE_CONFIGS[currentStep.zoneKey]}
             selection={selection[currentStep.zoneKey]}
+            otherPlaceholder={currentOther?.placeholder}
+            onAddOther={
+              currentOther
+                ? (label) => addCustom(currentStep.zoneKey!, label)
+                : undefined
+            }
             {...zoneBlockProps}
           />
         ) : null}
@@ -572,14 +729,31 @@ export default function StoryRecipeBuilder({
 
       <div className="recipe-wizard__dock">
         <footer className="recipe-wizard__footer">
-          <button
-            type="button"
-            className="recipe-wizard__nav recipe-wizard__nav--back"
-            disabled={stepIndex === 0}
-            onClick={goBack}
+          {stepIndex === 0 ? (
+            <Link
+              href="/crear"
+              className="recipe-wizard__nav recipe-wizard__nav--back"
+            >
+              ← Volver
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className="recipe-wizard__nav recipe-wizard__nav--back"
+              onClick={goBack}
+            >
+              ← Atrás
+            </button>
+          )}
+
+          <Link
+            href="/"
+            className="recipe-wizard__library"
+            aria-label="Mi biblioteca"
+            title="Mi biblioteca"
           >
-            ← Atrás
-          </button>
+            <BookshelfNavIcon />
+          </Link>
 
           {isReviewStep ? (
             <button
@@ -609,24 +783,42 @@ export default function StoryRecipeBuilder({
             </button>
           )}
         </footer>
-      </div>
 
-      {!isReviewStep ? (
-        <p className="crear-footnote mt-2 text-center text-xs">
-          Paso {stepIndex + 1} de {wizardSteps.length}
-          {isLastStep ? "" : " · la IA escribe en el último paso"}
-        </p>
-      ) : (
-        <p className="crear-footnote mt-2 text-center text-xs">
-          La IA escribe pronto · hoy puedes armar y guardar la receta.
-        </p>
-      )}
+        {!isReviewStep ? (
+          <p className="crear-footnote recipe-wizard__footnote">
+            Paso {stepIndex + 1} de {wizardSteps.length}
+            {isLastStep ? "" : " · la IA escribe en el último paso"}
+          </p>
+        ) : (
+          <p className="crear-footnote recipe-wizard__footnote">
+            La IA escribe pronto · hoy puedes armar y guardar la receta.
+          </p>
+        )}
+      </div>
     </div>
   );
 }
 
+function BookshelfNavIcon() {
+  return (
+    <svg
+      className="recipe-wizard__library-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+    </svg>
+  );
+}
+
 function stepLabelShort(step: RecipeWizardStep): string {
-  if (step.id === "heroes") return "Héroes";
+  if (step.id === "heroes") return "Protagonistas";
   if (step.id === "reto") return "Reto";
   if (step.id === "aprenden") return "Lección";
   if (step.id === "lugar") return "Lugar";

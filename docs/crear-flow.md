@@ -49,10 +49,10 @@ Mismo cielo que el home: `SkyScenery` en `(site)/layout.tsx` + `body.page-bg`.
 
 | Zona | Máx. | Obligatoria |
 |------|------|-------------|
-| Héroes | 3 | Sí |
-| El reto (dilema) | 1 | Sí |
-| Qué aprenden (emoción/lección) | 2 | Sí |
-| ¿Dónde pasa? | 1 | Sí |
+| Protagonistas | 3 | Sí (+ «Otro» texto libre) |
+| El reto (dilema) | 1 | Sí (+ «Otro» texto libre) |
+| Qué aprenden (emoción/lección) | 2 | Sí (+ «Otro» texto libre) |
+| ¿Dónde pasa? | 1 | Sí (+ «Otro» texto libre) |
 | Mascota, acompañantes, rol de reto, objeto, molde | 1–4 | No («Agregar más») |
 
 ### Ingredientes
@@ -63,16 +63,18 @@ Salen del perfil familiar vía `buildRecipeIngredients()` en `src/lib/story-reci
 
 Flujo **siempre guiado** — una etapa visible a la vez:
 
-1. Héroes → 2. Reto → 3. Lección → 4. Lugar → (5. Clásico si viene de plantilla) → Extras opcionales → Revisar y crear.
+1. Protagonistas → 2. Reto → 3. Lección → 4. Lugar → (5. Clásico si viene de plantilla) → Extras opcionales → Revisar y crear.
 
 - Barra de progreso + chips de pasos (tocar pasos anteriores para editar).
 - Panel con título y subtítulo claros por etapa.
-- Pie fijo: **← Atrás** | **Siguiente →** (deshabilitado si falta elegir) u **Omitir y continuar** en opcionales.
+- En protagonistas: enlace **«¿Falta alguien fijo? Editar perfil»** → `/familia`.
+- **«+ Otro»** en los 4 pasos obligatorios (texto libre, máx. 40 caracteres) además de chips del perfil o listas curadas.
+- Navegación bajo el panel (no flotante): **← Volver/Atrás** · icono biblioteca → `/` · **Siguiente →** (u **Omitir** en opcionales).
 - Último paso: resumen, recap y **✨ Crear mi cuento**.
 
 ### Defaults de demo
 
-- Héroe: primer niño del perfil.
+- Protagonista: primer niño del perfil (o «+ Otro»).
 - Reto: dormir.
 - Aprenden: responsabilidad.
 - Lugar: apartamento.
@@ -130,7 +132,7 @@ src/app/(site)/crear/
   adaptar/page.tsx      # Receta
 src/components/
   CrearHub.tsx          # Hub cliente (progreso, medidor, tarjetas)
-  CrearPageActions.tsx  # Barra Volver a Crear / Mi biblioteca
+  CrearPageActions.tsx  # Hub y plantillas (adaptar usa barra del wizard)
   StoryRecipeBuilder.tsx
   BrandIllustration.tsx
   StoryBookshelf.tsx    # Estante + carrusel
@@ -140,6 +142,7 @@ public/images/brand/
 src/lib/
   family-profile-completion.ts
   story-recipe.ts
+  story-recipe-custom.test.ts
   brand-illustration.ts
   brand-illustration-server.ts
   book-carousel.ts

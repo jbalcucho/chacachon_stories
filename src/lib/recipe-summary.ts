@@ -53,10 +53,10 @@ export function getStepBlocker(
   if (items.length > 0) return null;
 
   const labels: Partial<Record<keyof RecipeSelectionSlice, string>> = {
-    heroes: "Elige al menos un héroe para continuar",
-    reto: "Elige el reto del cuento para continuar",
-    aprenden: "Elige qué aprenden para continuar",
-    lugar: "Elige dónde pasa el cuento para continuar",
+    heroes: "Elige al menos un protagonista para continuar",
+    reto: "Elige el reto del cuento o escribe uno con «+ Otro»",
+    aprenden: "Elige qué aprenden o escríbelo con «+ Otro»",
+    lugar: "Elige dónde pasa o escríbelo con «+ Otro»",
     molde: "Elige un molde o toca «Omitir»",
   };
 
@@ -78,26 +78,29 @@ export function buildRecipeWizardSteps(
     {
       id: "heroes",
       zoneKey: "heroes",
-      title: "Paso 1 · Los héroes",
-      subtitle: "¿Quiénes protagonizan el cuento? Puedes elegir hasta 3.",
+      title: "Paso 1 · Los protagonistas",
+      subtitle:
+        "Elige quién sale en el cuento (hasta 3). Usa tu perfil o toca «+ Otro».",
     },
     {
       id: "reto",
       zoneKey: "reto",
       title: "Paso 2 · El reto",
-      subtitle: "¿Qué dilema de la vida real quieres abordar esta noche?",
+      subtitle:
+        "¿Qué dilema quieres abordar? Elige uno o escríbelo con «+ Otro».",
     },
     {
       id: "aprenden",
       zoneKey: "aprenden",
       title: "Paso 3 · La lección",
-      subtitle: "¿Qué quieres que aprendan? Puedes elegir hasta 2.",
+      subtitle:
+        "¿Qué quieres que aprendan? Elige hasta 2 o escríbelo con «+ Otro».",
     },
     {
       id: "lugar",
       zoneKey: "lugar",
       title: "Paso 4 · El lugar",
-      subtitle: "¿Dónde transcurre la historia?",
+      subtitle: "¿Dónde transcurre la historia? Elige uno o usa «+ Otro».",
     },
   ];
 
@@ -148,7 +151,7 @@ export function buildRecipeChecklist(
   selection: RecipeSelectionSlice,
 ): RecipeChecklistItem[] {
   return [
-    { key: "heroes", label: "Héroes", done: selection.heroes.length > 0 },
+    { key: "heroes", label: "Protagonistas", done: selection.heroes.length > 0 },
     { key: "reto", label: "Reto", done: selection.reto.length > 0 },
     {
       key: "aprenden",
@@ -165,7 +168,7 @@ export function countChecklistDone(items: RecipeChecklistItem[]): number {
 
 export function getRecipeBlocker(selection: RecipeSelectionSlice): string | null {
   if (selection.heroes.length === 0) {
-    return "Falta: elige al menos un héroe";
+    return "Falta: elige al menos un protagonista";
   }
   if (selection.reto.length === 0) {
     return "Falta: elige el reto del cuento";

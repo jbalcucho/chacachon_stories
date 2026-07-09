@@ -169,3 +169,94 @@ export function buildRecipeIngredients(
     moldes: MOLDES,
   };
 }
+
+export const RECIPE_CUSTOM_LABEL_MAX = 40;
+
+function slugifyRecipeLabel(label: string): string {
+  return (
+    label
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 32) || "otro"
+  );
+}
+
+export function isCustomRecipeIngredient(id: string): boolean {
+  return id.startsWith("custom-");
+}
+
+/** Protagonista escrito a mano (no está en el perfil). */
+export function buildCustomProtagonist(label: string): RecipeIngredient | null {
+  const trimmed = label.trim().slice(0, RECIPE_CUSTOM_LABEL_MAX);
+  if (!trimmed) return null;
+  return {
+    id: `custom-persona-${slugifyRecipeLabel(trimmed)}`,
+    kind: "persona",
+    label: trimmed,
+    emoji: "✨",
+    hint: "Protagonista personalizado",
+  };
+}
+
+/** Reto escrito a mano (no está en la lista). */
+export function buildCustomDilema(label: string): RecipeIngredient | null {
+  const trimmed = label.trim().slice(0, RECIPE_CUSTOM_LABEL_MAX);
+  if (!trimmed) return null;
+  return {
+    id: `custom-dilema-${slugifyRecipeLabel(trimmed)}`,
+    kind: "dilema",
+    label: trimmed,
+    emoji: "💭",
+    hint: "Reto personalizado",
+  };
+}
+
+/** Lección escrita a mano (no está en la lista). */
+export function buildCustomEmocion(label: string): RecipeIngredient | null {
+  const trimmed = label.trim().slice(0, RECIPE_CUSTOM_LABEL_MAX);
+  if (!trimmed) return null;
+  return {
+    id: `custom-emocion-${slugifyRecipeLabel(trimmed)}`,
+    kind: "emocion",
+    label: trimmed,
+    emoji: "💡",
+    hint: "Lección personalizada",
+  };
+}
+
+/** Lugar escrito a mano (no está en la lista). */
+export function buildCustomLugar(label: string): RecipeIngredient | null {
+  const trimmed = label.trim().slice(0, RECIPE_CUSTOM_LABEL_MAX);
+  if (!trimmed) return null;
+  return {
+    id: `custom-lugar-${slugifyRecipeLabel(trimmed)}`,
+    kind: "lugar",
+    label: trimmed,
+    emoji: "📍",
+    hint: "Lugar personalizado",
+  };
+}
+
+export type RecipeCustomZone = "heroes" | "reto" | "aprenden" | "lugar";
+
+export function buildCustomRecipeIngredient(
+  zone: RecipeCustomZone,
+  label: string,
+): RecipeIngredient | null {
+  switch (zone) {
+    case "heroes":
+      return buildCustomProtagonist(label);
+    case "reto":
+      return buildCustomDilema(label);
+    case "aprenden":
+      return buildCustomEmocion(label);
+    case "lugar":
+      return buildCustomLugar(label);
+    default:
+      return null;
+  }
+}
