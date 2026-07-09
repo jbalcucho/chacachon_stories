@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type {
   RecipeIngredient,
   RecipeIngredients,
@@ -134,6 +134,7 @@ type ZoneBlockProps = {
   ingredients: RecipeIngredients;
   selection: RecipeIngredient[];
   activeKind: RecipeKind | null;
+  dragEnabled: boolean;
   onToggle: (zone: ZoneKey, ing: RecipeIngredient) => void;
   onRemove: (zone: ZoneKey, id: string) => void;
   onDropIngredient: (zone: ZoneKey, id: string) => void;
@@ -141,11 +142,26 @@ type ZoneBlockProps = {
   onDragEnd: () => void;
 };
 
+function useFinePointer(): boolean {
+  const [fine, setFine] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setFine(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  return fine;
+}
+
 function ZoneBlock({
   config,
   ingredients,
   selection,
   activeKind,
+  dragEnabled,
   onToggle,
   onRemove,
   onDropIngredient,
@@ -208,7 +224,7 @@ function ZoneBlock({
             <button
               key={`${config.key}-${opt.id}`}
               type="button"
-              draggable
+              draggable={dragEnabled}
               className={`recipe-chip${selected ? " recipe-chip--selected" : ""}`}
               onClick={() => onToggle(config.key, opt)}
               onDragStart={(e) => {
@@ -254,6 +270,7 @@ export default function StoryRecipeBuilder({
   const [activeKind, setActiveKind] = useState<RecipeKind | null>(null);
   const [showMore, setShowMore] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const dragEnabled = useFinePointer();
 
   const allById = useMemo(() => {
     const map = new Map<string, RecipeIngredient>();
@@ -278,11 +295,15 @@ export default function StoryRecipeBuilder({
     (zone: ZoneKey, ing: RecipeIngredient) => {
       setSelection((prev) => {
         const current = prev[zone];
+        const max = zoneMax[zone].max;
         if (current.some((i) => i.id === ing.id)) {
           return { ...prev, [zone]: current.filter((i) => i.id !== ing.id) };
         }
-        if (current.length >= zoneMax[zone].max) {
-          flashNotice(`Máximo ${zoneMax[zone].max} en “${zoneMax[zone].title}”.`);
+        if (current.length >= max) {
+          if (max === 1) {
+            return { ...prev, [zone]: [ing] };
+          }
+          flashNotice(`Máximo ${max} en “${zoneMax[zone].title}”.`);
           return prev;
         }
         return { ...prev, [zone]: [...current, ing] };
@@ -304,9 +325,13 @@ export default function StoryRecipeBuilder({
       if (!ing || !zoneMax[zone].accepts.includes(ing.kind)) return;
       setSelection((prev) => {
         const current = prev[zone];
+        const max = zoneMax[zone].max;
         if (current.some((i) => i.id === id)) return prev;
-        if (current.length >= zoneMax[zone].max) {
-          flashNotice(`Máximo ${zoneMax[zone].max} en “${zoneMax[zone].title}”.`);
+        if (current.length >= max) {
+          if (max === 1) {
+            return { ...prev, [zone]: [ing] };
+          }
+          flashNotice(`Máximo ${max} en “${zoneMax[zone].title}”.`);
           return prev;
         }
         return { ...prev, [zone]: [...current, ing] };
@@ -364,6 +389,7 @@ export default function StoryRecipeBuilder({
             ingredients={ingredients}
             selection={selection[zone.key]}
             activeKind={activeKind}
+            dragEnabled={dragEnabled}
             onToggle={toggle}
             onRemove={remove}
             onDropIngredient={dropIngredient}
@@ -391,6 +417,7 @@ export default function StoryRecipeBuilder({
               ingredients={ingredients}
               selection={selection[zone.key]}
               activeKind={activeKind}
+              dragEnabled={dragEnabled}
               onToggle={toggle}
               onRemove={remove}
               onDropIngredient={dropIngredient}

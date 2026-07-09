@@ -19,6 +19,9 @@ npm run dev                  # http://localhost:3000
 | `/` | Biblioteca **Las historias de Chacachón** (estante interactivo) |
 | `/leer/[slug]` | Lector tipo libro (paginado por DOM, papel Cuento/Cuaderno, retoma página) |
 | `/familia` | Perfil familiar para personalizar los cuentos (requiere login) |
+| `/crear` | Hub crear cuento: vida, clásico o perfil |
+| `/crear/adaptar` | Armar receta del cuento (tap/drag; IA pendiente) |
+| `/crear/plantillas` | Elegir cuento tradicional para adaptar |
 | `/admin` | Catálogo interno de solo lectura (requiere rol `ADMIN`) |
 | `/login` | Entrar con Google |
 | `/privacidad` | Política de privacidad (piloto) |
@@ -38,6 +41,7 @@ Ver [docs/database.md](./docs/database.md) y [docs/architecture.md](./docs/archi
 | Documento | Descripción |
 |---|---|
 | [docs/architecture.md](./docs/architecture.md) | Arquitectura Sprint 0, rutas, decisiones |
+| [docs/crear-flow.md](./docs/crear-flow.md) | Hub `/crear`, receta, perfil, marca — estado julio 2026 |
 | [docs/database.md](./docs/database.md) | Schema Prisma, seed, migraciones |
 | [StackTecnico.md](./StackTecnico.md) | Stack completo, roadmap, seguridad |
 | [PerfilFamiliar.md](./PerfilFamiliar.md) | Perfil familiar JSONB, onboarding, interpolación |
@@ -59,6 +63,8 @@ Ver [docs/database.md](./docs/database.md) y [docs/architecture.md](./docs/archi
 
 **Lector personalizado activo** — biblioteca interactiva, auth Google, perfil familiar (JSONB) con interpolación en TypeScript y lector tipo libro (`/leer/[slug]`) con paginación real por DOM, temas de papel (Cuento/Cuaderno), tipografía Fredoka, soporte de listas/cursiva en Markdown, `prefers-reduced-motion`, retomar la última página leída y Open Graph por cuento. CSP en modo enforce.
 
+**Flujo crear (UI lista, IA pendiente)** — hub `/crear` con tres caminos, medidor de completitud del perfil, vista previa dinámica y receta interactiva en `/crear/adaptar` (zonas héroes, reto, lección, lugar + opcionales). Marca luna + libro en header, home y tarjetas OG. Ver [docs/crear-flow.md](./docs/crear-flow.md).
+
 **Cuentos publicados:** el lobo de las palabras, cerditos del edificio, operación a dormir, día sin pantallas de Nico. **En preparación (sin texto aún):** ascensor de las sorpresas, tren del bosque, misión Paloquemao, Chacachón en la luna — falta escribir el `.md` fuente antes de publicarlos.
 
-**Siguiente:** escribir los cuentos en preparación, catálogo editable en `/admin` y audios (ElevenLabs).
+**Siguiente:** conectar generación IA a la receta, escribir cuentos en preparación, catálogo editable en `/admin` y audios (ElevenLabs).

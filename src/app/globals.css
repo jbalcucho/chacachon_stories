@@ -3042,6 +3042,32 @@ body::before {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.crear-profile-meter--link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.crear-profile-meter--link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 202, 92, 0.35);
+  transform: translateY(-1px);
+}
+
+.crear-profile-meter--link:focus-visible {
+  outline: 2px solid rgba(255, 202, 92, 0.55);
+  outline-offset: 2px;
+}
+
+.crear-profile-meter__cta {
+  font-weight: 800;
+  color: var(--color-honey-glow);
+}
+
 .crear-profile-meter__header {
   display: flex;
   align-items: center;
@@ -3293,6 +3319,10 @@ body::before {
 
   .crear-profile-meter__fill {
     transition: none;
+  }
+
+  .crear-profile-meter--link:hover {
+    transform: none;
   }
 }
 
@@ -3563,9 +3593,11 @@ body::before {
   touch-action: manipulation;
 }
 
-.recipe-chip:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 233, 184, 0.4);
+@media (hover: hover) {
+  .recipe-chip:hover:not(.recipe-chip--selected) {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 233, 184, 0.4);
+  }
 }
 
 .recipe-chip:active {
@@ -3577,6 +3609,18 @@ body::before {
   background: rgba(255, 202, 92, 0.22);
   border-color: rgba(255, 202, 92, 0.6);
   color: #fff;
+  box-shadow:
+    0 0 0 2px rgba(255, 202, 92, 0.28),
+    0 4px 14px rgba(255, 202, 92, 0.22);
+}
+
+.recipe-chip--selected:hover,
+.recipe-chip--selected:focus-visible {
+  background: rgba(255, 202, 92, 0.28);
+  border-color: rgba(255, 202, 92, 0.65);
+  box-shadow:
+    0 0 0 2px rgba(255, 202, 92, 0.35),
+    0 4px 16px rgba(255, 202, 92, 0.28);
 }
 
 .recipe-summary {

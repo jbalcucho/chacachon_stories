@@ -70,9 +70,14 @@ Documentación relacionada: [StackTecnico.md](../StackTecnico.md) · [database.m
 | Ruta | Tipo | Descripción |
 |------|------|-------------|
 | `/` | Page | Biblioteca «Las historias de Chacachón» |
+| `/leer/[slug]` | Page | Lector personalizado (paginado, perfil interpolado) |
+| `/crear` | Page | Hub crear cuento (3 caminos + medidor de perfil) |
+| `/crear/plantillas` | Page | Cuento tradicional → adaptar |
+| `/crear/adaptar` | Page | Receta interactiva (tap/drag) |
+| `/familia` | Page | Perfil familiar (login) |
 | `/login` | Page | Entrar con Google |
 | `/privacidad` | Page | Política de privacidad (piloto) |
-| `/cuentos/*.html` | Static | Readers HTML |
+| `/cuentos/*.html` | Static | Readers HTML legacy |
 | `/api/auth/*` | API | NextAuth handlers |
 
 Rutas protegidas (middleware): `/familia/*`, `/admin/*` (Sprint 1+).

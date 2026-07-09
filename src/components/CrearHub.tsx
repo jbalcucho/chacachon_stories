@@ -25,12 +25,14 @@ type CrearHubProps = {
   options: CrearHubOption[];
   completion: ProfileCompletionData | null;
   defaultPreview: string;
+  profileHref?: string;
 };
 
 export default function CrearHub({
   options,
   completion,
   defaultPreview,
+  profileHref = "/familia",
 }: CrearHubProps) {
   const [activePreview, setActivePreview] = useState(defaultPreview);
 
@@ -64,7 +66,11 @@ export default function CrearHub({
       </nav>
 
       {completion ? (
-        <div className="crear-profile-meter mt-6">
+        <Link
+          href={profileHref}
+          className="crear-profile-meter crear-profile-meter--link mt-6"
+          aria-label={`Tu perfil de cuentos al ${completion.percent}%. ${completion.hint}. Ir a editar perfil`}
+        >
           <div className="crear-profile-meter__header">
             <span className="crear-profile-meter__label">Tu perfil de cuentos</span>
             <span className="crear-profile-meter__pct">{completion.percent}%</span>
@@ -75,15 +81,21 @@ export default function CrearHub({
             aria-valuenow={completion.percent}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-label={`Perfil completado al ${completion.percent}%`}
+            aria-hidden="true"
           >
             <span
               className="crear-profile-meter__fill"
               style={{ width: `${completion.percent}%` }}
             />
           </div>
-          <p className="crear-profile-meter__hint">{completion.hint}</p>
-        </div>
+          <p className="crear-profile-meter__hint">
+            {completion.hint}
+            <span className="crear-profile-meter__cta" aria-hidden="true">
+              {" "}
+              → Editar
+            </span>
+          </p>
+        </Link>
       ) : null}
 
       <p
