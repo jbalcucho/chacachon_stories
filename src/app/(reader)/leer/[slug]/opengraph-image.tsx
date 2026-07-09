@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { OG_NIGHT_BG, OgBrandMark } from "@/lib/og-brand-mark";
 import { getPublishedStoryBySlug } from "@/lib/stories";
 
 export const alt = "Un cuento de la familia Chacachón";
@@ -8,45 +9,6 @@ export const contentType = "image/png";
 type ImageProps = {
   params: { slug: string };
 };
-
-function MoonBadge() {
-  return (
-    <div
-      style={{
-        position: "relative",
-        display: "flex",
-        width: 84,
-        height: 84,
-        borderRadius: 22,
-        background: "#16224a",
-        flexShrink: 0,
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          left: 14,
-          top: 12,
-          width: 60,
-          height: 60,
-          borderRadius: "50%",
-          background: "radial-gradient(circle at 34% 30%, #FFF9E8 0%, #FFE08A 45%, #E8A820 100%)",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          left: 32,
-          top: 16,
-          width: 52,
-          height: 52,
-          borderRadius: "50%",
-          background: "#16224a",
-        }}
-      />
-    </div>
-  );
-}
 
 export default async function OpengraphImage({ params }: ImageProps) {
   const story = await getPublishedStoryBySlug(params.slug).catch(() => null);
@@ -61,34 +23,22 @@ export default async function OpengraphImage({ params }: ImageProps) {
           height: "100%",
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
           justifyContent: "space-between",
-          padding: "80px",
-          background: "linear-gradient(135deg, #2a3d6e 0%, #16213e 100%)",
+          padding: "64px 72px",
+          background: OG_NIGHT_BG,
           color: "#fdf6e3",
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
-          <MoonBadge />
-          <div style={{ display: "flex", fontSize: 36, fontWeight: 700, color: "#f4b942" }}>
-            <span>Las histor</span>
-            <span
-              style={{
-                color: "#ffe9b0",
-                textShadow: "0 0 22px rgba(255, 236, 170, 0.95)",
-              }}
-            >
-              IA
-            </span>
-            <span>s de Chacachón</span>
-          </div>
-        </div>
+        <OgBrandMark size={200} />
         <div
           style={{
             display: "flex",
-            fontSize: 78,
+            fontSize: 72,
             fontWeight: 700,
             lineHeight: 1.1,
+            textAlign: "center",
             maxWidth: "980px",
           }}
         >
@@ -97,12 +47,34 @@ export default async function OpengraphImage({ params }: ImageProps) {
         <div
           style={{
             display: "flex",
-            fontSize: 30,
-            color: "#e7c98f",
-            maxWidth: "960px",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 12,
           }}
         >
-          {moraleja ?? "Cuentos hiperlocalizados para leer en familia."}
+          <div
+            style={{
+              display: "flex",
+              fontSize: 28,
+              fontWeight: 700,
+              color: "#f4b942",
+            }}
+          >
+            <span>Las histor</span>
+            <span style={{ color: "#ffe9b0" }}>IA</span>
+            <span>s de Chacachón</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: 26,
+              color: "#e7c98f",
+              textAlign: "center",
+              maxWidth: "900px",
+            }}
+          >
+            {moraleja ?? "Cuentos hiperlocalizados para leer en familia."}
+          </div>
         </div>
       </div>
     ),

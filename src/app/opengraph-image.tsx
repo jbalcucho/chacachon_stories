@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
+import { OG_NIGHT_BG, OgBrandMark } from "@/lib/og-brand-mark";
 
-export const alt = "Las historIAs de Chacachón";
+export const alt = "Las historIAs de Chacachón — luna y cuento";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -15,52 +16,21 @@ export default function SiteOpengraphImage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 34,
-          background: "linear-gradient(135deg, #2a3d6e 0%, #16213e 100%)",
+          gap: 28,
+          padding: "48px",
+          background: OG_NIGHT_BG,
           color: "#fdf6e3",
           fontFamily: "sans-serif",
         }}
       >
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            width: 160,
-            height: 160,
-            borderRadius: 42,
-            background: "#16224a",
-            boxShadow: "0 0 60px rgba(255, 210, 110, 0.35)",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              left: 27,
-              top: 23,
-              width: 114,
-              height: 114,
-              borderRadius: "50%",
-              background: "radial-gradient(circle at 34% 30%, #FFF9E8 0%, #FFE08A 45%, #E8A820 100%)",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              left: 61,
-              top: 30,
-              width: 99,
-              height: 99,
-              borderRadius: "50%",
-              background: "#16224a",
-            }}
-          />
-        </div>
+        <OgBrandMark size={260} />
         <div
           style={{
             display: "flex",
-            fontSize: 72,
+            fontSize: 68,
             fontWeight: 700,
             color: "#f4b942",
+            textAlign: "center",
           }}
         >
           <span>Las histor</span>
@@ -74,7 +44,14 @@ export default function SiteOpengraphImage() {
           </span>
           <span>s de Chacachón</span>
         </div>
-        <div style={{ display: "flex", fontSize: 32, color: "#e7c98f" }}>
+        <div
+          style={{
+            display: "flex",
+            fontSize: 30,
+            color: "#e7c98f",
+            textAlign: "center",
+          }}
+        >
           Cuentos para leer en familia · humor bogotano
         </div>
       </div>

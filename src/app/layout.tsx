@@ -32,6 +32,21 @@ export const metadata: Metadata = {
     title: "Las historIAs de Chacachón",
     description:
       "Cuentos para leer en familia con humor rolo y lecciones sin sermón.",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Las historIAs de Chacachón — luna y cuento",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Las historIAs de Chacachón",
+    description:
+      "Cuentos para leer en familia con humor rolo y lecciones sin sermón.",
+    images: ["/opengraph-image"],
   },
 };
 

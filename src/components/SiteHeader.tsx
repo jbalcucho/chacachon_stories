@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import BrandMoonC from "@/components/BrandMoonC";
+import BrandMark from "@/components/BrandMark";
 import LoginButton from "@/components/LoginButton";
 
 export default function SiteHeader() {
@@ -38,15 +38,16 @@ export default function SiteHeader() {
       className={`site-header sticky top-0 z-50 border-b border-white/12 backdrop-blur-md${hidden ? " site-header--hidden" : ""}`}
     >
       <div className="site-header__inner mx-auto flex max-w-3xl items-center justify-between gap-2 px-4 py-2 sm:gap-3 sm:px-5 sm:py-3">
-        <Link href="/" className="min-w-0">
-          <p className="brand-word font-display truncate text-sm font-bold text-honey-glow sm:text-lg">
-            <span className="sr-only">C</span>
-            <BrandMoonC id="brand-moon-hdr" className="brand-moon--compact" />
-            hacachón
-          </p>
-          <p className="site-header__tagline hidden text-xs font-semibold text-cream-muted sm:block">
-            Cuentos en familia
-          </p>
+        <Link href="/" className="site-header__brand min-w-0">
+          <BrandMark id="brand-mark-hdr" variant="compact" />
+          <div className="min-w-0">
+            <p className="font-display truncate text-sm font-bold text-honey-glow sm:text-lg">
+              Chacachón
+            </p>
+            <p className="site-header__tagline hidden text-xs font-semibold text-cream-muted sm:block">
+              Cuentos en familia
+            </p>
+          </div>
         </Link>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Link
