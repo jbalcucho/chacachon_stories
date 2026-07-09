@@ -18,8 +18,3 @@ export const CREATE_STORY_CARD: StoryCard = {
 export function isCreateStoryCard(story: { slug: string }): boolean {
   return story.slug === CREATE_STORY_SLUG;
 }
-
-export function withCreateStorySlot(stories: StoryCard[]): StoryCard[] {
-  if (stories.some((s) => s.slug === CREATE_STORY_SLUG)) return stories;
-  return [...stories, CREATE_STORY_CARD];
-}

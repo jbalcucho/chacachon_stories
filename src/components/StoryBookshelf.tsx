@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import BookSpine from "@/components/BookSpine";
+import CreateStorySlot from "@/components/CreateStorySlot";
 import StoryBook from "@/components/StoryBook";
 import type { StoryCard } from "@/lib/stories";
-import { isCreateStoryCard, withCreateStorySlot } from "@/lib/create-story";
+import { CREATE_STORY_SLUG } from "@/lib/create-story";
 import {
   getCircularOffset,
   getStackedSides,
@@ -18,7 +19,7 @@ import {
 const BOOKSHELF_SLUG_KEY = "chacachon.bookshelf-active-slug";
 
 function indexForSlug(stories: StoryCard[], slug: string | null): number | null {
-  if (!slug) return null;
+  if (!slug || slug === CREATE_STORY_SLUG) return null;
   const index = stories.findIndex((story) => story.slug === slug);
   return index >= 0 ? index : null;
 }
@@ -26,14 +27,15 @@ function indexForSlug(stories: StoryCard[], slug: string | null): number | null 
 function readSavedSlug(): string | null {
   if (typeof window === "undefined") return null;
   try {
-    return sessionStorage.getItem(BOOKSHELF_SLUG_KEY);
+    const saved = sessionStorage.getItem(BOOKSHELF_SLUG_KEY);
+    return saved === CREATE_STORY_SLUG ? null : saved;
   } catch {
     return null;
   }
 }
 
 function saveActiveSlug(slug: string) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || slug === CREATE_STORY_SLUG) return;
   try {
     sessionStorage.setItem(BOOKSHELF_SLUG_KEY, slug);
   } catch {
@@ -45,9 +47,6 @@ function resolveInitialIndex(
   stories: StoryCard[],
   urlSlug: string | null,
 ): number {
-  // Debe ser determinista para SSR: solo depende de la URL (igual en
-  // servidor y cliente). La restauración desde sessionStorage ocurre en un
-  // efecto para no romper la hidratación.
   const fromUrl = indexForSlug(stories, urlSlug);
   if (fromUrl !== null) return fromUrl;
 
@@ -68,9 +67,10 @@ export default function StoryBookshelf({
   initialSlug = null,
 }: Props) {
   const router = useRouter();
-  const shelfStories = useMemo(() => withCreateStorySlot(stories), [stories]);
+  const catalogSlug =
+    initialSlug === CREATE_STORY_SLUG ? null : (initialSlug ?? null);
   const [activeIndex, setActiveIndex] = useState(() =>
-    resolveInitialIndex(shelfStories, initialSlug),
+    resolveInitialIndex(stories, catalogSlug),
   );
   const [slideDirection, setSlideDirection] = useState<SlideDirection>("right");
   const [isBookLeaving, setIsBookLeaving] = useState(false);
@@ -79,7 +79,7 @@ export default function StoryBookshelf({
   const transitionTimers = useRef<number[]>([]);
   const skipUrlSync = useRef(true);
 
-  const count = shelfStories.length;
+  const count = stories.length;
   const canCycle = count > 1;
   const isBookTransitioning = isBookLeaving || isBookEntering;
 
@@ -100,12 +100,12 @@ export default function StoryBookshelf({
 
   const persistSelection = useCallback(
     (index: number) => {
-      const slug = shelfStories[index]?.slug;
+      const slug = stories[index]?.slug;
       if (!slug) return;
       saveActiveSlug(slug);
       router.replace(`/?libro=${encodeURIComponent(slug)}`, { scroll: false });
     },
-    [router, shelfStories],
+    [router, stories],
   );
 
   useEffect(() => {
@@ -113,18 +113,18 @@ export default function StoryBookshelf({
       skipUrlSync.current = false;
       return;
     }
-    const index = indexForSlug(shelfStories, initialSlug ?? null);
+    const index = indexForSlug(stories, catalogSlug);
     if (index !== null) {
       setActiveIndex(index);
     }
-  }, [initialSlug, shelfStories]);
+  }, [catalogSlug, stories]);
 
   useEffect(() => {
-    if (initialSlug) return;
+    if (catalogSlug) return;
     const saved = readSavedSlug();
-    if (!saved || !shelfStories.some((story) => story.slug === saved)) return;
+    if (!saved || !stories.some((story) => story.slug === saved)) return;
     router.replace(`/?libro=${encodeURIComponent(saved)}`, { scroll: false });
-  }, [initialSlug, router, shelfStories]);
+  }, [catalogSlug, router, stories]);
 
   const changeActiveIndex = useCallback(
     (index: number) => {
@@ -185,12 +185,11 @@ export default function StoryBookshelf({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [goPrev, goNext]);
 
-  const activeStory = shelfStories[activeIndex];
+  const activeStory = stories[activeIndex];
   const activeOpenPath = activeStory?.openPath ?? null;
   const canOpenActive = Boolean(activeOpenPath);
-  const activeIsCreate = activeStory ? isCreateStoryCard(activeStory) : false;
 
-  const { left, right } = getStackedSides(shelfStories, activeIndex);
+  const { left, right } = getStackedSides(stories, activeIndex);
 
   function handleActiveClick() {
     if (isBookTransitioning) return;
@@ -223,7 +222,8 @@ export default function StoryBookshelf({
           </Link>
         </div>
         <p className="bookshelf-hint hidden text-center text-xs sm:block sm:text-right">
-          Toca un lomo o las flechas · el libro del centro se abre con otro clic
+          Toca un lomo o las flechas · el libro del centro se abre con otro clic ·
+          el dorado de la derecha crea tu cuento
         </p>
       </div>
 
@@ -297,6 +297,8 @@ export default function StoryBookshelf({
                   />
                 ))}
               </div>
+
+              <CreateStorySlot />
             </div>
             <div className="library-cubby__shelf" aria-hidden="true" />
           </div>
@@ -315,7 +317,8 @@ export default function StoryBookshelf({
       </div>
 
       <p className="bookshelf-hint-mobile sm:hidden">
-        Toca un lomo, desliza o usa las flechas
+        Toca un lomo, desliza o usa las flechas · el dorado de la derecha es para
+        crear
       </p>
 
       {activeStory ? (
@@ -323,9 +326,7 @@ export default function StoryBookshelf({
           <span className="text-honey-glow font-bold">{activeStory.title}</span>
           {" · "}
           {canOpenActive
-            ? activeIsCreate
-              ? "Clic de nuevo para crear tu cuento"
-              : "Clic de nuevo para abrir el cuento"
+            ? "Clic de nuevo para abrir el cuento"
             : "Próximamente en la biblioteca"}
         </p>
       ) : null}
