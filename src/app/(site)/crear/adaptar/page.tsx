@@ -1,67 +1,37 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import StoryRecipeBuilder from "@/components/StoryRecipeBuilder";
+import { getReaderProfile } from "@/lib/reader-profile";
+import { getSessionUserId } from "@/lib/session";
+import { buildRecipeIngredients } from "@/lib/story-recipe";
 
 export const metadata: Metadata = {
-  title: "Adaptar cuento",
+  title: "Armar cuento",
   robots: { index: false },
 };
 
-const STEPS = [
-  {
-    title: "¿Qué quieres trabajar?",
-    hint: "Dormir, pantallas, respeto, miedos…",
-    status: "next",
-  },
-  {
-    title: "Elige una plantilla",
-    hint: "Operación a dormir, Cerditos del edificio…",
-    status: "pending",
-  },
-  {
-    title: "Vista previa para padres",
-    hint: "Revisa el texto antes de leer en voz alta.",
-    status: "pending",
-  },
-  {
-    title: "Guardar en tu biblioteca",
-    hint: "Solo tu familia verá el borrador hasta que lo apruebes.",
-    status: "pending",
-  },
-];
+export default async function CrearAdaptarPage() {
+  const userId = await getSessionUserId();
+  const { perfil, source } = await getReaderProfile(userId);
+  const ingredients = buildRecipeIngredients(perfil);
 
-export default function CrearAdaptarPage() {
   return (
-    <main className="crear-main mx-auto max-w-xl px-4 py-6 pb-12 sm:px-6">
+    <main className="crear-main mx-auto max-w-2xl px-4 py-6 pb-14 sm:px-6">
       <header>
         <p className="text-xs font-bold uppercase tracking-widest text-honey-glow">
-          Paso 1 de 4 · wireframe
+          Arma tu receta
         </p>
         <h1 className="title-display mt-2 text-2xl sm:text-3xl">
-          Adaptar con tu familia
+          Arrastra a tu familia al cuento
         </h1>
         <p className="intro-copy mt-2 text-sm">
-          Aquí irá el asistente con IA. Por ahora puedes ver los pasos planeados.
+          Toca o arrastra los ingredientes a cada casilla. Cuando la receta esté
+          lista, la IA escribirá el cuento con tu acento y tus nombres.
         </p>
       </header>
 
-      <ol className="crear-steps mt-8">
-        {STEPS.map((step, index) => (
-          <li
-            key={step.title}
-            className={`crear-step${step.status === "next" ? " crear-step--active" : ""}`}
-          >
-            <span className="crear-step__num">{index + 1}</span>
-            <div>
-              <p className="crear-step__title">{step.title}</p>
-              <p className="crear-step__hint">{step.hint}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
-
-      <div className="crear-banner crear-banner--info mt-8">
-        La API de generación aún no está conectada. Este flujo valida la
-        experiencia antes de invertir en prompts y costos.
+      <div className="mt-6">
+        <StoryRecipeBuilder ingredients={ingredients} profileSource={source} />
       </div>
 
       <p className="mt-8 flex flex-wrap justify-center gap-4 text-sm">
