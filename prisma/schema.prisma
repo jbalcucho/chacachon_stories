@@ -72,3 +72,18 @@ model Story {
   @@index([status, sortOrder])
   @@map("stories")
 }
+
+/// Cuentos generados por el flujo /crear (IA o plantilla mock).
+model GeneratedStory {
+  id           String   @id @default(uuid())
+  userId       String?  @map("user_id")
+  title        String
+  bodyMarkdown String   @map("body_markdown")
+  recipe       Json
+  source       String   @default("mock")
+  model        String?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt])
+  @@map("generated_stories")
+}

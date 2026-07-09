@@ -2,6 +2,7 @@
 
 import BrandIllustration from "@/components/BrandIllustration";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
   buildCustomRecipeIngredient,
@@ -394,6 +395,7 @@ export default function StoryRecipeBuilder({
   profileSource,
   plantillaSlug = null,
 }: Props) {
+  const router = useRouter();
   const promoteMolde = hasPlantillaMolde(plantillaSlug);
   const dragEnabled = useFinePointer();
   const wizardSteps = useMemo(
@@ -409,6 +411,7 @@ export default function StoryRecipeBuilder({
   const [activeKind, setActiveKind] = useState<RecipeKind | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pulseTokenId, setPulseTokenId] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
 
   const currentStep = wizardSteps[stepIndex];
   const isLastStep = stepIndex === wizardSteps.length - 1;
@@ -560,6 +563,31 @@ export default function StoryRecipeBuilder({
     },
     [furthestConfirmedIndex, stepIndex],
   );
+
+  const handleGenerate = useCallback(async () => {
+    if (!canGenerate || generating) return;
+    setGenerating(true);
+    setNotice(null);
+    try {
+      const res = await fetch("/api/cuentos/generar", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ selection }),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { id?: string; message?: string }
+        | null;
+      if (!res.ok || !data?.id) {
+        flashNotice(data?.message ?? "No pudimos crear el cuento. Intenta de nuevo.");
+        setGenerating(false);
+        return;
+      }
+      router.push(`/leer/generado/${data.id}`);
+    } catch {
+      flashNotice("Sin conexión. Revisa tu internet e intenta de nuevo.");
+      setGenerating(false);
+    }
+  }, [canGenerate, flashNotice, generating, router, selection]);
 
   const currentOther =
     currentStep.zoneKey != null
@@ -766,12 +794,15 @@ export default function StoryRecipeBuilder({
             <button
               type="button"
               className={`recipe-generate recipe-wizard__nav recipe-wizard__nav--next${canGenerate ? " recipe-generate--ready" : ""}`}
-              disabled={!canGenerate}
-              onClick={() =>
-                flashNotice("La generación con IA llega en la siguiente fase ✨")
-              }
+              disabled={!canGenerate || generating}
+              aria-busy={generating}
+              onClick={handleGenerate}
             >
-              {canGenerate ? "✨ Crear mi cuento" : blocker}
+              {generating
+                ? "Creando tu cuento…"
+                : canGenerate
+                  ? "✨ Crear mi cuento"
+                  : blocker}
             </button>
           ) : (
             <button
@@ -798,7 +829,7 @@ export default function StoryRecipeBuilder({
           </p>
         ) : (
           <p className="crear-footnote recipe-wizard__footnote">
-            La IA escribe pronto · hoy puedes armar y guardar la receta.
+            Chacachón escribe tu cuento al tocar el botón ✨
           </p>
         )}
       </div>

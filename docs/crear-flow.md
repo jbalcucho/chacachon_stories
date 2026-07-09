@@ -123,6 +123,7 @@ Schema: `familyProfileEssentialSchema` en `src/lib/family-profile-schema.ts`.
 - Carrusel del estante con pilas simétricas izquierda/derecha (`book-carousel.ts`).
 - Libro destacado: lomo decorativo sin título + portada como héroe.
 - Slot «Crear cuento» espejo discreto a la izquierda para balance visual.
+- Luna del hero reducida (~6–8rem) para no competir con el carrusel del estante.
 
 ---
 
@@ -164,4 +165,4 @@ src/lib/
 
 ---
 
-*Última actualización: julio 2026 — confirmación por paso, sinopsis enriquecida y «Chacachón va a crear este cuento».*
+*Última actualización: julio 2026 — hero más compacto y footer alineado al header.*
