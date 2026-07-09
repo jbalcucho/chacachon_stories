@@ -51,7 +51,7 @@
 | Auth | NextAuth v4 | Google OAuth |
 | Deploy | Vercel (`iad1`) | Hosting + env vars |
 | CI | GitHub Actions (pendiente push) | `.github/workflows/ci.yml` local — scope `workflow` |
-| Marca | PNG/WebP ilustrado | `BrandIllustration` · `public/images/brand/hero-luna-chacachon.*` |
+| Marca | PNG/WebP ilustrado | `BrandIllustration` (`hero` home, `compact` header/footer) |
 
 ### Decisiones clave
 

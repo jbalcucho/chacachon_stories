@@ -1,6 +1,6 @@
 import { BRAND_ILLUSTRATION } from "@/lib/brand-illustration";
 
-type Variant = "hero" | "compact" | "crear" | "footer" | "recipe";
+type Variant = "hero" | "compact" | "crear" | "recipe";
 
 type Props = {
   variant?: Variant;
@@ -9,10 +9,9 @@ type Props = {
 };
 
 const SIZES: Record<Variant, string> = {
-  hero: "(max-width: 639px) 192px, 240px",
-  compact: "36px",
+  hero: "(max-width: 639px) 100px, 132px",
+  compact: "32px",
   crear: "40px",
-  footer: "72px",
   recipe: "32px",
 };
 

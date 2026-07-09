@@ -12,7 +12,7 @@ export default async function HomePage({
 
   return (
     <main className="home-main mx-auto max-w-5xl px-4 py-4 pb-8 sm:px-6 sm:py-6 sm:pb-10">
-      <header className="home-hero mb-4 text-center sm:mb-5">
+      <header className="home-hero mb-3 text-center sm:mb-4">
         <BrandIllustration variant="hero" priority />
         <h1 className="title-display text-3xl sm:text-5xl">
           Las histor

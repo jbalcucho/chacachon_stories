@@ -111,8 +111,9 @@ Schema: `familyProfileEssentialSchema` en `src/lib/family-profile-schema.ts`.
 ## Marca visual (julio 2026)
 
 - Ilustración: **luna creciente + libro abierto** (PNG/WebP con alpha, generada con Gemini y recortada en repo).
-- Componente único: `BrandIllustration` con variantes `hero | compact | crear | footer | recipe`.
-- Superficies: home, header, footer, hub `/crear`, receta, tarjetas Open Graph (`opengraph-image.tsx` + por cuento) y favicons (`icon.png`, `apple-icon.png`).
+- Componente único: `BrandIllustration` con variantes `hero | compact | crear | recipe`.
+- Superficies: home (hero más compacto, acorde al estante), header y footer (mismo bloque `compact` + wordmark), hub `/crear`, receta, tarjetas Open Graph (`opengraph-image.tsx` + por cuento) y favicons (`icon.png`, `apple-icon.png`).
+- Footer: enlace a `/` con la misma marca que el header (no ilustración suelta grande).
 - OG embebe el PNG vía `brand-illustration-server.ts` (solo servidor; no importar en cliente).
 - Wordmark: texto plano **Chacachón** (C normal).
 - SVG legacy (`BrandMark.tsx`, `brand-mark-svg.ts`) queda deprecado; no usar en UI nueva.
