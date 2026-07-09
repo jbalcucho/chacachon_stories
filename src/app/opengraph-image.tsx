@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { OG_NIGHT_BG, OgBrandMark } from "@/lib/og-brand-mark";
+import { OG_NIGHT_BG, OgBrandIllustration } from "@/lib/og-brand-mark";
 
 export const alt = "Las historIAs de Chacachón — luna y cuento";
 export const size = { width: 1200, height: 630 };
@@ -23,7 +23,7 @@ export default function SiteOpengraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        <OgBrandMark size={260} />
+        <OgBrandIllustration height={280} />
         <div
           style={{
             display: "flex",

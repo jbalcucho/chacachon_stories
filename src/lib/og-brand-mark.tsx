@@ -1,27 +1,34 @@
-import { brandMarkDataUrl } from "@/lib/brand-mark-svg";
+import {
+  brandIllustrationDimensions,
+} from "@/lib/brand-illustration";
+import { getBrandIllustrationDataUrl } from "@/lib/brand-illustration-server";
 
 type Props = {
-  size?: number;
-  /** Fondo redondeado en el SVG (favicon). En OG usar false y dejar el gradiente de la tarjeta. */
-  withBackground?: boolean;
+  height?: number;
 };
 
-/** Insignia luna + libro para imágenes Open Graph (next/og). */
-export function OgBrandMark({ size = 84, withBackground = false }: Props) {
+/** Ilustración luna + cuento para tarjetas Open Graph (next/og). */
+export function OgBrandIllustration({ height = 260 }: Props) {
+  const { width, height: h } = brandIllustrationDimensions(height);
+
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- SVG embebido para OG (Satori)
+    // eslint-disable-next-line @next/next/no-img-element -- PNG embebido para OG (Satori)
     <img
-      src={brandMarkDataUrl({ id: "og-brand", withBackground })}
+      src={getBrandIllustrationDataUrl()}
       alt=""
-      width={size}
-      height={size}
+      width={width}
+      height={h}
       style={{
         display: "flex",
         flexShrink: 0,
+        objectFit: "contain",
       }}
     />
   );
 }
+
+/** @deprecated Usar OgBrandIllustration */
+export const OgBrandMark = OgBrandIllustration;
 
 /** Gradiente nocturno compartido por las tarjetas OG. */
 export const OG_NIGHT_BG =

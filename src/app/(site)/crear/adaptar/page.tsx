@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import BrandMark from "@/components/BrandMark";
+import BrandIllustration from "@/components/BrandIllustration";
+import CrearPageActions from "@/components/CrearPageActions";
 import CrearProgress from "@/components/CrearProgress";
 import StoryRecipeBuilder from "@/components/StoryRecipeBuilder";
 import { getReaderProfile } from "@/lib/reader-profile";
@@ -24,13 +24,13 @@ export default async function CrearAdaptarPage({ searchParams }: PageProps) {
   const plantillaSlug = params.plantilla?.trim() || null;
 
   return (
-    <main className="crear-main mx-auto max-w-2xl px-4 py-6 pb-14 sm:px-6">
+    <main className="crear-main crear-main--recipe mx-auto max-w-2xl px-4 py-6 sm:px-6">
       <header className="crear-hero text-center sm:text-left">
         <div
           className="crear-hero__mark flex justify-center sm:justify-start"
           aria-hidden="true"
         >
-          <BrandMark id="brand-mark-adaptar" variant="compact" />
+          <BrandIllustration variant="crear" />
         </div>
         <p className="crear-hero__eyebrow">Paso 2 · Arma la receta</p>
         <h1 className="title-display crear-hero__title text-2xl sm:text-3xl">
@@ -44,15 +44,6 @@ export default async function CrearAdaptarPage({ searchParams }: PageProps) {
 
       <CrearProgress activeStep={2} />
 
-      <p className="mt-4 text-center text-sm sm:text-left">
-        <Link
-          href="/crear"
-          className="font-semibold text-honey-glow hover:underline"
-        >
-          ← Cambiar camino
-        </Link>
-      </p>
-
       <div className="mt-6">
         <StoryRecipeBuilder
           ingredients={ingredients}
@@ -61,14 +52,7 @@ export default async function CrearAdaptarPage({ searchParams }: PageProps) {
         />
       </div>
 
-      <p className="mt-8 flex flex-wrap justify-center gap-4 text-sm sm:justify-start">
-        <Link href="/crear" className="font-semibold text-honey-glow">
-          ← Hub crear
-        </Link>
-        <Link href="/" className="font-semibold text-cream-muted hover:text-cream">
-          Biblioteca
-        </Link>
-      </p>
+      <CrearPageActions />
     </main>
   );
 }

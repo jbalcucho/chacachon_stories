@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import CrearPageActions from "@/components/CrearPageActions";
 import { getLibraryStories } from "@/lib/stories";
 import { hasPersonalizedReader } from "@/lib/story-content-index";
 
@@ -51,11 +52,7 @@ export default async function CrearPlantillasPage() {
         Al tocar una plantilla irás al asistente (próximamente con IA).
       </p>
 
-      <p className="mt-8 text-center">
-        <Link href="/crear" className="text-sm font-semibold text-honey-glow">
-          ← Volver al hub crear
-        </Link>
-      </p>
+      <CrearPageActions showBiblioteca={false} />
     </main>
   );
 }

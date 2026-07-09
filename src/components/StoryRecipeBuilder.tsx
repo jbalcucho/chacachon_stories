@@ -1,6 +1,6 @@
 "use client";
 
-import BrandMark from "@/components/BrandMark";
+import BrandIllustration from "@/components/BrandIllustration";
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import type {
   RecipeIngredient,
@@ -16,7 +16,6 @@ import {
   getRecipeSuggestion,
   getStepBlocker,
   hasPlantillaMolde,
-  isWizardStepDone,
   personAvatarHue,
   personAvatarInitial,
   type RecipeSelectionSlice,
@@ -453,7 +452,13 @@ export default function StoryRecipeBuilder({
         </div>
         <ol className="recipe-wizard__steps">
           {wizardSteps.map((step, index) => {
-            const done = index < stepIndex || isWizardStepDone(step, selection);
+            const passed = index < stepIndex;
+            const filled =
+              passed ||
+              (step.zoneKey
+                ? selection[step.zoneKey].length > 0
+                : step.id === "extras" || step.id === "review");
+            const done = passed || (index !== stepIndex && filled);
             const active = index === stepIndex;
             const clickable = index < stepIndex;
 
@@ -516,7 +521,7 @@ export default function StoryRecipeBuilder({
 
             <div className="recipe-summary">
               <div className="recipe-summary__cover" aria-hidden="true">
-                <BrandMark id="brand-mark-recipe" variant="compact" />
+                <BrandIllustration variant="recipe" />
               </div>
               <div className="recipe-summary__body">
                 <p className="recipe-summary__label">Así quedará</p>
@@ -565,44 +570,46 @@ export default function StoryRecipeBuilder({
         ) : null}
       </section>
 
-      <footer className="recipe-wizard__footer">
-        <button
-          type="button"
-          className="recipe-wizard__nav recipe-wizard__nav--back"
-          disabled={stepIndex === 0}
-          onClick={goBack}
-        >
-          ← Atrás
-        </button>
+      <div className="recipe-wizard__dock">
+        <footer className="recipe-wizard__footer">
+          <button
+            type="button"
+            className="recipe-wizard__nav recipe-wizard__nav--back"
+            disabled={stepIndex === 0}
+            onClick={goBack}
+          >
+            ← Atrás
+          </button>
 
-        {isReviewStep ? (
-          <button
-            type="button"
-            className={`recipe-generate recipe-wizard__nav recipe-wizard__nav--next${canGenerate ? " recipe-generate--ready" : ""}`}
-            disabled={!canGenerate}
-            onClick={() =>
-              flashNotice("La generación con IA llega en la siguiente fase ✨")
-            }
-          >
-            {canGenerate ? "✨ Crear mi cuento" : blocker}
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="recipe-wizard__nav recipe-wizard__nav--next"
-            disabled={
-              !isExtrasStep &&
-              !currentStep.optional &&
-              Boolean(stepBlocker)
-            }
-            onClick={goNext}
-          >
-            {isExtrasStep || (currentStep.optional && stepBlocker)
-              ? "Omitir y continuar →"
-              : "Siguiente →"}
-          </button>
-        )}
-      </footer>
+          {isReviewStep ? (
+            <button
+              type="button"
+              className={`recipe-generate recipe-wizard__nav recipe-wizard__nav--next${canGenerate ? " recipe-generate--ready" : ""}`}
+              disabled={!canGenerate}
+              onClick={() =>
+                flashNotice("La generación con IA llega en la siguiente fase ✨")
+              }
+            >
+              {canGenerate ? "✨ Crear mi cuento" : blocker}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="recipe-wizard__nav recipe-wizard__nav--next"
+              disabled={
+                !isExtrasStep &&
+                !currentStep.optional &&
+                Boolean(stepBlocker)
+              }
+              onClick={goNext}
+            >
+              {isExtrasStep || (currentStep.optional && stepBlocker)
+                ? "Omitir y continuar →"
+                : "Siguiente →"}
+            </button>
+          )}
+        </footer>
+      </div>
 
       {!isReviewStep ? (
         <p className="crear-footnote mt-2 text-center text-xs">

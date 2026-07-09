@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import BrandMark from "@/components/BrandMark";
+import BrandIllustration from "@/components/BrandIllustration";
 import CrearHub, { type CrearHubOption } from "@/components/CrearHub";
+import CrearPageActions from "@/components/CrearPageActions";
 import {
   familyProfileEssentialSchema,
   type FamilyProfileDocument,
@@ -110,7 +111,7 @@ export default async function CrearPage() {
     <main className="crear-main mx-auto max-w-2xl px-4 py-6 pb-12 sm:px-6 sm:py-8">
       <header className="crear-hero text-center">
         <div className="crear-hero__mark" aria-hidden="true">
-          <BrandMark id="brand-mark-crear" variant="compact" />
+          <BrandIllustration variant="crear" />
         </div>
         <p className="crear-hero__eyebrow">Crear con IA</p>
         <h1 className="title-display crear-hero__title">Tu cuento, tu familia</h1>
@@ -142,14 +143,7 @@ export default async function CrearPage() {
         La IA escribe pronto · hoy puedes armar la receta y tu perfil.
       </p>
 
-      <p className="mt-6 text-center">
-        <Link
-          href="/"
-          className="text-sm font-semibold text-cream-muted hover:text-honey-glow"
-        >
-          ← Volver a mi biblioteca
-        </Link>
-      </p>
+      <CrearPageActions showCrear={false} />
     </main>
   );
 }

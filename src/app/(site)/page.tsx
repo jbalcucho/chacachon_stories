@@ -1,4 +1,4 @@
-import BrandMark from "@/components/BrandMark";
+import BrandIllustration from "@/components/BrandIllustration";
 import StoryBookshelf from "@/components/StoryBookshelf";
 import { getLibraryStories } from "@/lib/stories";
 
@@ -13,11 +13,7 @@ export default async function HomePage({
   return (
     <main className="home-main mx-auto max-w-5xl px-4 py-4 pb-8 sm:px-6 sm:py-6 sm:pb-10">
       <header className="home-hero mb-4 text-center sm:mb-5">
-        <div className="brand-mark-wrap" aria-hidden="true">
-          <span className="brand-mark-star brand-mark-star--a">✦</span>
-          <BrandMark id="brand-mark-hero" variant="hero" />
-          <span className="brand-mark-star brand-mark-star--b">✧</span>
-        </div>
+        <BrandIllustration variant="hero" priority />
         <h1 className="title-display text-3xl sm:text-5xl">
           Las histor
           <span className="title-ia" title="Historias con inteligencia artificial">

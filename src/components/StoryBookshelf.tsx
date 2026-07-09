@@ -9,9 +9,10 @@ import StoryBook from "@/components/StoryBook";
 import type { StoryCard } from "@/lib/stories";
 import { CREATE_STORY_SLUG } from "@/lib/create-story";
 import {
+  getBalancedStackedSides,
   getCircularOffset,
-  getStackedSides,
   initialActiveIndex,
+  isStackSpacer,
   nextCarouselIndex,
   prevCarouselIndex,
 } from "@/lib/book-carousel";
@@ -189,7 +190,37 @@ export default function StoryBookshelf({
   const activeOpenPath = activeStory?.openPath ?? null;
   const canOpenActive = Boolean(activeOpenPath);
 
-  const { left, right } = getStackedSides(stories, activeIndex);
+  const { left, right } = getBalancedStackedSides(stories, activeIndex);
+  const leftBookCount = left.filter((entry) => !isStackSpacer(entry)).length;
+  const rightBookCount = right.filter((entry) => !isStackSpacer(entry)).length;
+
+  function renderStackEntry(
+    entry: (typeof left)[number],
+    bookCount: number,
+  ) {
+    if (isStackSpacer(entry)) {
+      return (
+        <span
+          key={entry.key}
+          className="book-spine-stack__item book-spine-stack__spacer"
+          aria-hidden="true"
+        >
+          <span className="book-spine-stack__spine" />
+        </span>
+      );
+    }
+
+    return (
+      <BookSpine
+        key={entry.story.slug}
+        story={entry.story}
+        narrow={bookCount >= 4}
+        onClick={() => {
+          if (!isBookTransitioning) navigateTo(entry.index);
+        }}
+      />
+    );
+  }
 
   function handleActiveClick() {
     if (isBookTransitioning) return;
@@ -222,8 +253,11 @@ export default function StoryBookshelf({
           </Link>
         </div>
         <p className="bookshelf-hint hidden text-center text-xs sm:block sm:text-right">
-          Toca un lomo o las flechas · el libro del centro se abre con otro clic ·
-          el dorado de la derecha crea tu cuento
+          Selecciona el libro que quieres leer o crea una nueva histor
+          <span className="title-ia" title="Historia con inteligencia artificial">
+            IA
+          </span>
+          .
         </p>
       </div>
 
@@ -251,16 +285,7 @@ export default function StoryBookshelf({
                 data-count={left.length}
                 role="presentation"
               >
-                {left.map((item) => (
-                  <BookSpine
-                    key={item.story.slug}
-                    story={item.story}
-                    narrow={left.length >= 4}
-                    onClick={() => {
-                      if (!isBookTransitioning) navigateTo(item.index);
-                    }}
-                  />
-                ))}
+                {left.map((entry) => renderStackEntry(entry, leftBookCount))}
               </div>
 
               <div className="library-cubby__center" role="listitem">
@@ -286,20 +311,11 @@ export default function StoryBookshelf({
                 data-count={right.length}
                 role="presentation"
               >
-                {right.map((item) => (
-                  <BookSpine
-                    key={item.story.slug}
-                    story={item.story}
-                    narrow={right.length >= 4}
-                    onClick={() => {
-                      if (!isBookTransitioning) navigateTo(item.index);
-                    }}
-                  />
-                ))}
+                {right.map((entry) => renderStackEntry(entry, rightBookCount))}
               </div>
-
-              <CreateStorySlot />
             </div>
+            <CreateStorySlot variant="mirror" />
+            <CreateStorySlot variant="primary" />
             <div className="library-cubby__shelf" aria-hidden="true" />
           </div>
           <div className="library-cubby__base" aria-hidden="true" />
@@ -317,8 +333,11 @@ export default function StoryBookshelf({
       </div>
 
       <p className="bookshelf-hint-mobile sm:hidden">
-        Toca un lomo, desliza o usa las flechas · el dorado de la derecha es para
-        crear
+        Selecciona el libro que quieres leer o crea una nueva histor
+        <span className="title-ia" title="Historia con inteligencia artificial">
+          IA
+        </span>
+        .
       </p>
 
       {activeStory ? (

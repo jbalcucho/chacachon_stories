@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import BrandMark from "@/components/BrandMark";
+import BrandIllustration from "@/components/BrandIllustration";
 import LoginButton from "@/components/LoginButton";
 
 export default function SiteHeader() {
@@ -39,7 +39,7 @@ export default function SiteHeader() {
     >
       <div className="site-header__inner mx-auto flex max-w-3xl items-center justify-between gap-2 px-4 py-2 sm:gap-3 sm:px-5 sm:py-3">
         <Link href="/" className="site-header__brand min-w-0">
-          <BrandMark id="brand-mark-hdr" variant="compact" />
+          <BrandIllustration variant="compact" />
           <div className="min-w-0">
             <p className="font-display truncate text-sm font-bold text-honey-glow sm:text-lg">
               Chacachón

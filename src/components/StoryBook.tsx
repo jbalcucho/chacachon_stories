@@ -29,12 +29,19 @@ export default function StoryBook({
   const bookInner = (
     <>
       <div
-        className={`book-spine bg-gradient-to-b ${theme.spine}`}
+        className={`book-spine bg-gradient-to-b ${theme.spine}${featured ? " book-spine--shelf" : ""}`}
         aria-hidden="true"
       >
-        <span className="book-spine-text">
-          {story.title.split(/\s+/).slice(0, 2).join(" ")}
-        </span>
+        {featured ? (
+          <>
+            <span className="book-spine__ridge" aria-hidden="true" />
+            <span className="book-spine__pages" aria-hidden="true" />
+          </>
+        ) : (
+          <span className="book-spine-text">
+            {story.title.split(/\s+/).slice(0, 2).join(" ")}
+          </span>
+        )}
       </div>
       <div
         className={`book-cover bg-gradient-to-br ${theme.cover} ring-1`}

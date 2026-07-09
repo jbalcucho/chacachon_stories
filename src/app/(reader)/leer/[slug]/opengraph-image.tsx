@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { OG_NIGHT_BG, OgBrandMark } from "@/lib/og-brand-mark";
+import { OG_NIGHT_BG, OgBrandIllustration } from "@/lib/og-brand-mark";
 import { getPublishedStoryBySlug } from "@/lib/stories";
 
 export const alt = "Un cuento de la familia Chacachón";
@@ -31,7 +31,7 @@ export default async function OpengraphImage({ params }: ImageProps) {
           fontFamily: "sans-serif",
         }}
       >
-        <OgBrandMark size={200} />
+        <OgBrandIllustration height={220} />
         <div
           style={{
             display: "flex",
