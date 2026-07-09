@@ -82,6 +82,15 @@ export const storyTheme: Record<string, BookTheme> = {
     accent: "text-purple-100",
     glow: "192, 132, 252",
   },
+  "crear-cuento": {
+    id: "create",
+    emoji: "✨",
+    spine: "from-[#fbbf24] to-[#b45309]",
+    cover:
+      "from-[#fde68a] via-[#fbbf24] to-[#f59e0b] ring-[#fef08a]/65",
+    accent: "text-amber-950",
+    glow: "251, 191, 36",
+  },
 };
 
 export const variantTheme: Record<string, BookTheme> = {

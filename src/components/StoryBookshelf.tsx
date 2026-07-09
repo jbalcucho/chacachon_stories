@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import BookSpine from "@/components/BookSpine";
 import StoryBook from "@/components/StoryBook";
 import type { StoryCard } from "@/lib/stories";
+import { isCreateStoryCard, withCreateStorySlot } from "@/lib/create-story";
 import {
   getCircularOffset,
   getStackedSides,
@@ -66,8 +68,9 @@ export default function StoryBookshelf({
   initialSlug = null,
 }: Props) {
   const router = useRouter();
+  const shelfStories = useMemo(() => withCreateStorySlot(stories), [stories]);
   const [activeIndex, setActiveIndex] = useState(() =>
-    resolveInitialIndex(stories, initialSlug),
+    resolveInitialIndex(shelfStories, initialSlug),
   );
   const [slideDirection, setSlideDirection] = useState<SlideDirection>("right");
   const [isBookLeaving, setIsBookLeaving] = useState(false);
@@ -76,7 +79,7 @@ export default function StoryBookshelf({
   const transitionTimers = useRef<number[]>([]);
   const skipUrlSync = useRef(true);
 
-  const count = stories.length;
+  const count = shelfStories.length;
   const canCycle = count > 1;
   const isBookTransitioning = isBookLeaving || isBookEntering;
 
@@ -97,12 +100,12 @@ export default function StoryBookshelf({
 
   const persistSelection = useCallback(
     (index: number) => {
-      const slug = stories[index]?.slug;
+      const slug = shelfStories[index]?.slug;
       if (!slug) return;
       saveActiveSlug(slug);
       router.replace(`/?libro=${encodeURIComponent(slug)}`, { scroll: false });
     },
-    [router, stories],
+    [router, shelfStories],
   );
 
   useEffect(() => {
@@ -110,18 +113,18 @@ export default function StoryBookshelf({
       skipUrlSync.current = false;
       return;
     }
-    const index = indexForSlug(stories, initialSlug ?? null);
+    const index = indexForSlug(shelfStories, initialSlug ?? null);
     if (index !== null) {
       setActiveIndex(index);
     }
-  }, [initialSlug, stories]);
+  }, [initialSlug, shelfStories]);
 
   useEffect(() => {
     if (initialSlug) return;
     const saved = readSavedSlug();
-    if (!saved || !stories.some((story) => story.slug === saved)) return;
+    if (!saved || !shelfStories.some((story) => story.slug === saved)) return;
     router.replace(`/?libro=${encodeURIComponent(saved)}`, { scroll: false });
-  }, [initialSlug, router, stories]);
+  }, [initialSlug, router, shelfStories]);
 
   const changeActiveIndex = useCallback(
     (index: number) => {
@@ -182,11 +185,12 @@ export default function StoryBookshelf({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [goPrev, goNext]);
 
-  const activeStory = stories[activeIndex];
+  const activeStory = shelfStories[activeIndex];
   const activeOpenPath = activeStory?.openPath ?? null;
   const canOpenActive = Boolean(activeOpenPath);
+  const activeIsCreate = activeStory ? isCreateStoryCard(activeStory) : false;
 
-  const { left, right } = getStackedSides(stories, activeIndex);
+  const { left, right } = getStackedSides(shelfStories, activeIndex);
 
   function handleActiveClick() {
     if (isBookTransitioning) return;
@@ -212,7 +216,12 @@ export default function StoryBookshelf({
   return (
     <section className="bookshelf-section" aria-label={label}>
       <div className="bookshelf-header flex-col items-center gap-1 sm:flex-row sm:items-baseline sm:gap-4">
-        <p className="bookshelf-label">{label}</p>
+        <div className="flex flex-col items-center gap-1 sm:flex-row sm:items-baseline sm:gap-3">
+          <p className="bookshelf-label">{label}</p>
+          <Link href="/crear" className="bookshelf-create-link">
+            ✨ Crear cuento
+          </Link>
+        </div>
         <p className="bookshelf-hint hidden text-center text-xs sm:block sm:text-right">
           Toca un lomo o las flechas · el libro del centro se abre con otro clic
         </p>
@@ -314,7 +323,9 @@ export default function StoryBookshelf({
           <span className="text-honey-glow font-bold">{activeStory.title}</span>
           {" · "}
           {canOpenActive
-            ? "Clic de nuevo para abrir el cuento"
+            ? activeIsCreate
+              ? "Clic de nuevo para crear tu cuento"
+              : "Clic de nuevo para abrir el cuento"
             : "Próximamente en la biblioteca"}
         </p>
       ) : null}

@@ -5,6 +5,7 @@ import {
   getBookTheme,
   isStorySoon,
 } from "@/lib/book-theme";
+import { isCreateStoryCard } from "@/lib/create-story";
 
 type Props = {
   story: StoryCard;
@@ -22,6 +23,7 @@ export default function StoryBook({
   onClick,
 }: Props) {
   const isSoon = isStorySoon(story.status, story.openPath);
+  const isCreate = isCreateStoryCard(story);
   const theme = getBookTheme(story);
 
   const bookInner = (
@@ -41,10 +43,12 @@ export default function StoryBook({
           <span className="book-emoji" aria-hidden="true">
             {theme.emoji}
           </span>
-          {!isSoon ? (
+          {!isSoon && !isCreate ? (
             <span className={`book-badge ${theme.accent}`}>
               {variantLabel(story.variant)}
             </span>
+          ) : isCreate ? (
+            <span className="book-badge book-badge--create">IA ✨</span>
           ) : (
             <span className="book-badge book-badge--soon">Pronto ✨</span>
           )}
@@ -54,7 +58,11 @@ export default function StoryBook({
           <p className="book-moraleja">{story.moraleja}</p>
         ) : null}
         <p className="book-cta">
-          {isSoon ? "En preparación" : "Abrir cuento"}
+          {isCreate
+            ? "Crear cuento ✨"
+            : isSoon
+              ? "En preparación"
+              : "Abrir cuento"}
         </p>
       </div>
     </>
@@ -64,7 +72,7 @@ export default function StoryBook({
     return (
       <button
         type="button"
-        className={`book book--featured book--theme-${theme.id}${isSoon ? " book--soon" : ""}${entering ? " book--entering" : ""}${leaving ? " book--leaving" : ""}`}
+        className={`book book--featured book--theme-${theme.id}${isCreate ? " book--create" : ""}${isSoon ? " book--soon" : ""}${entering ? " book--entering" : ""}${leaving ? " book--leaving" : ""}`}
         style={bookGlowStyle(theme)}
         onClick={onClick}
         aria-current="true"
