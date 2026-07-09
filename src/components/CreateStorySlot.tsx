@@ -23,7 +23,7 @@ export default function CreateStorySlot() {
         <span className="library-create-slot__sparkle" aria-hidden="true">
           ✦
         </span>
-        <span className="library-create-slot__label">Nuevo</span>
+        <span className="library-create-slot__label">Nuevo Cuento</span>
       </span>
     </Link>
   );
