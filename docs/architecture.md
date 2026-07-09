@@ -118,4 +118,4 @@ Rutas protegidas (middleware): `/familia/*`, `/admin/*` (Sprint 1+).
 
 ---
 
-*Última actualización: julio 2026 — ilustración de marca, estante simétrico, CI en GitHub Actions.*
+*Última actualización: julio 2026 — ilustración de marca y estante simétrico.*
