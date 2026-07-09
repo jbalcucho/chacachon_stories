@@ -15,6 +15,11 @@ const contentSecurityPolicy = [
 ].join("; ");
 
 const config: NextConfig = {
+  // Los cuentos se leen con readFile en runtime; sin esto Vercel no los empaqueta
+  // en la función serverless y /leer/[slug] falla con ENOENT en producción.
+  outputFileTracingIncludes: {
+    "/leer/[slug]": ["./cuentos/**/*"],
+  },
   async redirects() {
     return storyRedirects.map((entry) => ({
       source: entry.source,

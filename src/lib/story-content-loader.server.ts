@@ -11,5 +11,11 @@ export function resolveStoryFilePath(filePath: string): string {
 export async function readStorySourceFile(slug: string): Promise<string | null> {
   const source = getStoryContentSource(slug);
   if (!source) return null;
-  return readFile(resolveStoryFilePath(source.filePath), "utf8");
+  try {
+    return await readFile(resolveStoryFilePath(source.filePath), "utf8");
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") return null;
+    throw error;
+  }
 }
