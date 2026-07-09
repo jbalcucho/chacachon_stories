@@ -26,7 +26,7 @@ La plataforma utilizará una arquitectura Serverless orientada a despliegues ág
 
 * **Frontend y Backend:** Next.js (React) con TypeScript.  
 * **Entorno de Desarrollo:** Cursor (IDE impulsado por IA para mayor velocidad de codificación).  
-* **Infraestructura y Base de Datos:** Vercel para despliegue web, y Supabase (PostgreSQL) para Auth, BD y almacenamiento de imágenes estáticas.  
+* **Infraestructura y Base de Datos:** Vercel para despliegue web; **Neon Postgres + Prisma** para BD; **NextAuth (Google OAuth)** para auth. Stack canónico en [StackTecnico.md](./StackTecnico.md).  
 * **Motores de Inteligencia Artificial:** Claude 4.5 Opus o Llama 3.3 para generación de texto con alta coherencia de dialectos locales; Midjourney para la generación de arte estático.
 
 ## **4\. Estructura de la Base de Datos (Core de los Demos)**
@@ -58,7 +58,7 @@ El principal canal de adquisición de usuarios será orgánico, a través de la 
 | Hardware (Micrófono USB para YouTube) | $300.000 (Pago único) |
 | Dominio Web (.com o .com.co) | $48.000 (Anual) |
 | Suscripciones Mes 1 (Midjourney, Cursor, APIs, CapCut) | $260.000 |
-| Alojamiento e Infraestructura Nube (Vercel/Supabase) | $0 (Capas gratuitas) |
+| Alojamiento e Infraestructura Nube (Vercel/Neon) | $0 (Capas gratuitas) |
 | **Inversión Total Aproximada para Salida a Producción** | **$608.000 COP** |
 
 ## **7\. Prompts de Generación (Ejemplos Maestros)**

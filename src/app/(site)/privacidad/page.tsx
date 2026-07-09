@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacidad",
@@ -17,14 +18,19 @@ export default function PrivacidadPage() {
       </p>
       <p className="mt-4">
         Los datos se almacenan de forma segura en nuestra base de datos (Neon
-        Postgres). No vendemos información personal. Puedes solicitar exportar o
-        eliminar tu cuenta y datos en cualquier momento escribiendo al
-        administrador del servicio.
+        Postgres). No vendemos información personal.
+      </p>
+      <p className="mt-4">
+        Si tienes cuenta, puedes{" "}
+        <Link href="/familia" className="font-sans font-semibold text-honey-glow underline">
+          exportar o eliminar tus datos
+        </Link>{" "}
+        desde la página Mi familia (Ley 1581 de 2012 — Habeas Data Colombia).
+        También puedes escribir al administrador del servicio.
       </p>
       <p className="mt-4">
         Esta es una versión piloto. El texto legal definitivo se publicará antes
-        del lanzamiento comercial, en cumplimiento de la Ley 1581 de 2012
-        (Habeas Data Colombia).
+        del lanzamiento comercial.
       </p>
     </main>
   );

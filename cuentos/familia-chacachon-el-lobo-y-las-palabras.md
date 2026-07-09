@@ -1,3 +1,8 @@
+---
+slug: el-lobo-y-las-palabras
+familyTag: chacachon
+---
+
 # El lobo de las palabras feas
 
 > Versión narrativa · Cerditos + Caperucita · Familia Chacachón  

@@ -1,3 +1,8 @@
+---
+slug: cerditos-del-edificio
+familyTag: chacachon
+---
+
 # Los Tres Cerditos del Apartamento y la Caperucita del Edificio
 
 > Cuento mezclado (Cerditos + Caperucita) · Familia Chacachón · Acento ñero/rolo básico · Tier 1  

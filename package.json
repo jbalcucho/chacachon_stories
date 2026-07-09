@@ -3,12 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "sync:cuentos": "node scripts/sync-story-manifest.mjs",
+    "validate:catalog": "node scripts/validate-story-catalog.mjs",
+    "predev": "node scripts/sync-story-manifest.mjs && node scripts/validate-story-catalog.mjs",
     "dev": "next dev --turbopack",
+    "prebuild": "node scripts/sync-story-manifest.mjs && node scripts/validate-story-catalog.mjs",
     "build": "prisma generate && next build",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx --env-file=.env prisma/seed.ts",
@@ -26,6 +32,7 @@
     "next-auth": "^4.24.11",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "server-only": "^0.0.1",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -39,7 +46,8 @@
     "prisma": "^5.22.0",
     "tailwindcss": "^4",
     "tsx": "^4.19.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   },
   "engines": {
     "node": ">=20.0.0"

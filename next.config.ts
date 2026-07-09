@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
+import storyRedirects from "./src/data/story-redirects.json";
 
-const contentSecurityPolicyReportOnly = [
+const contentSecurityPolicy = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
@@ -14,6 +15,13 @@ const contentSecurityPolicyReportOnly = [
 ].join("; ");
 
 const config: NextConfig = {
+  async redirects() {
+    return storyRedirects.map((entry) => ({
+      source: entry.source,
+      destination: entry.destination,
+      permanent: true,
+    }));
+  },
   async headers() {
     return [
       {
@@ -27,8 +35,8 @@ const config: NextConfig = {
             value: "camera=(), microphone=(), geolocation=()",
           },
           {
-            key: "Content-Security-Policy-Report-Only",
-            value: contentSecurityPolicyReportOnly,
+            key: "Content-Security-Policy",
+            value: contentSecurityPolicy,
           },
         ],
       },

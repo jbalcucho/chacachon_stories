@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El día sin pantallas de Nico · Familia Chacachón</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0f2420;
+      --text: #e8f6f1;
+      --text-soft: #9ec9bc;
+      --accent: #2dd4bf;
+      --accent-soft: #99f6e4;
+      --warm: #ffe9b8;
+      --font-size: 1.35rem;
+      --line: 1.85;
+      --max-width: 56rem;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      font-size: 18px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Literata", Georgia, "Times New Roman", serif;
+      font-size: var(--font-size);
+      line-height: var(--line);
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 95% 50% at 50% -8%, rgba(45, 212, 191, 0.22) 0%, transparent 55%),
+        radial-gradient(circle at 12% 80%, rgba(255, 233, 184, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 90% 35%, rgba(20, 184, 166, 0.12) 0%, transparent 38%),
+        var(--bg-deep);
+    }
+
+    .rain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.35;
+      background-image:
+        radial-gradient(1.5px 1.5px at 14% 20%, rgba(255,255,255,0.55), transparent),
+        radial-gradient(1px 1px at 32% 48%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1.5px 1.5px at 58% 16%, rgba(255,233,184,0.55), transparent),
+        radial-gradient(1px 1px at 74% 62%, rgba(255,255,255,0.35), transparent),
+        radial-gradient(1.5px 1.5px at 88% 28%, rgba(255,255,255,0.5), transparent);
+      z-index: 0;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      background: rgba(15, 36, 32, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.95rem;
+    }
+
+    .toolbar-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-shrink: 0;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid rgba(45, 212, 191, 0.4);
+      background: rgba(45, 212, 191, 0.12);
+      color: var(--accent-soft);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.88rem;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .toolbar-back:hover { background: rgba(45, 212, 191, 0.24); }
+    .toolbar-back:active { transform: scale(0.96); }
+
+    .toolbar-fonts {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-left: auto;
+    }
+
+    .toolbar span { color: var(--text-soft); }
+
+    .toolbar button {
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 700;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 1px solid rgba(45, 212, 191, 0.4);
+      border-radius: 50%;
+      background: rgba(45, 212, 191, 0.12);
+      color: var(--accent-soft);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .toolbar button:hover { background: rgba(45, 212, 191, 0.24); }
+    .toolbar button:active { transform: scale(0.96); }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+      background: rgba(45, 212, 191, 0.16);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: clamp(1.65rem, 4.8vw, 2.25rem);
+      font-weight: 700;
+      line-height: 1.25;
+      margin: 0 0 0.75rem;
+      color: #fff;
+    }
+
+    .subtitle {
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 1rem;
+      color: var(--text-soft);
+      margin: 0;
+    }
+
+    article p {
+      margin: 0 0 1.6em;
+      text-align: left;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+
+    article p:last-child {
+      margin-bottom: 0;
+      padding-top: 0.5rem;
+      color: var(--warm);
+      font-weight: 600;
+      white-space: pre-line;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      font-family: "Nunito", system-ui, sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      opacity: 0.7;
+    }
+
+    @media (min-width: 768px) {
+      html { font-size: 20px; }
+      main { padding: 3rem 2rem 5rem; }
+    }
+
+    @media print {
+      body { background: white; color: #111; }
+      .rain, .toolbar { display: none; }
+      main { max-width: none; padding: 1rem; }
+      header { border-color: #ccc; }
+      h1 { color: #111; }
+      article p:last-child { color: #333; }
+    }
+  </style>
+</head>
+<body>
+  <div class="rain" aria-hidden="true"></div>
+
+  <nav class="toolbar" aria-label="Lectura">
+    <a class="toolbar-back" href="/">← Biblioteca</a>
+    <div class="toolbar-fonts" role="group" aria-label="Tamaño de letra">
+      <button type="button" id="smaller" title="Letra más pequeña" aria-label="Letra más pequeña">A−</button>
+      <span id="size-label">Letra amplia</span>
+      <button type="button" id="larger" title="Letra más grande" aria-label="Letra más grande">A+</button>
+    </div>
+  </nav>
+
+  <main>
+    <header>
+      <div class="badge">Chacachón · Apartamento</div>
+      <h1>El día sin pantallas de Nico</h1>
+      <p class="subtitle">Para leer en voz alta · Un domingo en familia</p>
+    </header>
+
+    <article id="story">
+      <p>Había un domingo en Bogotá que empezó como casi todos los domingos: con Bingo ladrando a las cinco y media, Josefina zumbando por el pasillo como si el mundo se acabara si no barría, y Nico ya con la mano buscando la tablet antes de abrir bien los ojos.</p>
+
+      <p>El apartamento olía a café de Pauleta y a pan tostado. Afuera, Chapinero todavía bostezaba: un bus lejos, una llovizna fina en la ventana, el edificio quieto como quien no quiere despertar. Simónchin apareció en chanclas — porque en esa casa las chanclas ganan siempre — con un peluche bajo el brazo y la cara de quien espera que el día sea largo y bueno.</p>
+
+      <p>Nico no miró la llovizna. Miró la pantalla. —Bro —dijo, sin saludar—, solo un ratito. Es que ayer me quedé a un nivel. Pauleta, desde la cocina, no levantó la voz. Solo dijo, con esa calma que a veces pesa más que un grito: —Hoy no, mi vida. Hoy es el día sin pantallas de Nico.</p>
+
+      <p>El silencio que siguió fue más fuerte que el ladrido de Bingo. —¿Todo el día? —preguntó Nico, y la voz le salió más chiquita de lo que quería—. ¿En serio? ¿Ni YouTube? ¿Ni un poquito?</p>
+
+      <p>Chacachón, que estaba mirando el partido en mute — porque los papás también tienen pantallas, parce —, apagó el televisor con un clic. Se quedó un segundo mirando el rectángulo negro, como si él también se estuviera quitando algo.</p>
+
+      <p>—Todo el día —dijo—. Tú, yo, mamá, Simónchin. Sin tablet. Sin tele. Sin celular de juegos. Solo nosotros. Y si te pones bravo, igual. Así es. Simónchin levantó el peluche como bandera. —¡De una! —gritó—. Yo sí quiero. Yo tengo mil ideas. Nico no tenía mil ideas. Tenía un hueco en el pecho del tamaño de una pantalla apagada.</p>
+
+      <p>La primera hora fue una boleta.</p>
+
+      <p>Nico se sentó en el sofá y miró la mesa. Miró la pared. Miró a Josefina chocar con una silla. Suspiró tan fuerte que Mora se escondió detrás de Pauleta. —No hay nada que hacer —dijo—. Este día es injusto. Pauleta se agachó a su altura. Le peinó el pelo con los dedos, despacio, como cuando él era más chiquito y el mundo cabía en un abrazo. —Hay de todo —susurró—. Solo que ahora no brilla. A veces lo que más brilla no se enchufa.</p>
+
+      <p>Chacachón sacó una caja de Legos del closet. No la más nueva. La vieja. La que tenía piezas perdidas y un carrito sin rueda.</p>
+
+      <p>—Misión —dijo, con voz de papá chistoso pero ojos serios—. Construimos el TransMilenio más raro de Bogotá. Si queda feo, mejor. Si queda melo, también. Nico cruzó los brazos. —No quiero. Simónchin ya estaba en el piso, chanclas y todo, armando una estación con tapas de botellas. —Nico —dijo el hermanito, sin levantar la vista—, si no vienes, el bus se va sin ti.</p>
+
+      <p>Eso dolió un poquito. Porque Simónchin siempre lo seguía a él. Y ahora era al revés. Nico se sentó en el piso, lejos. Luego un poco más cerca. Luego puso una pieza. Solo una. Roja.</p>
+
+      <p>El TransMilenio quedó torcido, con una rueda de más y un letrero de cartón que decía *NO HAY TRANCÓN HOY*. Bingo se acostó encima y casi lo aplasta. Se rieron. Hasta Nico. Una risa corta, como quien prueba si todavía sabe.</p>
+
+      <p>Después del almuerzo — arepa, huevo, y esa paz rara de no pelear por la tablet —, Pauleta dijo: —Vamos al parque. Chanclas. Chaqueta. Sin pantallas en la maleta, parce. Ni escondidas.</p>
+
+      <p>El parque de Chapinero estaba mojado por la llovizna, brillante como si alguien hubiera limpiado el mundo a propósito. Había niños corriendo, un señor vendiendo helados, y un perro que no era Bingo ladrando a las palomas. Nico se quedó en la orilla del pasto, con las manos en los bolsillos. —Allá no hay nada —murmuró. Chacachón se sentó a su lado en una banca fría.</p>
+
+      <p>—Mira bien —dijo—. ¿Ves a ese chino del columpio? Está esperando que alguien lo empuje. ¿Ves el charco? Parece un lago si te agachas. ¿Ves a tu hermano? Ya se cayó dos veces y se está riendo. Simónchin venía corriendo, barro en las rodillas, ojos enormes. —¡Nico! ¡Ven! ¡Hay un charco gigante! Nico no quería. Quería la pantalla. Quería el nivel. Quería no sentir ese vacío raro.</p>
+
+      <p>Pero Simónchin le tendió la mano. Sucia. Pequeña. Temblando un poquito de frío y de emoción. Nico la tomó.</p>
+
+      <p>Corrieron. Saltaron el charco. Se mojaron los pantalones. Pauleta gritó desde lejos *¡las chanclas!* y ellos fingieron no oír. Bingo ladró a una paloma y Mora se pegó a la pierna de mamá, miedosa y feliz a la vez.</p>
+
+      <p>En un momento, Nico empujó a Simónchin en el columpio. Alto. Más alto. El hermanito gritaba *¡otra!* y *¡otra!* y la risa le salía del pecho como si no cupiera adentro. Nico empujaba, y de pronto se dio cuenta de algo que la tablet nunca le había mostrado tan claro:</p>
+
+      <p>el sonido de la risa de su hermano era más fuerte que cualquier video.</p>
+
+      <p>Se le hizo un nudo en la garganta. No lloró. Casi. Se limpió la nariz con la manga, como hacen los niños cuando el corazón se les adelanta a las palabras. —Bro —le dijo a Simónchin, voz ronca—, quedaste melo en el aire. —Tú también —respondió Simónchin—. Aunque estés bravo. Yo te vi.</p>
+
+      <p>De vuelta en el apartamento, el cielo de Bogotá se puso gris-lila, de esos que parecen un cuento. Chacachón sacó el balón. Jugaron en el pasillo — despacio, para no molestar a los vecinos — hasta que el portero tocó y les dijo *pilas con el ruido*, y ellos bajaron la voz y siguieron igual, porque a veces la felicidad también se puede susurrar.</p>
+
+      <p>Pauleta puso música bajita en la cocina. No era YouTube. Era una canción vieja que a ella le gustaba. Bailó un paso con Simónchin. Después miró a Nico. —¿Me acompañas, mi rey? Nico se puso colorado. —Ay, mamá…</p>
+
+      <p>Pero le dio la mano. Bailaron mal. Bailaron feo. Bailaron juntos. Chacachón los filmó… y no. No filmó. Guardó el celular en el bolsillo, como quien guarda un secreto bueno, y solo miró. Con esa cara de papá cansado que de pronto se le pone suave. —Quedó chimba —dijo, sin video que lo demuestre—. Yo me acuerdo.</p>
+
+      <p>Al final de la tarde, cuando Josefina ya dormía en su base y Bingo roncaba como un bus viejo, Nico se sentó en el sofá sin buscar nada. Simónchin se le pegó al costado. Pauleta les tapó las piernas con una cobija. Chacachón apagó la luz del pasillo.</p>
+
+      <p>Nadie dijo *enciendan la tablet*. Nadie lo necesitaba.</p>
+
+      <p>Nico miró por la ventana el edificio de enfrente, las ventanas prendidas una a una, como estrellas de apartamento. Pensó en todos los domingos que se le habían ido dentro de una pantalla. Pensó en la mano de Simónchin en el parque. Pensó en el baile tonto. Pensó en el TransMilenio de Legos torcido.</p>
+
+      <p>Y entonces, muy bajito, para que casi no se oyera: —Mamá… ¿mañana puedo… un poquito de tablet? Pauleta sonrió. No era una sonrisa de victoria. Era una sonrisa de alivio. De amor. De *te vi hoy de verdad*.</p>
+
+      <p>—Mañana sí, mi vida. Con medida. Pero hoy… hoy me gustó este Nico. El que empuja columpios. El que se moja. El que me baila aunque le dé pena. Nico apoyó la cabeza en el hombro de ella. —Hoy también me gustó —admitió—. Aunque al principio fue una boleta. Aunque me dio rabia. Aunque… aunque extrañé la pantalla.</p>
+
+      <p>Hizo una pausa. —Pero extrañé más esto. Y no sabía. Simónchin, medio dormido, murmuró: —Yo sí sabía. Por eso te agarré la mano. Chacachón se aclaró la garganta, porque a los papás a veces también se les hace nudo. —Operación Sin Pantallas: lista —dijo—. Medalla invisible. Pero vale más.</p>
+
+      <p>Esa noche, en la Operación A Dormir de siempre — pijama, dientes, chichi, poquita agua, chanclas, habitación, cama —, Nico hizo caso sin pelear. Antes de cerrar los ojos, miró la tablet apagada sobre el mueble. Ya no le parecía un enemigo. Tampoco un rey. Solo una cosa. Una cosa que podía esperar.</p>
+
+      <p>Porque el día le había dejado otra cosa más grande: el recuerdo de un charco, una risa, una mano sucia, un baile feo, y una familia entera que, por un domingo, se miró a los ojos.</p>
+
+      <p>Buenas noches, Nico. Buenas noches, Simónchin. Que mañana amanezcan con pilas… y con un pedacito de este día guardado en el pecho, donde no se necesita enchufe.</p>
+    </article>
+
+    <footer>Chacachón · Familia Chacachón</footer>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const labels = ["Pequeña", "Normal", "Amplia", "Muy amplia", "Extra grande"];
+    const sizes = ["1.1rem", "1.35rem", "1.55rem", "1.75rem", "2rem"];
+    let index = 1;
+
+    function updateSize() {
+      root.style.setProperty("--font-size", sizes[index]);
+      document.getElementById("size-label").textContent = "Letra " + labels[index].toLowerCase();
+    }
+
+    document.getElementById("larger").addEventListener("click", () => {
+      if (index < sizes.length - 1) {
+        index++;
+        updateSize();
+      }
+    });
+
+    document.getElementById("smaller").addEventListener("click", () => {
+      if (index > 0) {
+        index--;
+        updateSize();
+      }
+    });
+  </script>
+</body>
+</html>

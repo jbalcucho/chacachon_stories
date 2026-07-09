@@ -8,17 +8,17 @@ export default function LoginPage() {
       <div className="text-4xl" aria-hidden="true">
         🌙
       </div>
-      <h1 className="title-gradient mt-4 text-3xl font-extrabold">
+      <h1 className="title-display mt-4 text-3xl">
         Entrar a Chacachón
       </h1>
-      <p className="mt-4 font-serif text-sm leading-relaxed text-night-soft">
+      <p className="intro-copy mt-4 text-sm">
         Inicia sesión con Google para guardar el perfil de tu familia y
         personalizar cuentos. Leer la biblioteca no requiere cuenta.
       </p>
       <button
         type="button"
-        onClick={() => signIn("google", { callbackUrl: "/" })}
-        className="mt-8 rounded-xl border border-gold/30 bg-gold/15 px-6 py-3 text-sm font-bold text-gold-soft transition hover:bg-gold/25"
+        onClick={() => signIn("google", { callbackUrl: "/familia" })}
+        className="mt-8 rounded-xl border-2 border-honey/45 bg-honey/20 px-6 py-3 text-sm font-bold text-honey-glow transition hover:bg-honey/30"
       >
         Continuar con Google
       </button>

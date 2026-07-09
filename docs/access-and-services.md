@@ -29,14 +29,31 @@
 
 ## Lo que debes hacer tú (una vez)
 
-### 1. Google Cloud Console (si login falla)
+### 1. Google OAuth — error «Access blocked: This app's request is invalid»
 
-En el OAuth client de Google, agregar **Authorized redirect URIs**:
+Casi siempre falta el **redirect URI** de Chacachón en el cliente OAuth de Google (el mismo que usa rotatudisfraz).
 
-- `http://localhost:3000/api/auth/callback/google`
-- `https://TU-DOMINIO-VERCEL.vercel.app/api/auth/callback/google`
+1. Abre [Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials)
+2. Edita el **OAuth 2.0 Client ID** que usa rotatudisfraz (`GOOGLE_CLIENT_ID`)
+3. En **Authorized redirect URIs**, agrega **exactamente** (sin barra final):
 
-(Si rotatudisfraz ya usa `localhost:3000`, local puede funcionar sin cambios.)
+   ```
+   https://chacachon-stories.vercel.app/api/auth/callback/google
+   http://localhost:3000/api/auth/callback/google
+   ```
+
+4. Guarda y espera ~1 minuto. Vuelve a probar **Entrar** en prod.
+
+También verifica en [Vercel → chacachon-stories → Environment Variables](https://vercel.com/jose-balcuchos-projects/chacachon-stories/settings/environment-variables) (Production):
+
+| Variable | Valor correcto |
+|----------|----------------|
+| `NEXTAUTH_URL` | `https://chacachon-stories.vercel.app` |
+| `GOOGLE_CLIENT_ID` | mismo que rotatudisfraz |
+| `GOOGLE_CLIENT_SECRET` | mismo que rotatudisfraz (si falta, el login falla) |
+| `NEXTAUTH_SECRET` | cualquier string largo aleatorio |
+
+Después de cambiar variables en Vercel: **Deployments → Redeploy** el último deploy.
 
 ### 2. Vercel — primer deploy
 

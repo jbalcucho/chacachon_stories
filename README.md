@@ -16,10 +16,13 @@ npm run dev                  # http://localhost:3000
 
 | Ruta | Descripción |
 |------|-------------|
-| `/` | Biblioteca **Las historias de Chacachón** |
+| `/` | Biblioteca **Las historias de Chacachón** (estante interactivo) |
+| `/leer/[slug]` | Lector tipo libro (paginado por DOM, papel Cuento/Cuaderno, retoma página) |
+| `/familia` | Perfil familiar para personalizar los cuentos (requiere login) |
+| `/admin` | Catálogo interno de solo lectura (requiere rol `ADMIN`) |
 | `/login` | Entrar con Google |
 | `/privacidad` | Política de privacidad (piloto) |
-| `/cuentos/*.html` | Readers HTML (letra amplia) |
+| `/cuentos/*.html` | Readers HTML legacy (letra amplia) |
 
 ### Base de datos
 
@@ -54,4 +57,8 @@ Ver [docs/database.md](./docs/database.md) y [docs/architecture.md](./docs/archi
 
 ## Estado del proyecto
 
-**Sprint 0** — App Next.js con biblioteca, auth Google, schema Prisma y readers HTML en `public/cuentos/`. Siguiente: perfil familiar + interpolación en TypeScript.
+**Lector personalizado activo** — biblioteca interactiva, auth Google, perfil familiar (JSONB) con interpolación en TypeScript y lector tipo libro (`/leer/[slug]`) con paginación real por DOM, temas de papel (Cuento/Cuaderno), tipografía Fredoka, soporte de listas/cursiva en Markdown, `prefers-reduced-motion`, retomar la última página leída y Open Graph por cuento. CSP en modo enforce.
+
+**Cuentos publicados:** el lobo de las palabras, cerditos del edificio, operación a dormir, día sin pantallas de Nico. **En preparación (sin texto aún):** ascensor de las sorpresas, tren del bosque, misión Paloquemao, Chacachón en la luna — falta escribir el `.md` fuente antes de publicarlos.
+
+**Siguiente:** escribir los cuentos en preparación, catálogo editable en `/admin` y audios (ElevenLabs).

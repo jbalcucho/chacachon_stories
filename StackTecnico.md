@@ -209,8 +209,8 @@ Ver [GuiaAcentos.md](./GuiaAcentos.md). Default tier 1.
 
 | Sprint | Duración | Entregable | Estado |
 |---|---|---|---|
-| **0 — Setup** | 3–5 días | Next.js, Neon, Prisma, Vercel, biblioteca | ✅ en curso |
-| **1 — Familia** | 1–2 semanas | Perfil JSONB, API, interpolación TS | Pendiente |
+| **0 — Setup** | 3–5 días | Next.js, Neon, Prisma, Vercel, biblioteca | ✅ |
+| **1 — Familia** | 1–2 semanas | Perfil JSONB, API, interpolación TS, export/delete | ✅ base |
 | **2 — Reader** | 2 semanas | Reader React, acentos, audio | Pendiente |
 | **3 — Pagos** | 1–2 semanas | Wompi, gating premium | Pendiente |
 | **4 — Sharing** | 1 semana | OG tags WhatsApp | Pendiente |

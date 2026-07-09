@@ -331,4 +331,4 @@ Para probar tono en voz alta (con Mateo y Sofía como ejemplo):
 
 ---
 
-*Borrador de ejemplo — revisar en lectura en voz alta antes de insertar en Supabase.*
+*Borrador de ejemplo — revisar en lectura en voz alta antes de publicar (seed + HTML en `public/cuentos/`).*

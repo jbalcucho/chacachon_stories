@@ -67,7 +67,7 @@
       z-index: 10;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       gap: 0.75rem;
       padding: 0.85rem 1rem;
       background: rgba(15, 20, 35, 0.88);
@@ -75,6 +75,38 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       font-family: "Nunito", system-ui, sans-serif;
       font-size: 0.95rem;
+    }
+
+    .toolbar-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-shrink: 0;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 140, 66, 0.35);
+      background: rgba(255, 140, 66, 0.12);
+      color: var(--accent-soft);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.88rem;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .toolbar-back:hover {
+      background: rgba(255, 140, 66, 0.22);
+    }
+
+    .toolbar-back:active {
+      transform: scale(0.96);
+    }
+
+    .toolbar-fonts {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-left: auto;
     }
 
     .toolbar span {
@@ -211,10 +243,13 @@
 <body>
   <div class="stars" aria-hidden="true"></div>
 
-  <nav class="toolbar" aria-label="Tamaño de letra">
-    <button type="button" id="smaller" title="Letra más pequeña" aria-label="Letra más pequeña">A−</button>
-    <span id="size-label">Letra amplia</span>
-    <button type="button" id="larger" title="Letra más grande" aria-label="Letra más grande">A+</button>
+  <nav class="toolbar" aria-label="Lectura">
+    <a class="toolbar-back" href="/">← Biblioteca</a>
+    <div class="toolbar-fonts" role="group" aria-label="Tamaño de letra">
+      <button type="button" id="smaller" title="Letra más pequeña" aria-label="Letra más pequeña">A−</button>
+      <span id="size-label">Letra amplia</span>
+      <button type="button" id="larger" title="Letra más grande" aria-label="Letra más grande">A+</button>
+    </div>
   </nav>
 
   <main>

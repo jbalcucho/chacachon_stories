@@ -1,8 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Literata, Nunito } from "next/font/google";
-import { AuthProvider } from "@/components/AuthProvider";
-import SiteFooter from "@/components/SiteFooter";
-import SiteHeader from "@/components/SiteHeader";
+import { Fredoka, Nunito } from "next/font/google";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -11,9 +8,10 @@ const nunito = Nunito({
   variable: "--font-nunito",
 });
 
-const literata = Literata({
+const fredoka = Fredoka({
   subsets: ["latin"],
-  variable: "--font-literata",
+  variable: "--font-fredoka",
+  weight: ["500", "600", "700"],
 });
 
 const siteUrl = getSiteUrl();
@@ -40,7 +38,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#12141c",
+  themeColor: "#2a3d6e",
 };
 
 export default function RootLayout({
@@ -49,13 +47,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${nunito.variable} ${literata.variable}`}>
-      <body className="page-bg flex min-h-screen flex-col font-sans text-[#f4f0ea]">
-        <AuthProvider>
-          <SiteHeader />
-          <div className="flex-1">{children}</div>
-          <SiteFooter />
-        </AuthProvider>
+    <html lang="es" className={`${nunito.variable} ${fredoka.variable}`}>
+      <body className="page-bg flex min-h-screen flex-col font-sans text-cream">
+        {children}
       </body>
     </html>
   );

@@ -19,7 +19,7 @@ type Props = {
 };
 
 export default function StoryCardLink({ story }: Props) {
-  const isSoon = story.status !== "PUBLISHED" || !story.htmlPath;
+  const isSoon = story.status !== "PUBLISHED" || !story.openPath;
   const icon = variantIcon[story.variant] ?? "📖";
   const badgeClass =
     variantBadgeClass[story.variant] ?? "bg-white/10 text-night-soft";
@@ -53,7 +53,7 @@ export default function StoryCardLink({ story }: Props) {
 
   return (
     <Link
-      href={story.htmlPath!}
+      href={story.openPath!}
       className="group flex flex-col rounded-[1.25rem] border border-white/7 bg-night-card p-5 shadow-night transition hover:-translate-y-0.5 hover:border-gold/25 hover:bg-night-card-hover"
     >
       <div className="mb-3 flex items-start justify-between gap-3">
