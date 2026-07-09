@@ -15,7 +15,7 @@ Documenta lo construido hasta aquí en el hub `/crear`, el asistente de receta y
 | Receta interactiva | ✅ Tap + drag (desktop) | `/crear/adaptar` · `StoryRecipeBuilder.tsx` |
 | Perfil familiar | ✅ JSONB + completitud % | `/familia` · `family-profile-completion.ts` |
 | Generación IA | ⏳ Botón placeholder | «Crear mi cuento» avisa que viene en siguiente fase |
-| Marca luna + libro | ✅ Header, home, OG | `BrandMark.tsx` · `brand-mark-svg.ts` |
+| Marca luna + libro | ✅ Ilustración en header, home, footer, crear, OG, favicon | `BrandIllustration.tsx` · `public/images/brand/hero-luna-chacachon.{png,webp}` |
 
 ---
 
@@ -98,9 +98,18 @@ Schema: `familyProfileEssentialSchema` en `src/lib/family-profile-schema.ts`.
 
 ## Marca visual (julio 2026)
 
-- Símbolo: **luna creciente + libro abierto** (sin niño en la luna).
+- Ilustración: **luna creciente + libro abierto** (PNG/WebP con alpha, generada con Gemini y recortada en repo).
+- Componente único: `BrandIllustration` con variantes `hero | compact | crear | footer | recipe`.
+- Superficies: home, header, footer, hub `/crear`, receta, tarjetas Open Graph (`opengraph-image.tsx` + por cuento) y favicons (`icon.png`, `apple-icon.png`).
+- OG embebe el PNG vía `brand-illustration-server.ts` (solo servidor; no importar en cliente).
 - Wordmark: texto plano **Chacachón** (C normal).
-- OG cards: gradiente nocturno + marca grande (`opengraph-image.tsx`).
+- SVG legacy (`BrandMark.tsx`, `brand-mark-svg.ts`) queda deprecado; no usar en UI nueva.
+
+### Biblioteca (home)
+
+- Carrusel del estante con pilas simétricas izquierda/derecha (`book-carousel.ts`).
+- Libro destacado: lomo decorativo sin título + portada como héroe.
+- Slot «Crear cuento» espejo discreto a la izquierda para balance visual.
 
 ---
 
@@ -108,8 +117,7 @@ Schema: `familyProfileEssentialSchema` en `src/lib/family-profile-schema.ts`.
 
 1. Conectar **API de generación IA** al botón «Crear mi cuento» (payload = selección de receta + perfil).
 2. Pasar `?plantilla=slug` desde plantillas a la receta (pre-rellenar molde clásico).
-3. CI en GitHub Actions (`.github/workflows/ci.yml` pendiente de push con scope `workflow`).
-4. Iconos SVG en tarjetas del hub (sustituir emojis si se unifica ilustración).
+3. CI en GitHub Actions — archivo `.github/workflows/ci.yml` listo localmente; requiere push con scope `workflow` en GitHub.
 
 ---
 
@@ -122,14 +130,21 @@ src/app/(site)/crear/
   adaptar/page.tsx      # Receta
 src/components/
   CrearHub.tsx          # Hub cliente (progreso, medidor, tarjetas)
+  CrearPageActions.tsx  # Barra Volver a Crear / Mi biblioteca
   StoryRecipeBuilder.tsx
-  BrandMark.tsx
+  BrandIllustration.tsx
+  StoryBookshelf.tsx    # Estante + carrusel
+public/images/brand/
+  hero-luna-chacachon.png
+  hero-luna-chacachon.webp
 src/lib/
   family-profile-completion.ts
   story-recipe.ts
-  brand-mark-svg.ts
+  brand-illustration.ts
+  brand-illustration-server.ts
+  book-carousel.ts
 ```
 
 ---
 
-*Última actualización: julio 2026 — post commit `826c271` (hub /crear interactivo).*
+*Última actualización: julio 2026 — ilustración de marca unificada + estante simétrico.*

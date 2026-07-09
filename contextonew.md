@@ -39,7 +39,7 @@ El producto está diseñado para eliminar la fricción desde el segundo uno, cen
 
 El Flujo: El padre ingresa desde su móvil o tablet, introduce los nombres de sus dos hijos, selecciona el problema a resolver (ej. no querer comer verduras) y elige el acento (ej. costeño).
 
-La Entrega: En segundos, la pantalla muestra un libro digital paginado. No es solo una pared de texto; cada página tiene su propia ilustración consistente y de alta fidelidad estética.
+La Entrega: En segundos, la pantalla muestra un libro digital paginado. No es solo una pared de texto; cada página tiene su propia ilustración consistente y de alta fidelidad estética. La identidad visual del producto (luna + cuento) aparece en biblioteca, header, footer y previews al compartir por WhatsApp/redes (`BrandIllustration` + tarjetas Open Graph).
 
 Inmersión Auditiva: La interfaz incluye un botón de reproducción donde un sistema de Text-to-Speech (o voces humanas pregrabadas) narra la historia con el acento exacto, permitiendo que la familia se concentre en las imágenes y en reírse juntos de la situación.
 

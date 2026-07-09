@@ -50,6 +50,8 @@
 | Base de datos | **Neon Postgres** | users, stories, family_profiles |
 | Auth | NextAuth v4 | Google OAuth |
 | Deploy | Vercel (`iad1`) | Hosting + env vars |
+| CI | GitHub Actions (pendiente push) | `.github/workflows/ci.yml` local — scope `workflow` |
+| Marca | PNG/WebP ilustrado | `BrandIllustration` · `public/images/brand/hero-luna-chacachon.*` |
 
 ### Decisiones clave
 
@@ -78,9 +80,20 @@ Documentación relacionada: [StackTecnico.md](../StackTecnico.md) · [database.m
 | `/login` | Page | Entrar con Google |
 | `/privacidad` | Page | Política de privacidad (piloto) |
 | `/cuentos/*.html` | Static | Readers HTML legacy |
+| `/opengraph-image` | OG | Tarjeta de preview del sitio (ilustración + título) |
+| `/leer/[slug]/opengraph-image` | OG | Preview por cuento |
 | `/api/auth/*` | API | NextAuth handlers |
 
 Rutas protegidas (middleware): `/familia/*`, `/admin/*` (Sprint 1+).
+
+### Activos de marca
+
+| Activo | Ruta | Uso |
+|--------|------|-----|
+| Ilustración PNG/WebP | `public/images/brand/hero-luna-chacachon.*` | UI (`BrandIllustration`) |
+| Favicon | `src/app/icon.png` | Pestaña del navegador |
+| Apple touch | `src/app/apple-icon.png` | iOS «Añadir a inicio» |
+| OG embebido | `src/lib/brand-illustration-server.ts` | `ImageResponse` (solo servidor) |
 
 ---
 
@@ -105,4 +118,4 @@ Rutas protegidas (middleware): `/familia/*`, `/admin/*` (Sprint 1+).
 
 ---
 
-*Última actualización: Sprint 0 — Julio 2026*
+*Última actualización: julio 2026 — ilustración de marca, estante simétrico, CI en GitHub Actions.*

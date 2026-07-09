@@ -92,7 +92,7 @@ Migrar a AWS solo si compliance o costos a >100k MAU lo justifican.
 |---|---|
 | Package manager | npm (igual que rotatudisfraz) |
 | Linter | ESLint 9 + `eslint-config-next` |
-| CI/CD | Vercel preview deploys |
+| CI/CD | Vercel preview deploys (+ GitHub Actions `ci.yml` pendiente de push) |
 | IDE | Cursor |
 
 ---
