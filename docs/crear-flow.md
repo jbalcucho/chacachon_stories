@@ -129,7 +129,7 @@ Schema: `familyProfileEssentialSchema` en `src/lib/family-profile-schema.ts`.
 
 ## Próximos pasos (producto)
 
-1. ~~Conectar **API de generación IA** al botón «Crear mi cuento»~~ ✅ (jul 2026 — ver [ia-generacion.md](./ia-generacion.md)).
+1. ~~Conectar **API de generación IA**~~ ✅ · ~~calidad: biblia + perfil en prompt~~ ✅ (jul 2026).
 2. Pasar `?plantilla=slug` desde plantillas a la receta (pre-rellenar molde clásico).
 3. Moderación de «+ Otro», freemium por usuario y listado de cuentos generados en biblioteca.
 4. CI en GitHub Actions — archivo `.github/workflows/ci.yml` listo localmente; requiere push con scope `workflow` en GitHub.

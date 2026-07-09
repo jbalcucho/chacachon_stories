@@ -44,6 +44,7 @@ Ver [docs/database.md](./docs/database.md) y [docs/architecture.md](./docs/archi
 | [docs/architecture.md](./docs/architecture.md) | Arquitectura Sprint 0, rutas, decisiones |
 | [docs/crear-flow.md](./docs/crear-flow.md) | Hub `/crear`, receta, perfil, marca — estado julio 2026 |
 | [docs/ia-generacion.md](./docs/ia-generacion.md) | IA: Gemini POC gratis, Vercel, API, persistencia |
+| [docs/biblia-editorial.md](./docs/biblia-editorial.md) | Voz, estructura y calidad de cuentos (prompt editorial) |
 | [docs/database.md](./docs/database.md) | Schema Prisma, seed, migraciones |
 | [StackTecnico.md](./StackTecnico.md) | Stack completo, roadmap, seguridad |
 | [PerfilFamiliar.md](./PerfilFamiliar.md) | Perfil familiar JSONB, onboarding, interpolación |

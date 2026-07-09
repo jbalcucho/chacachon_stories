@@ -1,8 +1,14 @@
 import "server-only";
+import type { FamilyProfileDocument } from "@/lib/family-profile-schema";
 import type { RecipeSelectionSlice } from "@/lib/recipe-summary";
 import { parseStoryHeader } from "@/lib/story-markdown";
 import { buildMockStoryMarkdown } from "@/lib/story-mock";
 import { buildStoryPrompt } from "@/lib/story-prompt";
+
+export type StoryGenerationContext = {
+  selection: RecipeSelectionSlice;
+  perfil?: FamilyProfileDocument | null;
+};
 
 export type StorySource = "gemini" | "claude" | "mock";
 
@@ -39,10 +45,13 @@ function geminiModelCandidates(): string[] {
 }
 
 async function callClaude(
-  selection: RecipeSelectionSlice,
+  ctx: StoryGenerationContext,
   apiKey: string,
 ): Promise<string> {
-  const { system, user } = buildStoryPrompt(selection);
+  const { system, user } = buildStoryPrompt({
+    selection: ctx.selection,
+    perfil: ctx.perfil,
+  });
 
   const res = await fetch(ANTHROPIC_URL, {
     method: "POST",
@@ -78,11 +87,14 @@ async function callClaude(
 }
 
 async function callGeminiModel(
-  selection: RecipeSelectionSlice,
+  ctx: StoryGenerationContext,
   apiKey: string,
   model: string,
 ): Promise<string> {
-  const { system, user } = buildStoryPrompt(selection);
+  const { system, user } = buildStoryPrompt({
+    selection: ctx.selection,
+    perfil: ctx.perfil,
+  });
   const url = `${GEMINI_BASE_URL}/${model}:generateContent`;
 
   const res = await fetch(url, {
@@ -120,7 +132,7 @@ async function callGeminiModel(
 }
 
 async function callGemini(
-  selection: RecipeSelectionSlice,
+  ctx: StoryGenerationContext,
   apiKey: string,
 ): Promise<{ markdown: string; model: string }> {
   const candidates = geminiModelCandidates();
@@ -128,7 +140,7 @@ async function callGemini(
 
   for (const model of candidates) {
     try {
-      const markdown = await callGeminiModel(selection, apiKey, model);
+      const markdown = await callGeminiModel(ctx, apiKey, model);
       return { markdown, model };
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
@@ -147,7 +159,7 @@ async function callGemini(
  * Si el proveedor elegido falla, se cae a la plantilla para no romper el flujo.
  */
 export async function generateStory(
-  selection: RecipeSelectionSlice,
+  ctx: StoryGenerationContext,
 ): Promise<GeneratedStoryDraft> {
   const geminiKey = process.env.GEMINI_API_KEY?.trim();
   const anthropicKey = process.env.ANTHROPIC_API_KEY?.trim();
@@ -155,7 +167,7 @@ export async function generateStory(
 
   if (geminiKey) {
     try {
-      const { markdown, model } = await callGemini(selection, geminiKey);
+      const { markdown, model } = await callGemini(ctx, geminiKey);
       return {
         title: titleFromMarkdown(markdown, fallbackTitle),
         bodyMarkdown: markdown,
@@ -169,7 +181,7 @@ export async function generateStory(
 
   if (anthropicKey) {
     try {
-      const markdown = await callClaude(selection, anthropicKey);
+      const markdown = await callClaude(ctx, anthropicKey);
       return {
         title: titleFromMarkdown(markdown, fallbackTitle),
         bodyMarkdown: markdown,
@@ -181,7 +193,7 @@ export async function generateStory(
     }
   }
 
-  const markdown = buildMockStoryMarkdown(selection);
+  const markdown = buildMockStoryMarkdown(ctx.selection);
   return {
     title: titleFromMarkdown(markdown, fallbackTitle),
     bodyMarkdown: markdown,

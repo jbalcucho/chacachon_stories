@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import type { RecipeSelectionSlice } from "@/lib/recipe-summary";
 import { parseStoryHeader } from "@/lib/story-markdown";
 import { buildMockStoryMarkdown } from "@/lib/story-mock";
-import { buildStoryPrompt, describeRecipe } from "@/lib/story-prompt";
+import { buildStoryPrompt, describeProfile, describeRecipe } from "@/lib/story-prompt";
+import type { FamilyProfileDocument } from "@/lib/family-profile-schema";
 import type { RecipeIngredient } from "@/lib/story-recipe";
 
 function ing(
@@ -58,11 +59,48 @@ describe("describeRecipe", () => {
 });
 
 describe("buildStoryPrompt", () => {
-  it("incluye system prompt y detalles en el mensaje de usuario", () => {
-    const { system, user } = buildStoryPrompt(sampleSelection);
+  it("incluye system prompt editorial y detalles en el mensaje de usuario", () => {
+    const { system, user } = buildStoryPrompt({ selection: sampleSelection });
     expect(system).toContain("Chacachón");
+    expect(system).toContain("sermón");
     expect(user).toContain("Nico");
-    expect(user).toContain("cuento");
+    expect(user).toContain("arco mundo");
+  });
+
+  it("inyecta contexto del perfil familiar cuando se provee", () => {
+    const perfil: FamilyProfileDocument = {
+      meta: { ciudad: "Bogotá", como_le_dicen_al_hogar: "el apartamento" },
+      adultos: [
+        {
+          id: "a1",
+          rol: "mama",
+          nombre: "Julie",
+          apodo: "Pauleta",
+          frases_tipicas: ["Hagan caso"],
+        },
+      ],
+      ninos: [{ id: "n1", nombre: "Nicolás", apodo: "Nico" }],
+      mascotas: [{ id: "m1", nombre: "Bingo", personalidad: "ladra fuerte" }],
+    };
+    const { user } = buildStoryPrompt({ selection: sampleSelection, perfil });
+    expect(user).toContain("Contexto de la familia");
+    expect(user).toContain("Pauleta");
+    expect(user).toContain("Bingo");
+    expect(user).toContain("Bogotá");
+  });
+});
+
+describe("describeProfile", () => {
+  it("resume adultos, niños y mascotas sin volcar JSON", () => {
+    const lines = describeProfile({
+      meta: { ciudad: "Bogotá" },
+      adultos: [{ id: "a1", rol: "papa", nombre: "José", apodo: "Chacachón" }],
+      ninos: [{ id: "n1", nombre: "Nico" }],
+    });
+    const text = lines.join(" ");
+    expect(text).toContain("Bogotá");
+    expect(text).toContain("Chacachón");
+    expect(text).toContain("Nico");
   });
 });
 

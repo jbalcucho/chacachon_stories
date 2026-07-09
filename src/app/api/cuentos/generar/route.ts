@@ -5,6 +5,7 @@ import {
   toSelectionSlice,
 } from "@/lib/recipe-selection";
 import { saveGeneratedStory } from "@/lib/generated-stories.server";
+import { getReaderProfile } from "@/lib/reader-profile";
 import { getSessionUserId } from "@/lib/session";
 import { generateStory } from "@/lib/story-generation.server";
 
@@ -34,7 +35,8 @@ export async function POST(request: Request) {
   try {
     const userId = await getSessionUserId();
     const slice = toSelectionSlice(parsed.data);
-    const draft = await generateStory(slice);
+    const { perfil } = await getReaderProfile(userId);
+    const draft = await generateStory({ selection: slice, perfil });
     const id = await saveGeneratedStory({
       ...draft,
       userId,

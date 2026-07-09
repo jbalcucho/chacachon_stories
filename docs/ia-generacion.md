@@ -259,11 +259,18 @@ Rotar key: nueva en AI Studio → actualizar `.env.local` y Vercel → redeploy.
 
 ---
 
+## Relación con la biblia editorial
+
+Las reglas de voz, estructura y ejemplos buenos/malos viven en
+**[docs/biblia-editorial.md](./biblia-editorial.md)**. El system prompt en
+`story-prompt.ts` debe alinearse con ese documento. Para acentos y modismos, ver
+también [GuiaAcentos.md](../GuiaAcentos.md).
+
 ## Pendientes (siguientes fases)
 
 - **Moderación** de campos «+ Otro» antes del prompt.
 - **Freemium:** límite de cuentos generados por usuario.
-- **Perfil en el prompt:** apodos, frases típicas, ciudad del JSONB familiar.
+- ~~**Perfil en el prompt**~~ ✅ — ver `describeProfile()` en `story-prompt.ts`.
 - **Imagen/voz:** portada (fal.ai) y narración (ElevenLabs).
 - **Listado** de cuentos generados en biblioteca del usuario.
 
