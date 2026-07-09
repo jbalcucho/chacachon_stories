@@ -9,17 +9,18 @@ import type {
 } from "@/lib/story-recipe";
 import {
   buildInitialRecipeSelection,
-  buildRecipeChecklist,
   buildRecipeSynopsis,
   buildRecipeTitle,
-  countChecklistDone,
+  buildRecipeWizardSteps,
   getRecipeBlocker,
   getRecipeSuggestion,
+  getStepBlocker,
   hasPlantillaMolde,
+  isWizardStepDone,
   personAvatarHue,
   personAvatarInitial,
-  RECIPE_GUIDED_STORAGE_KEY,
   type RecipeSelectionSlice,
+  type RecipeWizardStep,
 } from "@/lib/recipe-summary";
 
 type Props = {
@@ -28,16 +29,7 @@ type Props = {
   plantillaSlug?: string | null;
 };
 
-type ZoneKey =
-  | "heroes"
-  | "reto"
-  | "aprenden"
-  | "lugar"
-  | "mascota"
-  | "acompanantes"
-  | "rolReto"
-  | "objeto"
-  | "molde";
+type ZoneKey = keyof RecipeSelectionSlice;
 
 type ZoneConfig = {
   key: ZoneKey;
@@ -46,104 +38,99 @@ type ZoneConfig = {
   empty: string;
   accepts: RecipeKind[];
   max: number;
-  core: boolean;
   options: (ing: RecipeIngredients) => RecipeIngredient[];
 };
 
-const ZONES: ZoneConfig[] = [
-  {
+const ZONE_CONFIGS: Record<ZoneKey, ZoneConfig> = {
+  heroes: {
     key: "heroes",
     title: "Héroes",
-    hint: "Toca cada chip · hasta 3",
-    empty: "¿Quiénes protagonizan?",
+    hint: "Toca para elegir · hasta 3",
+    empty: "Toca un nombre abajo",
     accepts: ["persona"],
     max: 3,
-    core: true,
     options: (i) => i.personas,
   },
-  {
+  reto: {
     key: "reto",
     title: "El reto",
-    hint: "1 dilema",
-    empty: "¿Qué problema resuelven?",
+    hint: "Elige 1",
+    empty: "Toca un dilema abajo",
     accepts: ["dilema"],
     max: 1,
-    core: true,
     options: (i) => i.dilemas,
   },
-  {
+  aprenden: {
     key: "aprenden",
     title: "Qué aprenden",
-    hint: "Hasta 2 lecciones",
-    empty: "Elige una lección",
+    hint: "Hasta 2",
+    empty: "Toca una lección abajo",
     accepts: ["emocion"],
     max: 2,
-    core: true,
     options: (i) => i.emociones,
   },
-  {
+  lugar: {
     key: "lugar",
     title: "¿Dónde pasa?",
-    hint: "1 lugar",
-    empty: "Elige la ambientación",
+    hint: "Elige 1",
+    empty: "Toca un lugar abajo",
     accepts: ["lugar"],
     max: 1,
-    core: true,
     options: (i) => i.lugares,
   },
-  {
+  mascota: {
     key: "mascota",
     title: "Mascota",
     hint: "Opcional · 1",
     empty: "¿Aparece alguna mascota?",
     accepts: ["mascota"],
     max: 1,
-    core: false,
     options: (i) => i.mascotas,
   },
-  {
+  acompanantes: {
     key: "acompanantes",
     title: "Acompañantes",
-    hint: "Familia o mascotas · hasta 4",
+    hint: "Hasta 4",
     empty: "¿Quién más aparece?",
     accepts: ["persona", "mascota"],
     max: 4,
-    core: false,
     options: (i) => [...i.personas, ...i.mascotas],
   },
-  {
+  rolReto: {
     key: "rolReto",
     title: "Rol de reto",
-    hint: "Alguien hace de lobo/monstruo · 1",
+    hint: "Quien hace de «lobo» · 1",
     empty: "¿Quién interpreta el reto?",
     accepts: ["persona", "mascota"],
     max: 1,
-    core: false,
     options: (i) => [...i.mascotas, ...i.personas],
   },
-  {
+  objeto: {
     key: "objeto",
     title: "Objeto especial",
     hint: "Hasta 2",
-    empty: "Un elemento con protagonismo",
+    empty: "Un detalle con protagonismo",
     accepts: ["objeto"],
     max: 2,
-    core: false,
     options: (i) => i.objetos,
   },
-  {
+  molde: {
     key: "molde",
     title: "Molde clásico",
     hint: "Opcional · 1",
-    empty: "¿Mezclar con un cuento clásico?",
+    empty: "¿Mezclar con un clásico?",
     accepts: ["molde"],
     max: 1,
-    core: false,
     options: (i) => i.moldes,
   },
-];
+};
 
-type Selection = RecipeSelectionSlice;
+const EXTRA_ZONE_KEYS: ZoneKey[] = [
+  "mascota",
+  "acompanantes",
+  "rolReto",
+  "objeto",
+];
 
 type ZoneBlockProps = {
   config: ZoneConfig;
@@ -152,6 +139,7 @@ type ZoneBlockProps = {
   activeKind: RecipeKind | null;
   dragEnabled: boolean;
   pulseTokenId: string | null;
+  compact?: boolean;
   onToggle: (zone: ZoneKey, ing: RecipeIngredient) => void;
   onRemove: (zone: ZoneKey, id: string) => void;
   onDropIngredient: (zone: ZoneKey, id: string) => void;
@@ -171,18 +159,6 @@ function useFinePointer(): boolean {
   }, []);
 
   return fine;
-}
-
-function usePreferGuided(): boolean {
-  const [prefer, setPrefer] = useState(false);
-
-  useEffect(() => {
-    const done = window.localStorage.getItem(RECIPE_GUIDED_STORAGE_KEY);
-    const narrow = window.matchMedia("(max-width: 619px)").matches;
-    setPrefer(!done && narrow);
-  }, []);
-
-  return prefer;
 }
 
 function IngredientIcon({ ing }: { ing: RecipeIngredient }) {
@@ -210,6 +186,7 @@ function ZoneBlock({
   activeKind,
   dragEnabled,
   pulseTokenId,
+  compact = false,
   onToggle,
   onRemove,
   onDropIngredient,
@@ -222,9 +199,12 @@ function ZoneBlock({
   const selectedIds = new Set(selection.map((s) => s.id));
 
   return (
-    <div className="recipe-block">
+    <div className={`recipe-block${compact ? " recipe-block--compact" : ""}`}>
+      {compact ? (
+        <p className="recipe-block__mini-title">{config.title}</p>
+      ) : null}
       <div
-        className={`recipe-zone${isTarget ? " recipe-zone--target" : ""}${over ? " recipe-zone--over" : ""}`}
+        className={`recipe-zone${isTarget ? " recipe-zone--target" : ""}${over ? " recipe-zone--over" : ""}${compact ? " recipe-zone--compact" : ""}`}
         onDragOver={(e) => {
           if (!isTarget) return;
           e.preventDefault();
@@ -238,10 +218,16 @@ function ZoneBlock({
           if (id) onDropIngredient(config.key, id);
         }}
       >
-        <div className="recipe-zone__head">
-          <span className="recipe-zone__title">{config.title}</span>
-          <span className="recipe-zone__hint">{config.hint}</span>
-        </div>
+        {!compact ? (
+          <div className="recipe-zone__head">
+            <span className="recipe-zone__title">{config.title}</span>
+            <span className="recipe-zone__hint">{config.hint}</span>
+          </div>
+        ) : (
+          <span className="recipe-zone__hint recipe-zone__hint--solo">
+            {config.hint}
+          </span>
+        )}
         <div className="recipe-zone__slots">
           {selection.length === 0 ? (
             <span className="recipe-zone__empty">{config.empty}</span>
@@ -301,23 +287,23 @@ export default function StoryRecipeBuilder({
 }: Props) {
   const promoteMolde = hasPlantillaMolde(plantillaSlug);
   const dragEnabled = useFinePointer();
-  const preferGuided = usePreferGuided();
+  const wizardSteps = useMemo(
+    () => buildRecipeWizardSteps(promoteMolde),
+    [promoteMolde],
+  );
 
-  const [selection, setSelection] = useState<Selection>(() =>
+  const [selection, setSelection] = useState<RecipeSelectionSlice>(() =>
     buildInitialRecipeSelection(ingredients, plantillaSlug),
   );
+  const [stepIndex, setStepIndex] = useState(0);
   const [activeKind, setActiveKind] = useState<RecipeKind | null>(null);
-  const [showMore, setShowMore] = useState(
-    () => promoteMolde || Boolean(plantillaSlug),
-  );
   const [notice, setNotice] = useState<string | null>(null);
   const [pulseTokenId, setPulseTokenId] = useState<string | null>(null);
-  const [guidedActive, setGuidedActive] = useState(false);
-  const [guidedStep, setGuidedStep] = useState(0);
 
-  useEffect(() => {
-    if (preferGuided) setGuidedActive(true);
-  }, [preferGuided]);
+  const currentStep = wizardSteps[stepIndex];
+  const isLastStep = stepIndex === wizardSteps.length - 1;
+  const isReviewStep = currentStep.id === "review";
+  const isExtrasStep = currentStep.id === "extras";
 
   const allById = useMemo(() => {
     const map = new Map<string, RecipeIngredient>();
@@ -326,20 +312,6 @@ export default function StoryRecipeBuilder({
     }
     return map;
   }, [ingredients]);
-
-  const zoneMax = useMemo(() => {
-    const map = {} as Record<ZoneKey, ZoneConfig>;
-    for (const zone of ZONES) map[zone.key] = zone;
-    return map;
-  }, []);
-
-  const coreZoneKeys = useMemo((): ZoneKey[] => {
-    const base: ZoneKey[] = ["heroes", "reto", "aprenden", "lugar"];
-    if (promoteMolde) base.push("molde");
-    return base;
-  }, [promoteMolde]);
-
-  const guidedZoneKeys = coreZoneKeys;
 
   const flashNotice = useCallback((message: string) => {
     setNotice(message);
@@ -351,16 +323,12 @@ export default function StoryRecipeBuilder({
     window.setTimeout(() => setPulseTokenId(null), 320);
   }, []);
 
-  const exitGuided = useCallback(() => {
-    setGuidedActive(false);
-    window.localStorage.setItem(RECIPE_GUIDED_STORAGE_KEY, "done");
-  }, []);
-
   const toggle = useCallback(
     (zone: ZoneKey, ing: RecipeIngredient) => {
+      const config = ZONE_CONFIGS[zone];
       setSelection((prev) => {
         const current = prev[zone];
-        const max = zoneMax[zone].max;
+        const max = config.max;
         if (current.some((i) => i.id === ing.id)) {
           return { ...prev, [zone]: current.filter((i) => i.id !== ing.id) };
         }
@@ -369,14 +337,14 @@ export default function StoryRecipeBuilder({
             pulseToken(ing.id);
             return { ...prev, [zone]: [ing] };
           }
-          flashNotice(`Máximo ${max} en “${zoneMax[zone].title}”.`);
+          flashNotice(`Máximo ${max} en “${config.title}”.`);
           return prev;
         }
         pulseToken(ing.id);
         return { ...prev, [zone]: [...current, ing] };
       });
     },
-    [flashNotice, pulseToken, zoneMax],
+    [flashNotice, pulseToken],
   );
 
   const remove = useCallback((zone: ZoneKey, id: string) => {
@@ -389,57 +357,63 @@ export default function StoryRecipeBuilder({
   const dropIngredient = useCallback(
     (zone: ZoneKey, id: string) => {
       const ing = allById.get(id);
-      if (!ing || !zoneMax[zone].accepts.includes(ing.kind)) return;
+      const config = ZONE_CONFIGS[zone];
+      if (!ing || !config.accepts.includes(ing.kind)) return;
       setSelection((prev) => {
         const current = prev[zone];
-        const max = zoneMax[zone].max;
+        const max = config.max;
         if (current.some((i) => i.id === id)) return prev;
         if (current.length >= max) {
           if (max === 1) {
             pulseToken(ing.id);
             return { ...prev, [zone]: [ing] };
           }
-          flashNotice(`Máximo ${max} en “${zoneMax[zone].title}”.`);
+          flashNotice(`Máximo ${max} en “${config.title}”.`);
           return prev;
         }
         pulseToken(ing.id);
         return { ...prev, [zone]: [...current, ing] };
       });
     },
-    [allById, flashNotice, pulseToken, zoneMax],
+    [allById, flashNotice, pulseToken],
   );
 
-  const checklist = useMemo(
-    () => buildRecipeChecklist(selection),
-    [selection],
-  );
-  const checklistDone = countChecklistDone(checklist);
   const title = useMemo(() => buildRecipeTitle(selection), [selection]);
   const synopsis = useMemo(() => buildRecipeSynopsis(selection), [selection]);
   const suggestion = useMemo(() => getRecipeSuggestion(selection), [selection]);
   const blocker = getRecipeBlocker(selection);
   const canGenerate = blocker === null;
 
-  const coreZones = useMemo(() => {
-    return ZONES.filter((z) => coreZoneKeys.includes(z.key));
-  }, [coreZoneKeys]);
+  const stepBlocker = useMemo(() => {
+    if (isReviewStep || isExtrasStep) return null;
+    if (!currentStep.zoneKey) return null;
+    return getStepBlocker(
+      currentStep.zoneKey,
+      selection,
+      currentStep.optional,
+    );
+  }, [currentStep, isExtrasStep, isReviewStep, selection]);
 
-  const optionalZones = useMemo(() => {
-    const optionalKeys: ZoneKey[] = promoteMolde
-      ? ["mascota", "acompanantes", "rolReto", "objeto"]
-      : ["mascota", "acompanantes", "rolReto", "objeto", "molde"];
-    return ZONES.filter((z) => optionalKeys.includes(z.key));
+  const extraZoneKeys = useMemo((): ZoneKey[] => {
+    if (promoteMolde) return EXTRA_ZONE_KEYS;
+    return [...EXTRA_ZONE_KEYS, "molde"];
   }, [promoteMolde]);
 
-  const zonesToRender = useMemo(() => {
-    if (!guidedActive) return coreZones;
-    const key = guidedZoneKeys[guidedStep];
-    return coreZones.filter((z) => z.key === key);
-  }, [coreZones, guidedActive, guidedStep, guidedZoneKeys]);
+  const goNext = useCallback(() => {
+    setStepIndex((i) => Math.min(wizardSteps.length - 1, i + 1));
+  }, [wizardSteps.length]);
 
-  const guidedZoneConfig = guidedActive
-    ? zoneMax[guidedZoneKeys[guidedStep]]
-    : null;
+  const goBack = useCallback(() => {
+    setStepIndex((i) => Math.max(0, i - 1));
+  }, []);
+
+  const goToStep = useCallback(
+    (index: number) => {
+      if (index > stepIndex) return;
+      setStepIndex(index);
+    },
+    [stepIndex],
+  );
 
   const zoneBlockProps = {
     ingredients,
@@ -454,7 +428,7 @@ export default function StoryRecipeBuilder({
   };
 
   return (
-    <div className="recipe-builder">
+    <div className="recipe-wizard">
       {profileSource === "demo" ? (
         <p className="crear-banner crear-banner--info">
           Estás viendo la familia demo Chacachón. Entra y completa tu perfil para
@@ -464,176 +438,229 @@ export default function StoryRecipeBuilder({
 
       {plantillaSlug && selection.molde[0] ? (
         <p className="recipe-plantilla-badge" role="status">
-          Plantilla: <strong>{selection.molde[0].label}</strong> — puedes ajustar
-          la receta abajo.
+          Plantilla: <strong>{selection.molde[0].label}</strong>
         </p>
       ) : null}
 
-      {guidedActive ? (
-        <div className="recipe-guided">
-          <p className="recipe-guided__label">
-            Paso {guidedStep + 1} de {guidedZoneKeys.length}
-            {guidedZoneConfig ? ` · ${guidedZoneConfig.title}` : ""}
-          </p>
-          <div className="recipe-guided__actions">
-            <button
-              type="button"
-              className="recipe-guided__btn"
-              disabled={guidedStep === 0}
-              onClick={() => setGuidedStep((s) => Math.max(0, s - 1))}
-            >
-              ← Atrás
-            </button>
-            {guidedStep < guidedZoneKeys.length - 1 ? (
-              <button
-                type="button"
-                className="recipe-guided__btn recipe-guided__btn--primary"
-                onClick={() =>
-                  setGuidedStep((s) =>
-                    Math.min(guidedZoneKeys.length - 1, s + 1),
-                  )
-                }
-              >
-                Siguiente →
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="recipe-guided__btn recipe-guided__btn--primary"
-                onClick={exitGuided}
-              >
-                Ver receta completa
-              </button>
-            )}
-            <button
-              type="button"
-              className="recipe-guided__btn recipe-guided__btn--ghost"
-              onClick={exitGuided}
-            >
-              Saltar guía
-            </button>
-          </div>
+      <nav className="recipe-wizard__track" aria-label="Pasos de la receta">
+        <div className="recipe-wizard__track-bar">
+          <span
+            className="recipe-wizard__track-fill"
+            style={{
+              width: `${((stepIndex + 1) / wizardSteps.length) * 100}%`,
+            }}
+          />
         </div>
-      ) : (
-        <button
-          type="button"
-          className="recipe-guided-toggle"
-          onClick={() => {
-            setGuidedActive(true);
-            setGuidedStep(0);
-          }}
-        >
-          ⊕ Modo guiado paso a paso
-        </button>
-      )}
+        <ol className="recipe-wizard__steps">
+          {wizardSteps.map((step, index) => {
+            const done = index < stepIndex || isWizardStepDone(step, selection);
+            const active = index === stepIndex;
+            const clickable = index < stepIndex;
 
-      <div
-        className={`recipe-board${guidedActive ? " recipe-board--guided" : ""}`}
-      >
-        {zonesToRender.map((zone) => (
+            return (
+              <li
+                key={step.id}
+                className={[
+                  "recipe-wizard__step",
+                  active ? "recipe-wizard__step--active" : "",
+                  done ? "recipe-wizard__step--done" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                {clickable ? (
+                  <button
+                    type="button"
+                    className="recipe-wizard__step-btn"
+                    onClick={() => goToStep(index)}
+                    aria-current={active ? "step" : undefined}
+                  >
+                    <span className="recipe-wizard__step-num">
+                      {done && !active ? "✓" : index + 1}
+                    </span>
+                    <span className="recipe-wizard__step-label">
+                      {stepLabelShort(step)}
+                    </span>
+                  </button>
+                ) : (
+                  <span className="recipe-wizard__step-btn recipe-wizard__step-btn--static">
+                    <span className="recipe-wizard__step-num">
+                      {done && !active ? "✓" : index + 1}
+                    </span>
+                    <span className="recipe-wizard__step-label">
+                      {stepLabelShort(step)}
+                    </span>
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
+
+      <section className="recipe-wizard__panel" aria-labelledby="recipe-step-title">
+        <header className="recipe-wizard__header">
+          <h2 id="recipe-step-title" className="recipe-wizard__title">
+            {currentStep.title}
+          </h2>
+          <p className="recipe-wizard__subtitle">{currentStep.subtitle}</p>
+        </header>
+
+        {isReviewStep ? (
+          <div className="recipe-wizard__review">
+            {suggestion ? (
+              <p className="recipe-suggestion" role="note">
+                💡 {suggestion}
+              </p>
+            ) : null}
+
+            <div className="recipe-summary">
+              <div className="recipe-summary__cover" aria-hidden="true">
+                <BrandMark id="brand-mark-recipe" variant="compact" />
+              </div>
+              <div className="recipe-summary__body">
+                <p className="recipe-summary__label">Así quedará</p>
+                {title ? (
+                  <h3 className="recipe-summary__title">{title}</h3>
+                ) : null}
+                <p className="recipe-summary__text">
+                  {synopsis ??
+                    "Completa los pasos anteriores para ver la idea del cuento."}
+                </p>
+              </div>
+            </div>
+
+            <RecipeRecap selection={selection} steps={wizardSteps} />
+          </div>
+        ) : isExtrasStep ? (
+          <div className="recipe-wizard__extras">
+            {extraZoneKeys.map((key) => (
+              <ZoneBlock
+                key={key}
+                config={ZONE_CONFIGS[key]}
+                selection={selection[key]}
+                compact
+                {...zoneBlockProps}
+              />
+            ))}
+          </div>
+        ) : currentStep.zoneKey ? (
           <ZoneBlock
-            key={zone.key}
-            config={zone}
-            selection={selection[zone.key]}
+            config={ZONE_CONFIGS[currentStep.zoneKey]}
+            selection={selection[currentStep.zoneKey]}
             {...zoneBlockProps}
           />
-        ))}
-      </div>
+        ) : null}
 
-      {!guidedActive ? (
-        <>
+        {notice ? (
+          <p className="recipe-notice" role="status">
+            {notice}
+          </p>
+        ) : null}
+
+        {stepBlocker ? (
+          <p className="recipe-wizard__hint" role="status">
+            {stepBlocker}
+          </p>
+        ) : null}
+      </section>
+
+      <footer className="recipe-wizard__footer">
+        <button
+          type="button"
+          className="recipe-wizard__nav recipe-wizard__nav--back"
+          disabled={stepIndex === 0}
+          onClick={goBack}
+        >
+          ← Atrás
+        </button>
+
+        {isReviewStep ? (
           <button
             type="button"
-            className="recipe-more"
-            onClick={() => setShowMore((v) => !v)}
-            aria-expanded={showMore}
+            className={`recipe-generate recipe-wizard__nav recipe-wizard__nav--next${canGenerate ? " recipe-generate--ready" : ""}`}
+            disabled={!canGenerate}
+            onClick={() =>
+              flashNotice("La generación con IA llega en la siguiente fase ✨")
+            }
           >
-            {showMore
-              ? "− Menos opciones"
-              : promoteMolde
-                ? "➕ Agregar más (mascota, acompañantes, objeto…)"
-                : "➕ Agregar más (mascota, molde clásico, objeto…)"}
+            {canGenerate ? "✨ Crear mi cuento" : blocker}
           </button>
+        ) : (
+          <button
+            type="button"
+            className="recipe-wizard__nav recipe-wizard__nav--next"
+            disabled={
+              !isExtrasStep &&
+              !currentStep.optional &&
+              Boolean(stepBlocker)
+            }
+            onClick={goNext}
+          >
+            {isExtrasStep || (currentStep.optional && stepBlocker)
+              ? "Omitir y continuar →"
+              : "Siguiente →"}
+          </button>
+        )}
+      </footer>
 
-          {showMore ? (
-            <div className="recipe-board recipe-board--optional">
-              {optionalZones.map((zone) => (
-                <ZoneBlock
-                  key={zone.key}
-                  config={zone}
-                  selection={selection[zone.key]}
-                  {...zoneBlockProps}
-                />
-              ))}
-            </div>
-          ) : null}
-        </>
-      ) : null}
-
-      {suggestion ? (
-        <p className="recipe-suggestion" role="note">
-          💡 {suggestion}
+      {!isReviewStep ? (
+        <p className="crear-footnote mt-2 text-center text-xs">
+          Paso {stepIndex + 1} de {wizardSteps.length}
+          {isLastStep ? "" : " · la IA escribe en el último paso"}
         </p>
-      ) : null}
-
-      {notice ? (
-        <p className="recipe-notice" role="status">
-          {notice}
+      ) : (
+        <p className="crear-footnote mt-2 text-center text-xs">
+          La IA escribe pronto · hoy puedes armar y guardar la receta.
         </p>
-      ) : null}
-
-      <div className="recipe-checklist" aria-label="Progreso de la receta">
-        <div className="recipe-checklist__head">
-          <span className="recipe-checklist__title">Tu receta</span>
-          <span className="recipe-checklist__count">
-            {checklistDone}/{checklist.length}
-          </span>
-        </div>
-        <ul className="recipe-checklist__list">
-          {checklist.map((item) => (
-            <li
-              key={item.key}
-              className={`recipe-checklist__item${item.done ? " recipe-checklist__item--done" : ""}`}
-            >
-              <span className="recipe-checklist__mark" aria-hidden="true">
-                {item.done ? "✓" : "○"}
-              </span>
-              {item.label}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="recipe-summary">
-        <div className="recipe-summary__cover" aria-hidden="true">
-          <BrandMark id="brand-mark-recipe" variant="compact" />
-        </div>
-        <div className="recipe-summary__body">
-          <p className="recipe-summary__label">Tu cuento</p>
-          {title ? (
-            <h2 className="recipe-summary__title">{title}</h2>
-          ) : null}
-          <p className="recipe-summary__text">
-            {synopsis ??
-              "Elige al menos un héroe y un reto para ver la idea del cuento."}
-          </p>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        className={`recipe-generate${canGenerate ? " recipe-generate--ready" : ""}`}
-        disabled={!canGenerate}
-        aria-disabled={!canGenerate}
-        onClick={() =>
-          flashNotice("La generación con IA llega en la siguiente fase ✨")
-        }
-      >
-        {canGenerate ? "✨ Crear mi cuento" : blocker}
-      </button>
-      <p className="crear-footnote mt-3 text-center text-xs">
-        La IA escribe pronto · hoy puedes armar y guardar la receta.
-      </p>
+      )}
     </div>
+  );
+}
+
+function stepLabelShort(step: RecipeWizardStep): string {
+  if (step.id === "heroes") return "Héroes";
+  if (step.id === "reto") return "Reto";
+  if (step.id === "aprenden") return "Lección";
+  if (step.id === "lugar") return "Lugar";
+  if (step.id === "molde") return "Clásico";
+  if (step.id === "extras") return "Extras";
+  return "Revisar";
+}
+
+function RecipeRecap({
+  selection,
+  steps,
+}: {
+  selection: RecipeSelectionSlice;
+  steps: RecipeWizardStep[];
+}) {
+  const coreSteps = steps.filter(
+    (s) => s.zoneKey && s.id !== "molde" && s.id !== "extras" && s.id !== "review",
+  );
+
+  return (
+    <ul className="recipe-recap" aria-label="Resumen de elecciones">
+      {coreSteps.map((step) => {
+        if (!step.zoneKey) return null;
+        const items = selection[step.zoneKey];
+        return (
+          <li key={step.id} className="recipe-recap__item">
+            <span className="recipe-recap__label">{stepLabelShort(step)}</span>
+            <span className="recipe-recap__value">
+              {items.length > 0
+                ? items.map((i) => i.label).join(", ")
+                : "—"}
+            </span>
+          </li>
+        );
+      })}
+      {selection.molde[0] ? (
+        <li className="recipe-recap__item">
+          <span className="recipe-recap__label">Clásico</span>
+          <span className="recipe-recap__value">{selection.molde[0].label}</span>
+        </li>
+      ) : null}
+    </ul>
   );
 }

@@ -37,10 +37,8 @@ export default async function CrearAdaptarPage({ searchParams }: PageProps) {
           Arma tu cuento
         </h1>
         <p className="intro-copy crear-hero__lead mt-2 max-w-none text-sm sm:text-base">
-          <span className="recipe-copy-touch">Toca cada ingrediente</span>
-          <span className="recipe-copy-drag"> o arrástralo en computador</span>{" "}
-          para llenar la receta. La IA escribirá con los nombres y el tono de tu
-          familia.
+          Sigue los pasos para armar la receta. En el último paso revisas y creas
+          tu cuento con IA.
         </p>
       </header>
 

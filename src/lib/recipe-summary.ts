@@ -43,6 +43,101 @@ export function hasPlantillaMolde(slug: string | null | undefined): boolean {
   return slug in PLANTILLA_TO_MOLDE;
 }
 
+export function getStepBlocker(
+  zoneKey: keyof RecipeSelectionSlice,
+  selection: RecipeSelectionSlice,
+  optional = false,
+): string | null {
+  if (optional) return null;
+  const items = selection[zoneKey];
+  if (items.length > 0) return null;
+
+  const labels: Partial<Record<keyof RecipeSelectionSlice, string>> = {
+    heroes: "Elige al menos un héroe para continuar",
+    reto: "Elige el reto del cuento para continuar",
+    aprenden: "Elige qué aprenden para continuar",
+    lugar: "Elige dónde pasa el cuento para continuar",
+    molde: "Elige un molde o toca «Omitir»",
+  };
+
+  return labels[zoneKey] ?? "Completa este paso para continuar";
+}
+
+export type RecipeWizardStep = {
+  id: string;
+  zoneKey?: keyof RecipeSelectionSlice;
+  title: string;
+  subtitle: string;
+  optional?: boolean;
+};
+
+export function buildRecipeWizardSteps(
+  promoteMolde: boolean,
+): RecipeWizardStep[] {
+  const steps: RecipeWizardStep[] = [
+    {
+      id: "heroes",
+      zoneKey: "heroes",
+      title: "Paso 1 · Los héroes",
+      subtitle: "¿Quiénes protagonizan el cuento? Puedes elegir hasta 3.",
+    },
+    {
+      id: "reto",
+      zoneKey: "reto",
+      title: "Paso 2 · El reto",
+      subtitle: "¿Qué dilema de la vida real quieres abordar esta noche?",
+    },
+    {
+      id: "aprenden",
+      zoneKey: "aprenden",
+      title: "Paso 3 · La lección",
+      subtitle: "¿Qué quieres que aprendan? Puedes elegir hasta 2.",
+    },
+    {
+      id: "lugar",
+      zoneKey: "lugar",
+      title: "Paso 4 · El lugar",
+      subtitle: "¿Dónde transcurre la historia?",
+    },
+  ];
+
+  if (promoteMolde) {
+    steps.push({
+      id: "molde",
+      zoneKey: "molde",
+      title: "Paso 5 · El clásico",
+      subtitle: "Basado en un cuento tradicional. Puedes cambiarlo o dejarlo así.",
+      optional: true,
+    });
+  }
+
+  steps.push({
+    id: "extras",
+    title: promoteMolde ? "Paso 6 · Toques extra" : "Paso 5 · Toques extra",
+    subtitle: "Opcional: mascota, acompañantes, objeto especial y más.",
+    optional: true,
+  });
+
+  steps.push({
+    id: "review",
+    title: promoteMolde ? "Paso 7 · Tu cuento" : "Paso 6 · Tu cuento",
+    subtitle: "Revisa cómo quedó la receta antes de crear.",
+    optional: true,
+  });
+
+  return steps;
+}
+
+export function isWizardStepDone(
+  step: RecipeWizardStep,
+  selection: RecipeSelectionSlice,
+): boolean {
+  if (step.id === "review" || step.id === "extras") return true;
+  if (!step.zoneKey) return true;
+  if (step.optional) return true;
+  return selection[step.zoneKey].length > 0;
+}
+
 function joinNames(items: RecipeIngredient[]): string {
   if (items.length === 0) return "";
   if (items.length === 1) return items[0].label;
@@ -191,8 +286,6 @@ export function personAvatarHue(id: string): number {
   }
   return Math.abs(hash) % 360;
 }
-
-export const RECIPE_GUIDED_STORAGE_KEY = "chacachon-recipe-guided-v1";
 
 export function buildInitialRecipeSelection(
   ingredients: {
