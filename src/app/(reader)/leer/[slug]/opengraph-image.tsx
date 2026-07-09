@@ -9,6 +9,45 @@ type ImageProps = {
   params: { slug: string };
 };
 
+function MoonBadge() {
+  return (
+    <div
+      style={{
+        position: "relative",
+        display: "flex",
+        width: 84,
+        height: 84,
+        borderRadius: 22,
+        background: "#16224a",
+        flexShrink: 0,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          left: 14,
+          top: 12,
+          width: 60,
+          height: 60,
+          borderRadius: "50%",
+          background: "radial-gradient(circle at 34% 30%, #FFF9E8 0%, #FFE08A 45%, #E8A820 100%)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: 32,
+          top: 16,
+          width: 52,
+          height: 52,
+          borderRadius: "50%",
+          background: "#16224a",
+        }}
+      />
+    </div>
+  );
+}
+
 export default async function OpengraphImage({ params }: ImageProps) {
   const story = await getPublishedStoryBySlug(params.slug).catch(() => null);
   const title = story?.title ?? "Las historias de Chacachón";
@@ -29,8 +68,20 @@ export default async function OpengraphImage({ params }: ImageProps) {
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", fontSize: 34, color: "#f4b942" }}>
-          ✦ Las historias de Chacachón
+        <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
+          <MoonBadge />
+          <div style={{ display: "flex", fontSize: 36, fontWeight: 700, color: "#f4b942" }}>
+            <span>Las histor</span>
+            <span
+              style={{
+                color: "#ffe9b0",
+                textShadow: "0 0 22px rgba(255, 236, 170, 0.95)",
+              }}
+            >
+              IA
+            </span>
+            <span>s de Chacachón</span>
+          </div>
         </div>
         <div
           style={{

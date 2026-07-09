@@ -402,12 +402,68 @@ body::before {
 }
 
 .title-ia {
+  color: inherit;
   font-weight: 800;
-  letter-spacing: 0.06em;
-  color: #fff4d6;
-  text-shadow:
-    0 0 18px rgba(255, 202, 92, 0.65),
-    0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: ia-glow 2.8s ease-in-out infinite;
+}
+
+@keyframes ia-glow {
+  0%,
+  100% {
+    text-shadow:
+      0 0 16px rgba(255, 236, 170, 0.7),
+      0 0 30px rgba(255, 205, 95, 0.4),
+      0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+  50% {
+    text-shadow:
+      0 0 24px rgba(255, 244, 190, 1),
+      0 0 46px rgba(255, 210, 100, 0.7),
+      0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+}
+
+.brand-word {
+  white-space: nowrap;
+}
+
+.brand-moon {
+  display: inline-block;
+  width: 1.34em;
+  height: 1.34em;
+  vertical-align: -0.34em;
+  margin-right: -0.18em;
+  margin-left: -0.08em;
+  animation: moon-float 3.8s ease-in-out infinite;
+}
+
+.brand-moon--compact {
+  width: 1.12em;
+  height: 1.12em;
+  vertical-align: -0.22em;
+  margin-right: -0.1em;
+  margin-left: -0.03em;
+}
+
+.brand-moon__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 14px rgba(255, 220, 120, 0.7))
+    drop-shadow(0 3px 8px rgba(255, 200, 80, 0.35));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-moon {
+    animation: none;
+  }
+
+  .title-ia {
+    animation: none;
+    text-shadow:
+      0 0 16px rgba(255, 224, 150, 0.7),
+      0 1px 0 rgba(255, 255, 255, 0.18);
+  }
 }
 
 .home-hero .hero-moon-wrap {

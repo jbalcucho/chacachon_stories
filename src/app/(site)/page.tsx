@@ -1,4 +1,4 @@
-import HeroMoon from "@/components/HeroMoon";
+import BrandMoonC from "@/components/BrandMoonC";
 import StoryBookshelf from "@/components/StoryBookshelf";
 import { getLibraryStories } from "@/lib/stories";
 
@@ -13,17 +13,17 @@ export default async function HomePage({
   return (
     <main className="home-main mx-auto max-w-5xl px-4 py-4 pb-8 sm:px-6 sm:py-6 sm:pb-10">
       <header className="home-hero mb-4 text-center sm:mb-5">
-        <div className="hero-moon-wrap" aria-hidden="true">
-          <span className="hero-moon-star hero-moon-star--a">✦</span>
-          <HeroMoon />
-          <span className="hero-moon-star hero-moon-star--b">✧</span>
-        </div>
         <h1 className="title-display text-3xl sm:text-5xl">
           Las histor
           <span className="title-ia" title="Historias con inteligencia artificial">
             IA
           </span>
-          s de Chacachón
+          s de{" "}
+          <span className="brand-word">
+            <span className="sr-only">C</span>
+            <BrandMoonC />
+            hacachón
+          </span>
         </h1>
         <p className="intro-copy mx-auto mt-2 max-w-lg text-sm sm:mt-3 sm:text-lg">
           ¿Qué vamos a leer hoy?
