@@ -34,6 +34,7 @@ const BOGOTA_ROLO_EXAMPLES: FewShotSet = {
 const BOGOTA_NINOS_EXAMPLES: FewShotSet = {
   opening: NEUTRO_EXAMPLES.opening,
   dialogue: BOGOTA_ROLO_EXAMPLES.dialogue,
+  regulation: REGULATION_EXAMPLE,
 };
 
 const BOGOTA_CACHACO_EXAMPLES: FewShotSet = {
