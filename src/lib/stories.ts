@@ -180,7 +180,10 @@ const getCachedLibraryStories = unstable_cache(
 );
 
 export async function getLibraryStories(): Promise<StoryCard[]> {
-  return getCachedLibraryStories();
+  const stories = await getCachedLibraryStories();
+  return stories.filter(
+    (story) => story.status === "PUBLISHED" && Boolean(story.openPath),
+  );
 }
 
 /** Catálogo completo (todos los estados) para vistas administrativas. */

@@ -183,8 +183,6 @@ export default function StoryReader({
   return (
     <div className="story-reader story-reader--book" data-paper={paper}>
       <div className="story-reader__night" aria-hidden="true" />
-      {measureLayer}
-
       <header className="story-reader__toolbar">
         <div className="story-reader__toolbar-row story-reader__toolbar-row--nav">
           <Link
@@ -280,6 +278,7 @@ export default function StoryReader({
           onTouchStart={(e) => handleTouchStart(e.touches[0].clientX)}
           onTouchEnd={(e) => handleTouchEnd(e.changedTouches[0].clientX)}
         >
+          {measureLayer}
           <div
             className="book-shell"
             data-turning={turning ?? undefined}

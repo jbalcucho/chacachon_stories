@@ -1,5 +1,4 @@
 import type { StoryCard } from "@/lib/stories";
-import { variantLabel } from "@/lib/stories";
 import {
   bookGlowStyle,
   getBookTheme,
@@ -50,27 +49,14 @@ export default function StoryBook({
           <span className="book-emoji" aria-hidden="true">
             {theme.emoji}
           </span>
-          {!isSoon && !isCreate ? (
-            <span className={`book-badge ${theme.accent}`}>
-              {variantLabel(story.variant)}
-            </span>
-          ) : isCreate ? (
+          {isCreate ? (
             <span className="book-badge book-badge--create">IA ✨</span>
-          ) : (
-            <span className="book-badge book-badge--soon">Pronto ✨</span>
-          )}
+          ) : null}
         </div>
         <h2 className="book-title">{story.title}</h2>
         {story.moraleja ? (
           <p className="book-moraleja">{story.moraleja}</p>
         ) : null}
-        <p className="book-cta">
-          {isCreate
-            ? "Crear cuento ✨"
-            : isSoon
-              ? "En preparación"
-              : "Abrir cuento"}
-        </p>
       </div>
     </>
   );

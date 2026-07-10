@@ -343,10 +343,6 @@ export default function StoryBookshelf({
       {activeStory ? (
         <p className="library-active-hint" aria-live="polite">
           <span className="text-honey-glow font-bold">{activeStory.title}</span>
-          {" · "}
-          {canOpenActive
-            ? "Clic de nuevo para abrir el cuento"
-            : "Próximamente en la biblioteca"}
         </p>
       ) : null}
     </section>
