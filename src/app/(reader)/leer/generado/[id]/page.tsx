@@ -26,7 +26,7 @@ function toContent(markdown: string): PersonalizedStoryContent {
   const parsed = parseStoryHeader(markdown);
   return {
     title: parsed.title,
-    subtitle: parsed.subtitle,
+    subtitle: null,
     blocks: parseBodyBlocks(parsed.body),
   };
 }

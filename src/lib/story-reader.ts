@@ -59,14 +59,11 @@ export async function loadPersonalizedStory(
   };
 
   const title = personalizeStoryText(parsed.title, perfil, personalizeOptions);
-  const subtitle = parsed.subtitle
-    ? personalizeStoryText(parsed.subtitle, perfil, personalizeOptions)
-    : null;
   const bodyBlocks = parseBodyBlocks(parsed.body);
 
   return {
     title,
-    subtitle,
+    subtitle: null,
     blocks: personalizeBlocks(bodyBlocks, perfil, personalizeOptions),
   };
 }

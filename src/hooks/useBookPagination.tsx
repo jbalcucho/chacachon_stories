@@ -77,7 +77,7 @@ export function useBookPagination({ content, fontSize }: Args) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [pages, setPages] = useState<BookPageData[]>([
-    { blocks: content.blocks, includeTitle: true, includeSubtitle: true },
+    { blocks: content.blocks, includeTitle: true, includeSubtitle: false },
   ]);
 
   useLayoutEffect(() => {
