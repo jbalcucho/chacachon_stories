@@ -55,16 +55,18 @@ Valores recomendados para la BD, de menor a mayor carga dialectal:
 
 | `codigo_acento` | Registro | Uso en MVP |
 |---|---|---|
-| `neutro` | Español estándar latinoamericano | Narrador base, fallback |
+| `neutro` | Español estándar latinoamericano | **Default generación IA** (`/crear`) y narrador base |
 | `bogota_rolo` | Bogotano cotidiano (mezcla rolo + cachaco) | Acento familiar, generaciones mixtas |
 | `bogota_cachaco` | Rolo tradicional / generacional | Abuelos, nostalgia, tier 1–2 |
-| `bogota_ninos` | Ñero/barrio actual suavizado, 5–10 años | **Default tier 1** — vocabulario de hoy |
+| `bogota_ninos` | Ñero/barrio actual suavizado, 5–10 años | Vocabulario de hoy — opcional en wizard |
 | `bogota_gomelo` | Bogotá alto estrato / juvenil | Contraste cómico, tier 1–2 |
 | `bogota_nero_lite` | Calle bogotana suavizada | Personajes adultos cómicos, tier 1–2 |
 | `costa_caribe` | Costeño (futuro) | Segundo acento post-MVP |
 | `paisa` | Antioqueño (futuro) | Tercer acento post-MVP |
 
 **MVP:** publicar primero `neutro` + `bogota_rolo`. Los demás cuando haya QA editorial.
+
+> **Generación IA (`POST /api/cuentos/generar`):** el default es siempre `neutro`, independiente del `codigo_acento` del perfil. El acento regional solo aplica si el usuario lo elige en el paso de revisión de `/crear`.
 
 ---
 

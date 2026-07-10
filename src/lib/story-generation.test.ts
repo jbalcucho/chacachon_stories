@@ -63,8 +63,38 @@ describe("buildStoryPrompt", () => {
     const { system, user } = buildStoryPrompt({ selection: sampleSelection });
     expect(system).toContain("Chacachón");
     expect(system).toContain("sermón");
+    expect(system).toContain("neutro colombiano");
     expect(user).toContain("Nico");
     expect(user).toContain("arco mundo");
+    expect(user).toContain("Neutro colombiano");
+    expect(user).toContain("fragmentos de referencia");
+  });
+
+  it("usa neutro por defecto aunque no se pase accentCode", () => {
+    const { accentCode, system } = buildStoryPrompt({
+      selection: sampleSelection,
+    });
+    expect(accentCode).toBe("neutro");
+    expect(system).toContain("neutro colombiano");
+  });
+
+  it("aplica instrucciones y few-shot del acento elegido", () => {
+    const { system, user, accentCode } = buildStoryPrompt({
+      selection: sampleSelection,
+      accentCode: "bogota_cachaco",
+    });
+    expect(accentCode).toBe("bogota_cachaco");
+    expect(system).toContain("cachaco");
+    expect(user).toContain("Bogotano cachaco");
+    expect(user).toContain("Ah carachas");
+  });
+
+  it("ignora accentCode inválido y vuelve a neutro", () => {
+    const { accentCode } = buildStoryPrompt({
+      selection: sampleSelection,
+      accentCode: "paisa",
+    });
+    expect(accentCode).toBe("neutro");
   });
 
   it("inyecta contexto del perfil familiar cuando se provee", () => {

@@ -4,7 +4,7 @@
 > Complementa [GuiaAcentos.md](../GuiaAcentos.md) (dialecto) y alimenta `src/lib/story-prompt.ts`.
 
 **Audiencia del cuento:** niños de **3 a 7 años** leídos en voz alta por un adulto, de noche o en familia.  
-**Audiencia del humor:** doble — el niño sigue la trama; el adulto reconoce la cotidianidad bogotana.
+**Audiencia del humor:** doble — el niño sigue la trama; el adulto reconoce la cotidianidad familiar (hogar, colegio, ciudad colombiana).
 
 ---
 
@@ -12,7 +12,7 @@
 
 Un cuento Chacachón **no** es un resumen genérico de “un niño aprendió X”. Es:
 
-1. **Hiperlocal:** edificio, ascensor, vereda, colegio, TransMilenio, tablet, chanclas — el mundo real del niño bogotano.
+1. **Hiperlocal:** edificio, ascensor, vereda, colegio, transporte, tablet, chanclas — el mundo real del niño colombiano (Bogotá cuando el perfil o el lugar lo indiquen).
 2. **Personal:** nombres, mascotas y dinámica familiar del perfil (cuando esté disponible).
 3. **Pedagógico sin sermón:** el reto del cuento coincide con un dolor real de crianza; la lección se **muestra** en el desenlace.
 4. **Cálido y cómico:** risa suave para el adulto, nunca burla cruel ni vulgaridad.
@@ -59,14 +59,26 @@ Todo cuento generado debe seguir este arco (3 a 5 escenas con `## `):
 
 ## 3. Voz y registro (tier 1)
 
-Para generación IA en POC, usar **`bogota_ninos` suavizado** — ver [GuiaAcentos.md](../GuiaAcentos.md).
+**Default en generación IA y en `/crear`:** `neutro` — español claro, cálido y comprensible en todo Colombia.  
+Los acentos regionales (`bogota_rolo`, `bogota_ninos`, `bogota_cachaco`, etc.) son **opcionales**; el usuario los elige al confirmar la receta. Ver [GuiaAcentos.md](../GuiaAcentos.md).
+
+El `codigo_acento` del perfil familiar **no** impone el acento del cuento generado salvo que el usuario lo elija en el wizard.
+
+### Neutro (default)
+
+- Español latinoamericano natural; máximo 0–1 modismo local por párrafo.
+- Cotidianidad colombiana sin saturar jerga: casa, colegio, familia, ciudad.
+- Detalles sensoriales concretos (olores, sonidos del hogar, clima).
+
+### Acentos opcionales
+
+Si el usuario elige un acento bogotano, aplicar las reglas de densidad de [GuiaAcentos.md](../GuiaAcentos.md) (2–4 marcas por párrafo en tier 1).
 
 ### Sí usar
 
 - Segunda persona implícita o narrador cercano (*“En el apartamento olía a…”*).
 - Diálogos cortos con emoción reconocible.
-- Detalles sensoriales: olores, sonidos del edificio, clima de Bogotá.
-- **2–4 marcas dialectales por párrafo** como máximo (parce, pilas, chimba, boleta, de una).
+- Detalles sensoriales: olores, sonidos del edificio, clima.
 - Humor de situación: tablet, chanclas, ascensor, lista de mamá, perro que ladra.
 
 ### No usar
@@ -178,12 +190,27 @@ Antes de dar por bueno un cuento generado:
 |-----------|---------|
 | `docs/biblia-editorial.md` | **Fuente de verdad editorial** (este archivo) |
 | [GuiaAcentos.md](../GuiaAcentos.md) | Matiz dialectal y tiers |
+| `src/lib/story-accent.ts` | Códigos de acento, default `neutro`, opciones del wizard |
+| `src/lib/story-prompt-examples.ts` | Fragmentos few-shot de cuentos curados |
 | `src/lib/story-prompt.ts` | System prompt + mensaje usuario → API |
 | `src/lib/story-mock.ts` | Fallback sin IA (no sustituye calidad) |
 | `docs/ia-generacion.md` | Infra, keys, Vercel, persistencia |
 
-**Próximo paso técnico:** mantener `STORY_SYSTEM_PROMPT` alineado con este doc;
-`buildStoryPrompt()` ya inyecta receta + perfil familiar (jul 2026).
+**Próximo paso técnico:** mantener `buildStorySystemPrompt()` y `buildFewShotBlock()` alineados con este doc;
+`buildStoryPrompt()` inyecta receta + perfil + acento elegido (jul 2026).
+
+---
+
+## 10. Cuentos curados como corpus de referencia
+
+Los cuentos en `cuentos/*.md` no son “entrenamiento” del modelo en el sentido de fine-tuning; son **few-shot editorial**:
+
+1. **Refinar** cada cuento publicado (tono, ritmo, checklist §7).
+2. **Etiquetar** variantes por `codigo_acento` cuando existan (neutro vs regional).
+3. **Extraer** fragmentos cortos (apertura + diálogo) a `src/lib/story-prompt-examples.ts`.
+4. **No copiar** tramas literalmente en generación — solo imitar voz y nivel de detalle.
+
+Al añadir un cuento nuevo, agregar al menos un par de fragmentos neutros; si hay versión dialectal curada, añadirla al mapa `BY_ACCENT`.
 
 ---
 

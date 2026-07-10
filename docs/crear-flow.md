@@ -80,7 +80,9 @@ Flujo **siempre guiado** — una etapa visible a la vez:
 
 ### Vista previa del cuento (revisión)
 
-`buildRecipeSynopsis()` arma un texto de varias frases: protagonistas y escenario, reto y lección, extras opcionales (mascota, acompañantes, objeto, clásico) y cierre con tono Chacachón (humor rolo, sin sermón).
+`buildRecipeSynopsis()` arma un texto de varias frases: protagonistas y escenario, reto y lección, extras opcionales (mascota, acompañantes, objeto, clásico) y cierre con tono Chacachón (humor familiar, sin sermón).
+
+En el paso de revisión, el usuario elige **acento narrativo** (default: **neutro colombiano**; opcional: variantes bogotanas). Se envía como `accentCode` en `POST /api/cuentos/generar`. Ver `src/lib/story-accent.ts` y [GuiaAcentos.md](../GuiaAcentos.md).
 
 ### Defaults de demo
 

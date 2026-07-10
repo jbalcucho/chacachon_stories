@@ -24,13 +24,18 @@ const TURN_MS = 680;
 const PAPER_KEY = "chacachon-paper";
 const PROGRESS_PREFIX = "chacachon.reader-progress:";
 
+function initialFontSize(): number {
+  if (typeof window === "undefined") return 1.2;
+  return window.innerWidth < 560 ? 1.1 : 1.28;
+}
+
 export default function StoryReader({
   content,
   profileSource,
   storyTitle,
   storySlug,
 }: Props) {
-  const [fontSize, setFontSize] = useState(1.28);
+  const [fontSize, setFontSize] = useState(initialFontSize);
   const [paper, setPaper] = useState<PaperStyle>("cuento");
   const [pageIndex, setPageIndex] = useState(0);
   const [turning, setTurning] = useState<TurnDirection | null>(null);
@@ -181,25 +186,48 @@ export default function StoryReader({
       {measureLayer}
 
       <header className="story-reader__toolbar">
-        <Link
-          href={`/?libro=${encodeURIComponent(storySlug)}`}
-          className="story-reader__back"
-        >
-          ← Biblioteca
-        </Link>
+        <div className="story-reader__toolbar-row story-reader__toolbar-row--nav">
+          <Link
+            href={`/?libro=${encodeURIComponent(storySlug)}`}
+            className="story-reader__back"
+          >
+            ← Biblioteca
+          </Link>
 
-        <div className="story-reader__toolbar-center">
-          <span className="story-reader__toolbar-title">{storyTitle}</span>
-          {profileSource === "user" ? (
-            <span className="story-reader__badge">Tu familia</span>
-          ) : (
-            <span className="story-reader__badge story-reader__badge--demo">
-              Demo Chacachón
-            </span>
-          )}
+          <div className="story-reader__font-controls">
+            <button
+              type="button"
+              onClick={decrease}
+              className="story-reader__font-btn"
+              aria-label="Texto más pequeño"
+            >
+              A−
+            </button>
+            <button
+              type="button"
+              onClick={increase}
+              className="story-reader__font-btn"
+              aria-label="Texto más grande"
+            >
+              A+
+            </button>
+          </div>
         </div>
 
-        <div className="story-reader__tools">
+        <div className="story-reader__toolbar-row story-reader__toolbar-row--title">
+          <div className="story-reader__toolbar-center">
+            <span className="story-reader__toolbar-title">{storyTitle}</span>
+            {profileSource === "user" ? (
+              <span className="story-reader__badge">Tu familia</span>
+            ) : (
+              <span className="story-reader__badge story-reader__badge--demo">
+                Demo Chacachón
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="story-reader__toolbar-row story-reader__toolbar-row--paper">
           <div
             className="story-reader__paper-toggle"
             role="group"
@@ -222,25 +250,6 @@ export default function StoryReader({
               onClick={() => changePaper("cuaderno")}
             >
               Cuaderno
-            </button>
-          </div>
-
-          <div className="story-reader__font-controls">
-            <button
-              type="button"
-              onClick={decrease}
-              className="story-reader__font-btn"
-              aria-label="Texto más pequeño"
-            >
-              A−
-            </button>
-            <button
-              type="button"
-              onClick={increase}
-              className="story-reader__font-btn"
-              aria-label="Texto más grande"
-            >
-              A+
             </button>
           </div>
         </div>

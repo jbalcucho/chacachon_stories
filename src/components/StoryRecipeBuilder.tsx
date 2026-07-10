@@ -28,6 +28,11 @@ import {
   type RecipeSelectionSlice,
   type RecipeWizardStep,
 } from "@/lib/recipe-summary";
+import {
+  DEFAULT_STORY_ACCENT,
+  STORY_ACCENT_OPTIONS,
+  type StoryAccentCode,
+} from "@/lib/story-accent";
 
 type Props = {
   ingredients: RecipeIngredients;
@@ -412,6 +417,9 @@ export default function StoryRecipeBuilder({
   const [notice, setNotice] = useState<string | null>(null);
   const [pulseTokenId, setPulseTokenId] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [accentCode, setAccentCode] = useState<StoryAccentCode>(
+    DEFAULT_STORY_ACCENT,
+  );
 
   const currentStep = wizardSteps[stepIndex];
   const isLastStep = stepIndex === wizardSteps.length - 1;
@@ -572,7 +580,7 @@ export default function StoryRecipeBuilder({
       const res = await fetch("/api/cuentos/generar", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ selection }),
+        body: JSON.stringify({ selection, accentCode }),
       });
       const data = (await res.json().catch(() => null)) as
         | { id?: string; message?: string }
@@ -587,7 +595,7 @@ export default function StoryRecipeBuilder({
       flashNotice("Sin conexión. Revisa tu internet e intenta de nuevo.");
       setGenerating(false);
     }
-  }, [canGenerate, flashNotice, generating, router, selection]);
+  }, [canGenerate, flashNotice, generating, router, selection, accentCode]);
 
   const currentOther =
     currentStep.zoneKey != null
@@ -722,6 +730,31 @@ export default function StoryRecipeBuilder({
             </div>
 
             <RecipeRecap selection={selection} steps={wizardSteps} />
+
+            <fieldset className="recipe-accent">
+              <legend className="recipe-accent__legend">
+                ¿Cómo quieres que suene el cuento?
+              </legend>
+              <p className="recipe-accent__hint">
+                Por defecto usamos español neutro colombiano. Los acentos regionales
+                son opcionales.
+              </p>
+              <div className="recipe-accent__options">
+                {STORY_ACCENT_OPTIONS.map((opt) => (
+                  <label key={opt.code} className="recipe-accent__option">
+                    <input
+                      type="radio"
+                      name="story-accent"
+                      value={opt.code}
+                      checked={accentCode === opt.code}
+                      onChange={() => setAccentCode(opt.code)}
+                    />
+                    <span className="recipe-accent__label">{opt.label}</span>
+                    <span className="recipe-accent__desc">{opt.hint}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
           </div>
         ) : isExtrasStep ? (
           <div className="recipe-wizard__extras">

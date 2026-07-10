@@ -1,6 +1,12 @@
 import type { PersonalizedStoryContent } from "@/lib/story-reader";
 import type { StoryBlock } from "@/lib/story-markdown";
 import type { BookPageData } from "@/lib/story-book-pages";
+import {
+  joinSentences,
+  joinWords,
+  splitIntoSentences,
+  splitIntoWords,
+} from "@/lib/story-paragraph-split";
 
 type RenderPage = Pick<
   BookPageData,
@@ -8,6 +14,7 @@ type RenderPage = Pick<
 > & {
   title?: string | null;
   subtitle?: string | null;
+  dropCap?: boolean;
 };
 
 /** Quita marcadores en línea para medir el mismo texto que se renderiza. */
@@ -72,7 +79,9 @@ export function renderPageToInner(
   }
 
   const body = document.createElement("div");
-  body.className = "book-page__body";
+  body.className = page.dropCap
+    ? "book-page__body book-page__body--drop"
+    : "book-page__body";
   for (const block of page.blocks) {
     appendBlock(body, block);
   }
@@ -85,6 +94,81 @@ export function pageFits(inner: HTMLElement): boolean {
   return inner.scrollHeight <= available + 1;
 }
 
+function blocksFit(
+  inner: HTMLElement,
+  shell: RenderPage,
+  blocks: StoryBlock[],
+): boolean {
+  renderPageToInner(inner, { ...shell, blocks });
+  return pageFits(inner);
+}
+
+function maxParagraphPrefixThatFits(
+  inner: HTMLElement,
+  paragraphText: string,
+  pageBlocks: StoryBlock[],
+  shell: RenderPage,
+): { prefix: string; suffix: string } | null {
+  const sentences = splitIntoSentences(paragraphText);
+  let fitCount = 0;
+
+  for (let i = 0; i < sentences.length; i += 1) {
+    const candidate = joinSentences(sentences.slice(0, i + 1));
+    if (
+      blocksFit(inner, shell, [
+        ...pageBlocks,
+        { type: "paragraph", text: candidate },
+      ])
+    ) {
+      fitCount = i + 1;
+    } else {
+      break;
+    }
+  }
+
+  if (fitCount > 0) {
+    return {
+      prefix: joinSentences(sentences.slice(0, fitCount)),
+      suffix: joinSentences(sentences.slice(fitCount)),
+    };
+  }
+
+  const words = splitIntoWords(paragraphText);
+  if (words.length === 0) return null;
+
+  let lo = 1;
+  let hi = words.length;
+  let best = 0;
+
+  while (lo <= hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    const candidate = joinWords(words.slice(0, mid));
+    if (
+      blocksFit(inner, shell, [
+        ...pageBlocks,
+        { type: "paragraph", text: candidate },
+      ])
+    ) {
+      best = mid;
+      lo = mid + 1;
+    } else {
+      hi = mid - 1;
+    }
+  }
+
+  if (best === 0) {
+    return {
+      prefix: words[0] ?? paragraphText,
+      suffix: joinWords(words.slice(1)),
+    };
+  }
+
+  return {
+    prefix: joinWords(words.slice(0, best)),
+    suffix: joinWords(words.slice(best)),
+  };
+}
+
 /** Pagina midiendo el DOM real (misma estructura que StoryPageBlocks). */
 export function paginateBookContent(
   inner: HTMLElement,
@@ -95,63 +179,95 @@ export function paginateBookContent(
   const hasSubtitle = Boolean(subtitle);
   const pages: BookPageData[] = [];
   let blockIndex = 0;
+  let pendingParagraph: string | null = null;
   let isFirstPage = true;
 
   while (true) {
     const includeTitle = isFirstPage && hasTitle;
     const includeSubtitle = isFirstPage && hasSubtitle;
-    const remaining = blocks.length - blockIndex;
+    const shell: RenderPage = {
+      blocks: [],
+      includeTitle,
+      includeSubtitle,
+      title,
+      subtitle,
+      dropCap: isFirstPage,
+    };
 
-    if (!includeTitle && !includeSubtitle && remaining === 0) break;
+    const hasWork =
+      includeTitle ||
+      includeSubtitle ||
+      Boolean(pendingParagraph?.trim()) ||
+      blockIndex < blocks.length;
 
-    if (remaining === 0) {
-      renderPageToInner(inner, {
-        blocks: [],
-        includeTitle,
-        includeSubtitle,
-        title,
-        subtitle,
-      });
-      if ((includeTitle || includeSubtitle) && pageFits(inner)) {
-        pages.push({ blocks: [], includeTitle, includeSubtitle });
+    if (!hasWork) break;
+
+    const pageBlocks: StoryBlock[] = [];
+
+    while (pendingParagraph?.trim() || blockIndex < blocks.length) {
+      let unit: StoryBlock;
+      let fromPending = false;
+
+      if (pendingParagraph?.trim()) {
+        unit = { type: "paragraph", text: pendingParagraph };
+        fromPending = true;
+      } else {
+        unit = blocks[blockIndex];
       }
+
+      if (blocksFit(inner, shell, [...pageBlocks, unit])) {
+        pageBlocks.push(unit);
+        if (fromPending) pendingParagraph = null;
+        else blockIndex += 1;
+        continue;
+      }
+
+      if (unit.type === "paragraph") {
+        const split = maxParagraphPrefixThatFits(
+          inner,
+          unit.text,
+          pageBlocks,
+          shell,
+        );
+        if (split?.prefix) {
+          pageBlocks.push({ type: "paragraph", text: split.prefix });
+          pendingParagraph = split.suffix.trim() ? split.suffix : null;
+          if (!fromPending && !pendingParagraph) blockIndex += 1;
+        } else if (pageBlocks.length === 0) {
+          pageBlocks.push(unit);
+          pendingParagraph = null;
+          if (!fromPending) blockIndex += 1;
+        }
+      } else if (pageBlocks.length === 0) {
+        pageBlocks.push(unit);
+        blockIndex += 1;
+      }
+
       break;
     }
 
-    let fitCount = 0;
-    for (let tryCount = 1; tryCount <= remaining; tryCount += 1) {
-      const candidate = blocks.slice(blockIndex, blockIndex + tryCount);
-      renderPageToInner(inner, {
-        blocks: candidate,
-        includeTitle,
-        includeSubtitle,
-        title,
-        subtitle,
-      });
-      if (pageFits(inner)) {
-        fitCount = tryCount;
-      } else {
-        break;
-      }
+    if (
+      pageBlocks.length === 0 &&
+      !includeTitle &&
+      !includeSubtitle
+    ) {
+      break;
     }
 
-    if (fitCount === 0) {
-      pages.push({
-        blocks: [blocks[blockIndex]],
-        includeTitle,
-        includeSubtitle,
-      });
-      blockIndex += 1;
-    } else {
-      pages.push({
-        blocks: blocks.slice(blockIndex, blockIndex + fitCount),
-        includeTitle,
-        includeSubtitle,
-      });
-      blockIndex += fitCount;
+    if (pageBlocks.length === 0 && (includeTitle || includeSubtitle)) {
+      renderPageToInner(inner, { ...shell, blocks: [] });
+      if (!pageFits(inner)) break;
     }
+
+    pages.push({
+      blocks: pageBlocks,
+      includeTitle,
+      includeSubtitle,
+    });
 
     isFirstPage = false;
+
+    if (!pendingParagraph && blockIndex >= blocks.length) break;
   }
 
   if (pages.length === 0) {

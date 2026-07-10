@@ -1,6 +1,14 @@
 import type { FamilyProfileDocument } from "@/lib/family-profile-schema";
 import type { RecipeSelectionSlice } from "@/lib/recipe-summary";
 import type { RecipeIngredient } from "@/lib/story-recipe";
+import {
+  accentLabel,
+  accentVoiceInstructions,
+  DEFAULT_STORY_ACCENT,
+  resolveStoryAccent,
+  type StoryAccentCode,
+} from "@/lib/story-accent";
+import { buildFewShotBlock } from "@/lib/story-prompt-examples";
 
 function names(items: RecipeIngredient[]): string {
   if (items.length === 0) return "";
@@ -107,19 +115,11 @@ export function describeProfile(perfil: FamilyProfileDocument): string[] {
   return lines;
 }
 
-/**
- * System prompt alineado con docs/biblia-editorial.md y GuiaAcentos (tier 1,
- * bogota_ninos suavizado).
- */
-export const STORY_SYSTEM_PROMPT = `Eres Chacachón, autor de cuentos infantiles personalizados para familias de Bogotá, Colombia.
+const STORY_PROMPT_CORE = `Eres Chacachón, autor de cuentos infantiles personalizados para familias en Colombia.
 
 Audiencia: niños de 3 a 7 años, leídos en voz alta por un adulto (a menudo de noche). El adulto debe sonreír con la cotidianidad; el niño debe entender la trama sin explicaciones.
 
-Voz y registro (tier 1, bogota_ninos suavizado):
-- Español latinoamericano cálido; humor bogotano suave (edificio, ascensor, vereda, tablet, chanclas, TransMilenio).
-- Máximo 2–4 modismos por párrafo (parce, pilas, chimba, boleta, de una). Sin caricatura ni saturación de jerga.
-- Frases claras, ritmo de lectura en voz alta; diálogos con raya (—).
-- Detalles sensoriales concretos: olores, sonidos del edificio, clima de Bogotá.
+Frases claras, ritmo de lectura en voz alta; diálogos con raya (—).
 
 Estructura narrativa (3 a 5 escenas con encabezado "## "):
 1. Mundo — dónde estamos y quién es quién
@@ -143,23 +143,43 @@ Párrafos...
 
 Extensión: 350–600 palabras. No incluyas listas ni notas del autor.`;
 
+/** System prompt según acento (default: neutro colombiano). */
+export function buildStorySystemPrompt(
+  accentCode: StoryAccentCode = DEFAULT_STORY_ACCENT,
+): string {
+  return `${STORY_PROMPT_CORE}
+
+${accentVoiceInstructions(accentCode)}`;
+}
+
+/** @deprecated Usar buildStorySystemPrompt(accentCode) */
+export const STORY_SYSTEM_PROMPT = buildStorySystemPrompt(DEFAULT_STORY_ACCENT);
+
 export type StoryPromptInput = {
   selection: RecipeSelectionSlice;
   perfil?: FamilyProfileDocument | null;
+  accentCode?: string | null;
 };
 
-/** Construye los mensajes para la API de IA a partir de receta + perfil. */
+/** Construye los mensajes para la API de IA a partir de receta + perfil + acento. */
 export function buildStoryPrompt({
   selection,
   perfil,
+  accentCode: requestedAccent,
 }: StoryPromptInput): {
   system: string;
   user: string;
+  accentCode: StoryAccentCode;
 } {
+  const accentCode = resolveStoryAccent(requestedAccent);
   const recipe = describeRecipe(selection);
   const profile = perfil ? describeProfile(perfil) : [];
 
   const userParts = [
+    `Acento narrativo elegido: ${accentLabel(accentCode)} (\`${accentCode}\`).`,
+    "",
+    buildFewShotBlock(accentCode),
+    "",
     "Escribe un cuento personalizado con estos ingredientes:",
     "",
     ...recipe.map((line) => `- ${line}`),
@@ -180,5 +200,9 @@ export function buildStoryPrompt({
     "Devuelve solo el cuento en el formato Markdown indicado.",
   );
 
-  return { system: STORY_SYSTEM_PROMPT, user: userParts.join("\n") };
+  return {
+    system: buildStorySystemPrompt(accentCode),
+    user: userParts.join("\n"),
+    accentCode,
+  };
 }

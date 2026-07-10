@@ -284,7 +284,7 @@ export function buildRecipeSynopsis(
   }
 
   parts.push(
-    "Humor bogotano, escenas concretas y una moraleja sin sermón — así lo imagina Chacachón.",
+    "Humor familiar, escenas concretas y una moraleja sin sermón — así lo imagina Chacachón.",
   );
 
   return parts.join(" ");

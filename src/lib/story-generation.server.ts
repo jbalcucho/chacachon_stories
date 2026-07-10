@@ -8,6 +8,7 @@ import { buildStoryPrompt } from "@/lib/story-prompt";
 export type StoryGenerationContext = {
   selection: RecipeSelectionSlice;
   perfil?: FamilyProfileDocument | null;
+  accentCode?: string | null;
 };
 
 export type StorySource = "gemini" | "claude" | "mock";
@@ -51,6 +52,7 @@ async function callClaude(
   const { system, user } = buildStoryPrompt({
     selection: ctx.selection,
     perfil: ctx.perfil,
+    accentCode: ctx.accentCode,
   });
 
   const res = await fetch(ANTHROPIC_URL, {
@@ -94,6 +96,7 @@ async function callGeminiModel(
   const { system, user } = buildStoryPrompt({
     selection: ctx.selection,
     perfil: ctx.perfil,
+    accentCode: ctx.accentCode,
   });
   const url = `${GEMINI_BASE_URL}/${model}:generateContent`;
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import {
-  recipeSelectionSchema,
+  generateStoryRequestSchema,
   selectionMissingRequired,
   toSelectionSlice,
 } from "@/lib/recipe-selection";
@@ -17,9 +17,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "JSON inválido" }, { status: 400 });
   }
 
-  const parsed = recipeSelectionSchema.safeParse(
-    (body as { selection?: unknown })?.selection ?? body,
-  );
+  const raw = body as { selection?: unknown; accentCode?: unknown };
+  const parsed = generateStoryRequestSchema.safeParse({
+    selection: raw?.selection ?? body,
+    accentCode: raw?.accentCode,
+  });
   if (!parsed.success) {
     return NextResponse.json(
       { message: "Receta inválida", errors: parsed.error.flatten() },
@@ -27,20 +29,24 @@ export async function POST(request: Request) {
     );
   }
 
-  const missing = selectionMissingRequired(parsed.data);
+  const missing = selectionMissingRequired(parsed.data.selection);
   if (missing) {
     return NextResponse.json({ message: missing }, { status: 400 });
   }
 
   try {
     const userId = await getSessionUserId();
-    const slice = toSelectionSlice(parsed.data);
+    const slice = toSelectionSlice(parsed.data.selection);
     const { perfil } = await getReaderProfile(userId);
-    const draft = await generateStory({ selection: slice, perfil });
+    const draft = await generateStory({
+      selection: slice,
+      perfil,
+      accentCode: parsed.data.accentCode,
+    });
     const id = await saveGeneratedStory({
       ...draft,
       userId,
-      recipe: parsed.data,
+      recipe: parsed.data.selection,
     });
 
     return NextResponse.json({ id, source: draft.source });

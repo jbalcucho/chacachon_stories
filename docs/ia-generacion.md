@@ -263,8 +263,7 @@ Rotar key: nueva en AI Studio → actualizar `.env.local` y Vercel → redeploy.
 
 Las reglas de voz, estructura y ejemplos buenos/malos viven en
 **[docs/biblia-editorial.md](./biblia-editorial.md)**. El system prompt en
-`story-prompt.ts` debe alinearse con ese documento. Para acentos y modismos, ver
-también [GuiaAcentos.md](../GuiaAcentos.md).
+`story-prompt.ts` debe alinearse con ese documento. El **default de acento es `neutro`**; el usuario puede elegir variantes bogotanas en `/crear`. Fragmentos few-shot en `story-prompt-examples.ts`. Para acentos y modismos, ver también [GuiaAcentos.md](../GuiaAcentos.md).
 
 ## Pendientes (siguientes fases)
 

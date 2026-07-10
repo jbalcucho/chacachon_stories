@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { storyAccentCodeSchema } from "@/lib/story-accent";
 import type { RecipeSelectionSlice } from "@/lib/recipe-summary";
 
 /** Ingrediente tal como viaja del cliente al backend (subconjunto serializable). */
@@ -32,6 +33,15 @@ export const recipeSelectionSchema = z.object({
 });
 
 export type RecipeSelectionPayload = z.infer<typeof recipeSelectionSchema>;
+
+/** Cuerpo de POST /api/cuentos/generar */
+export const generateStoryRequestSchema = z.object({
+  selection: recipeSelectionSchema,
+  /** Default en servidor: `neutro` (español neutro colombiano). */
+  accentCode: storyAccentCodeSchema.optional(),
+});
+
+export type GenerateStoryRequest = z.infer<typeof generateStoryRequestSchema>;
 
 /** Regla mínima: sin protagonista ni reto no hay cuento que generar. */
 export function selectionMissingRequired(
