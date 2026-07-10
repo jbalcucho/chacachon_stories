@@ -69,7 +69,7 @@ export function accentVoiceInstructions(code: StoryAccentCode): string {
 - Escenas urbanas bogotanas cuando encajen: edificio, TransMilenio, trancon.`;
     case "bogota_ninos":
       return `Voz y registro (bogotano actual / niños, tier 1):
-- Vocabulario de niños bogotanos de hoy, suavizado para 3–7 años.
+- Vocabulario de niños bogotanos de hoy, suavizado para lectura familiar (hasta ~12 años).
 - Máximo 2–4 modismos por párrafo (parce, pilas, chimba, en serio, bro).
 - NO uses nono, pelafustán, ah carachas (son cachacos — ver GuiaAcentos).`;
     case "bogota_cachaco":

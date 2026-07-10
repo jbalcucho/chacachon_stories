@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "sync:cuentos": "node scripts/sync-story-manifest.mjs",
+    "sync:html": "node scripts/sync-story-html.mjs",
     "generate:icons": "node scripts/generate-app-icons.mjs",
     "validate:catalog": "node scripts/validate-story-catalog.mjs",
+    "validate:quality": "tsx scripts/validate-story-quality.mjs",
     "predev": "node scripts/sync-story-manifest.mjs && node scripts/validate-story-catalog.mjs",
     "dev": "next dev --turbopack",
     "prebuild": "node scripts/sync-story-manifest.mjs && node scripts/validate-story-catalog.mjs",

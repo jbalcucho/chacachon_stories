@@ -3,8 +3,9 @@
 > Reglas de voz, estructura y calidad para cuentos generados por IA y curados a mano.  
 > Complementa [GuiaAcentos.md](../GuiaAcentos.md) (dialecto) y alimenta `src/lib/story-prompt.ts`.
 
-**Audiencia del cuento:** niños de **3 a 7 años** leídos en voz alta por un adulto, de noche o en familia.  
-**Audiencia del humor:** doble — el niño sigue la trama; el adulto reconoce la cotidianidad familiar (hogar, colegio, ciudad colombiana).
+**Audiencia (este entregable):** cuentos **familiares** pensados para niños de hasta **~12 años** (lectura en voz alta o lectura propia según la edad), con humor de **doble audiencia**: el niño sigue la trama; el adulto reconoce la cotidianidad familiar (hogar, colegio, ciudad colombiana). Cualquier edad puede disfrutarlos; el foco editorial y de producto es la infancia / preadolescencia temprana.
+
+**Fuera de alcance por ahora:** versiones explícitamente para adultos. Quedan para una fase posterior; no mezclar tono adulto en el corpus ni en el prompt de generación de este MVP.
 
 ---
 
@@ -12,55 +13,71 @@
 
 Un cuento Chacachón **no** es un resumen genérico de “un niño aprendió X”. Es:
 
-1. **Hiperlocal:** edificio, ascensor, vereda, colegio, transporte, tablet, chanclas — el mundo real del niño colombiano (Bogotá cuando el perfil o el lugar lo indiquen).
-2. **Personal:** nombres, mascotas y dinámica familiar del perfil (cuando esté disponible).
-3. **Pedagógico sin sermón:** el reto del cuento coincide con un dolor real de crianza; la lección se **muestra** en el desenlace.
-4. **Cálido y cómico:** risa suave para el adulto, nunca burla cruel ni vulgaridad.
-5. **Ritmo de lectura en voz alta:** frases claras, párrafos respirables, diálogos con raya (`—`).
+1. **Mundo reconocible y sensorial (pertenencia + cognición corporizada):** el cuento ocurre en un mundo que el niño *podría habitar* —casa, colegio, barrio, ciudad del perfil— con **1–3 anclas sensoriales concretas** por escena (olor a café o lluvia, textura del pasto o del pelaje, sonido de las llaves, frío en las manos). El cerebro asimila mejor lo que *siente*; evita lo abstracto (“era bonito”, “estaba triste” → muéstralo en el cuerpo). Lo colombiano entra cuando el perfil o el lugar lo piden; **no forzar Bogotá** ni saturar objetos/jerga como checklist de marca. Prioridad: **familia → lugar del perfil → Colombia → genérico cálido**.
+2. **Personal (reconocimiento familiar):** el cuento hace sentir *esta* familia, no “unos niños genéricos”. Usar **exactamente** nombres y apodos de la receta/perfil; dar **agencia** al protagonista (hace, decide, siente — no solo aparece nombrado); integrar **1–2 marcas de dinámica** (quién pone el límite, quién alivia, rol de la mascota) y como máximo **1–2 frases típicas** en diálogo. No volcar el perfil entero ni inventar parientes o datos que el usuario no dio. Sin perfil (demo): personalizar con la receta; no fingir “tu familia” si es modo demo.
+3. **Pedagógico sin sermón (aprendizaje en la piel):** el **reto** es el conflicto que el niño reconoce (deseo, miedo suave, frustración); la **lección** de la receta es solo la semilla del cierre y se **muestra** en lo que hacen o sienten, no se declara. Preferir cambio de conducta o de vínculo (apaga, pide la mano, se queda) antes que explicación adulta. Permitir **una** frase de insight del niño si suena a él, no a maestro. Prohibido: “la moraleja es…”, “aprendimos que…”, monólogos correctivos largos, subtítulos o escenas morales.
+4. **Cálido y cómico (humor de reconocimiento):** el humor nace de la **situación cotidiana** (rutina, mascota, malentendido suave), no de chistes sueltos ni de ridiculizar al niño. **Doble audiencia:** el niño sigue la gracia de lo que pasa; el adulto sonríe al verse. **Calor:** límites firmes sin humillación; cansancio parental permitido, cinismo o sarcasmo hiriente no. **Densidad:** 1–2 momentos cómicos memorables por cuento bastan. Prohibido: burla cruel, grosería, clasismo, reírse *del* niño como tonto.
+5. **Ritmo de lectura en voz alta (oído primero):** el cuento debe poder leerse en familia sin atascarse. Frases en su mayoría **cortas o medias**; párrafos de **2–4 oraciones**; diálogos con raya (`—`), turnos breves, alternando narración y voz. Dejar **aire** entre beats (no un muro de texto). El cierre baja el volumen (calma, no clímax nuevo). Evitar: oraciones kilométricas, párrafos de media página, cascadas de nombres, onomatopeyas en exceso. Formato: Markdown limpio (`#`, `>`, `##`, `—`).
 
 Referencias canónicas (leer antes de afinar prompts):
 
-| Cuento | Qué demuestra |
-|--------|----------------|
-| `cuentos/familia-chacachon-operacion-a-dormir.md` | Rutina nocturna, lista de mamá, humor parental |
+
+| Cuento                                                | Qué demuestra                                              |
+| ----------------------------------------------------- | ---------------------------------------------------------- |
+| `cuentos/familia-chacachon-operacion-a-dormir.md`     | Rutina nocturna, lista de mamá, humor parental             |
 | `cuentos/familia-chacachon-nico-dia-sin-pantallas.md` | Reto moderno, escena de apartamento, moraleja sin discurso |
-| `cuentos/familia-chacachon-el-lobo-y-las-palabras.md` | Molde clásico + familia, metáfora del lobo, tier 1 |
+| `cuentos/familia-chacachon-el-lobo-y-las-palabras.md` | Molde clásico + familia, metáfora del lobo, tier 1         |
+
 
 ---
 
-## 2. Estructura narrativa obligatoria
+## 2. Estructura narrativa
 
-Todo cuento generado debe seguir este arco (3 a 5 escenas con `## `):
+### Andamiaje recomendado (generación IA y QA)
+
+Para lectura familiar en voz alta, el default es un arco de **3 a 5 escenas** con `##` :
 
 ```
-1. MUNDO     — Dónde estamos, quién es quién, tono del día (1 escena)
-2. RETO      — El dilema aparece; tensión suave, sin miedo fuerte (1 escena)
-3. COMPLICACIÓN — Intento fallido o momento difícil (1 escena, opcional si es corto)
-4. GIRO      — Decisión, ayuda, objeto o personaje que cambia el rumbo (1 escena)
-5. CIERRE    — Calma, abrazo, rutina restaurada; la lección queda implícita (1 escena)
+1. MUNDO     — Dónde estamos, quién es quién, tono del día
+2. RETO      — El dilema aparece; tensión acorde a la edad (sin terror)
+3. COMPLICACIÓN — Intento fallido o momento difícil (opcional si el cuento es corto)
+4. GIRO      — Decisión, ayuda, objeto o personaje que cambia el rumbo
+5. CIERRE    — Calma, vínculo restaurado; la lección queda implícita
 ```
+
+Es **andamiaje**, no camisa de fuerza: un cuento corto puede fusionar mundo+reto o saltarse la complicación. Variantes válidas cuando la receta lo pida (p. ej. molde clásico de tres intentos, día acumulativo).
+
+### Mínimo obligatorio (calidad)
+
+Da igual el número exacto de `##` si se cumplen estas tres:
+
+1. **Deseo o conflicto claro** — el niño entiende qué se quiere o qué duele.
+2. **Causa–efecto** — lo que pasa sigue de lo que hicieron los personajes (no una lista de eventos sueltos).
+3. **Cierre en calma** — el arco emocional aterriza; la lección se *siente*, no se predica.
 
 ### Extensión
 
-| Métrica | Objetivo |
-|---------|----------|
-| Palabras | **350 – 600** |
-| Escenas (`##`) | **3 – 5** |
-| Tiempo de lectura | **5 – 8 minutos** en voz alta |
-| Párrafos por escena | 2 – 4 |
+
+| Métrica             | Objetivo                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------- |
+| Palabras            | **350 – 600** (default lectura en voz alta; más solo si la receta/molde lo justifica) |
+| Escenas (`##`)      | **3 – 5** recomendadas                                                                |
+| Tiempo de lectura   | **5 – 8 minutos** en voz alta                                                         |
+| Párrafos por escena | 2 – 4                                                                                 |
+
 
 ### Título y subtítulo
 
 - **Título:** evocador, con nombre del protagonista o del reto cuando encaje.  
-  Ej.: *La misión secreta de Nico: el guardián de la noche* · *El día sin pantallas de Nico*.
+Ej.: *La misión secreta de Nico: el guardián de la noche* · *El día sin pantallas de Nico*.
 - **Subtítulo** (`> …`): una línea que promete emoción o lugar. No repite la moraleja.
 
 ---
 
 ## 3. Voz y registro (tier 1)
 
-**Default en generación IA y en `/crear`:** `neutro` — español claro, cálido y comprensible en todo Colombia.  
-Los acentos regionales (`bogota_rolo`, `bogota_ninos`, `bogota_cachaco`, etc.) son **opcionales**; el usuario los elige al confirmar la receta. Ver [GuiaAcentos.md](../GuiaAcentos.md).
+**Default en generación IA y en** `/crear`**:** `neutro` — español claro, cálido y comprensible en todo Colombia.  
+Los acentos regionales (rolo, cachaco, santandereano, costeño, paisa, pastuso, etc.) son **opcionales**; el usuario los elige al confirmar la receta. Ver [GuiaAcentos.md](../GuiaAcentos.md).
 
 El `codigo_acento` del perfil familiar **no** impone el acento del cuento generado salvo que el usuario lo elija en el wizard.
 
@@ -72,14 +89,16 @@ El `codigo_acento` del perfil familiar **no** impone el acento del cuento genera
 
 ### Acentos opcionales
 
-Si el usuario elige un acento bogotano, aplicar las reglas de densidad de [GuiaAcentos.md](../GuiaAcentos.md) (2–4 marcas por párrafo en tier 1).
+Si el usuario elige un acento  aplicar las reglas de densidad de [GuiaAcentos.md](../GuiaAcentos.md) (2–4 marcas por párrafo en tier 1).
 
 ### Sí usar
 
-- Segunda persona implícita o narrador cercano (*“En el apartamento olía a…”*).
-- Diálogos cortos con emoción reconocible.
-- Detalles sensoriales: olores, sonidos del edificio, clima.
-- Humor de situación: tablet, chanclas, ascensor, lista de mamá, perro que ladra.
+- Narrador cercano (*“En la casa olía a…”*).
+- Diálogos cortos con raya (`—`) y emoción reconocible; turnos breves.
+- Anclas de pertenencia: olores, sonidos, clima, gestos de rutina familiar.
+- Humor de **reconocimiento**: situación cotidiana (rutina, mascota, malentendido suave), no chiste suelto ni sketch.
+- Calor en el vínculo: límite firme sin humillar; cansancio parental sin cinismo hiriente.
+- Párrafos de 2–4 oraciones; aire entre beats para lectura en voz alta.
 
 ### No usar
 
@@ -87,14 +106,20 @@ Si el usuario elige un acento bogotano, aplicar las reglas de densidad de [GuiaA
 - Violencia, miedo intenso, castigos humillantes, muerte, armas.
 - Marcas comerciales, política, religión doctrinal.
 - Insultos, clasismo, burla a barrios o estratos.
-- Saturación de modismos (caricatura).
+- Burla *del* niño (tonto, llorón, “boleta” como humillación); reír *con* la situación familiar sí.
+- Saturar gags o modismos hasta volver el cuento un sketch.
+- Oraciones kilométricas, párrafos muro, cascadas de nombres u onomatopeyas en exceso.
+- Cierre que abre un clímax nuevo en vez de bajar el volumen.
+- Saturación de modismos u objetos “locales” (caricatura / postcard).
+- Forzar Bogotá u otra ciudad si el perfil o la receta apuntan a otro lugar.
 - Fantasía desconectada del mundo del niño **salvo** que el usuario eligió un lugar fantástico o un molde clásico.
 
-### Moraleja
+### Moraleja (detalle del pilar §1.3)
 
-- Debe poder resumirse en **una frase** al final del cuento en la mente del lector, no en el texto.
-- Debe alinearse con el ingrediente **«Qué aprenden»** de la receta.
-- El **reto** es el conflicto; la **lección** es el premio emocional del cierre.
+- En la mente del lector adulto puede resumirse en **una frase**; en el texto del cuento, **no**.
+- Alineada con **«Qué aprenden»**; el **reto** es el conflicto vivido, no el discurso.
+- Sermón disfrazado también cuenta: monólogo largo de mamá/papá, “y desde ese día…”, título/subtítulo moral, escena tipo “La moraleja”.
+- Insight del niño al cierre (una línea, en su voz) **sí** puede; cartilla del adulto **no**.
 
 ---
 
@@ -102,17 +127,19 @@ Si el usuario elige un acento bogotano, aplicar las reglas de densidad de [GuiaA
 
 Cada zona del wizard en `/crear/adaptar` tiene un trabajo narrativo:
 
-| Ingrediente | Rol en la historia |
-|-------------|-------------------|
-| **Protagonistas** | Llevan la acción; usar **exactamente** esos nombres. |
-| **Reto** | Conflicto central; debe sentirse en la escena 2. |
-| **Qué aprenden** | Semilla del cierre; nunca como frase moral pegada. |
-| **Lugar** | Escenario dominante; detalles concretos (no “un lugar bonito”). |
-| **Mascota** | Al menos un momento cómico o de apoyo. |
-| **Acompañantes** | Diálogo o reacción que tensiona o ayuda. |
-| **Rol de reto** | “Lobo” simbólico: quien encarna el lado difícil (sin villano terrorífico). |
-| **Objeto especial** | Detalle con payoff en el giro o cierre. |
-| **Molde clásico** | Estructura inspirada (tres intentos, viaje, regreso) sin copiar copyrighted plot verbatim. |
+
+| Ingrediente         | Rol en la historia                                                                         |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| **Protagonistas**   | Llevan la acción; usar **exactamente** esos nombres.                                       |
+| **Reto**            | Conflicto que el niño reconoce; debe sentirse en el nudo (no como sermón del adulto). |
+| **Qué aprenden**    | Semilla **solo** del cierre; nunca frase moral pegada ni monólogo correctivo.          |
+| **Lugar**           | Escenario dominante; detalles concretos (no “un lugar bonito”).                            |
+| **Mascota**         | Al menos un momento cómico o de apoyo.                                                     |
+| **Acompañantes**    | Diálogo o reacción que tensiona o ayuda.                                                   |
+| **Rol de reto**     | “Lobo” simbólico: quien encarna el lado difícil (sin villano terrorífico).                 |
+| **Objeto especial** | Detalle con payoff en el giro o cierre.                                                    |
+| **Molde clásico**   | Estructura inspirada (tres intentos, viaje, regreso) sin copiar copyrighted plot verbatim. |
+
 
 Si falta un ingrediente opcional, **no inventar** personajes nuevos con nombre propio.
 
@@ -120,15 +147,17 @@ Si falta un ingrediente opcional, **no inventar** personajes nuevos con nombre p
 
 ## 5. Perfil familiar (cuando se inyecte al prompt)
 
+El perfil alimenta el **reconocimiento familiar** (§1.2), no un dump de ficha.
+
 Prioridad de datos del JSONB (`PerfilFamiliar.md`):
 
-1. Nombres y **apodos** de niños y adultos.
-2. Ciudad / barrio (`meta.ciudad`).
-3. Mascotas con personalidad breve.
-4. **Frases típicas** de mamá/papa/niños (1–2 por cuento, integradas en diálogo).
-5. Gustos o “no le gusta” solo si refuerzan el reto (ej. `dormir`, `pantallas`).
+1. Nombres y **apodos** de niños y adultos (el apodo manda en diálogo si existe).
+2. Ciudad / barrio (`meta.ciudad`) — ancla de lugar, no postcard.
+3. Mascotas con personalidad breve — un momento, no biografía.
+4. **Frases típicas** de mamá/papá/niños (**máx. 1–2 por cuento**, en diálogo).
+5. Gustos o “no le gusta” **solo** si refuerzan el reto (ej. dormir, pantallas).
 
-No exponer datos sensibles inventados. No mencionar email, escuela real con dirección, ni datos que el usuario no haya puesto.
+**No:** inventar hermanos, colegios, direcciones, emails ni datos sensibles; no listar a toda la familia en el primer párrafo si no actúan.
 
 ---
 
@@ -169,32 +198,40 @@ No exponer datos sensibles inventados. No mencionar email, escuela real con dire
 
 ## 7. Checklist de calidad (revisión humana o QA)
 
-Antes de dar por bueno un cuento generado:
+Antes de dar por bueno un cuento generado (o revisar demos con `npm run validate:quality`):
 
-- [ ] ¿Suena a Bogotá/cotidianidad, no a plantilla neutra?
-- [ ] ¿El niño de 5 años entiende qué pasó sin explicación adulta?
-- [ ] ¿El adulto sonríe al menos una vez?
+
+- [ ] ¿Se siente el mundo del niño (familia + lugar del perfil), sin postcard ni plantilla genérica?
+- [ ] ¿Un niño de hasta ~12 años entiende qué pasó sin explicación adulta?
+- [ ] ¿El adulto puede sonreír *y* el niño entiende la gracia (humor de reconocimiento, no burla del niño)?
+- [ ] ¿Hay ~1–2 momentos cómicos, sin saturar gags?
 - [ ] ¿El reto de la receta es el corazón del conflicto?
-- [ ] ¿La lección se siente al final sin que la digan?
-- [ ] ¿Los nombres coinciden con la receta/perfil?
-- [ ] ¿350–600 palabras y 3–5 escenas?
+- [ ] ¿El niño *vivió* la lección (cambio/vínculo) o un adulto la explicó?
+- [ ] ¿La lección se siente al final sin que la digan (ni en subtítulo/escena moral)?
+- [ ] ¿Se siente *esta* familia (nombres exactos, agencia del niño, 1–2 marcas de dinámica) sin volcar el perfil?
+- [ ] ¿Hay deseo/conflicto claro, causa–efecto y cierre en calma?
+- [ ] ¿350–600 palabras y ~3–5 escenas (o variante justificada por la receta)?
 - [ ] ¿Máximo 3–4 modismos por párrafo?
 - [ ] ¿Sin violencia, miedo fuerte ni sermón?
-- [ ] ¿Formato Markdown válido para el lector (`#`, `>`, `##`)?
+- [ ] ¿Se lee en voz alta sin tropezar (frases medias, párrafos cortos, diálogo con `—`, cierre más quieto)?
+- [ ] ¿Formato Markdown válido para el lector (`#`, `>`, `##`, `—`)?
 
 ---
 
 ## 8. Relación con el código
 
-| Artefacto | Función |
-|-----------|---------|
-| `docs/biblia-editorial.md` | **Fuente de verdad editorial** (este archivo) |
-| [GuiaAcentos.md](../GuiaAcentos.md) | Matiz dialectal y tiers |
-| `src/lib/story-accent.ts` | Códigos de acento, default `neutro`, opciones del wizard |
-| `src/lib/story-prompt-examples.ts` | Fragmentos few-shot de cuentos curados |
-| `src/lib/story-prompt.ts` | System prompt + mensaje usuario → API |
-| `src/lib/story-mock.ts` | Fallback sin IA (no sustituye calidad) |
-| `docs/ia-generacion.md` | Infra, keys, Vercel, persistencia |
+
+| Artefacto                           | Función                                                  |
+| ----------------------------------- | -------------------------------------------------------- |
+| `docs/biblia-editorial.md`          | **Fuente de verdad editorial** (este archivo)            |
+| [GuiaAcentos.md](../GuiaAcentos.md) | Matiz dialectal y tiers                                  |
+| `src/lib/story-accent.ts`           | Códigos de acento, default `neutro`, opciones del wizard |
+| `src/lib/story-prompt-examples.ts`  | Fragmentos few-shot de cuentos curados                   |
+| `src/lib/story-prompt.ts`           | System prompt + mensaje usuario → API                    |
+| `src/lib/story-mock.ts`             | Fallback sin IA (no sustituye calidad)                   |
+| `src/lib/story-quality.ts`          | Rúbrica automática (palabras, escenas, sermón, sensorial) |
+| `docs/ia-generacion.md`             | Infra, keys, Vercel, persistencia                        |
+
 
 **Próximo paso técnico:** mantener `buildStorySystemPrompt()` y `buildFewShotBlock()` alineados con este doc;
 `buildStoryPrompt()` inyecta receta + perfil + acento elegido (jul 2026).
@@ -226,4 +263,4 @@ No subir temperatura ni tokens como primer recurso; primero claridad de reglas y
 
 ---
 
-*Última actualización: julio 2026 — v1 para POC de generación con Gemini.*
+*Última actualización: julio 2026 — cinco pilares afinados (pertenencia, reconocimiento, aprendizaje en la piel, humor de reconocimiento, oído primero).*

@@ -65,7 +65,8 @@ describe("buildStoryPrompt", () => {
     expect(system).toContain("sermón");
     expect(system).toContain("neutro colombiano");
     expect(user).toContain("Nico");
-    expect(user).toContain("arco mundo");
+    expect(user).toContain("andamiaje mundo");
+    expect(user).toContain("deseo/conflicto");
     expect(user).toContain("Neutro colombiano");
     expect(user).toContain("fragmentos de referencia");
   });
