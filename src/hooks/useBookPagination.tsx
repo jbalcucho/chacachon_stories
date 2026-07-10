@@ -34,71 +34,57 @@ function pagesEqual(a: BookPageData[], b: BookPageData[]): boolean {
   });
 }
 
-function measurePageBox(viewport: HTMLElement): {
-  width: number;
-  height: number;
-} {
-  const rect = viewport.getBoundingClientRect();
-  let width = Math.round(rect.width);
-  let height = Math.round(rect.height);
-
-  const root = viewport.closest(".story-reader--book");
-  const toolbar = root?.querySelector<HTMLElement>(".story-reader__toolbar");
-  const footer = root?.querySelector<HTMLElement>(".book-reader__footer");
-  const chrome =
-    Math.round(toolbar?.getBoundingClientRect().height ?? 0) +
-    Math.round(footer?.getBoundingClientRect().height ?? 0) +
-    16;
-
-  if (width < 48) width = Math.round(window.innerWidth);
-  if (height < 160) {
-    height = Math.max(Math.round(window.innerHeight - chrome), 280);
-  }
-
-  return { width, height };
+function measureDebounceMs(): number {
+  if (typeof window === "undefined") return 64;
+  return window.innerWidth < 768 ? 140 : 64;
 }
 
-function applyMeasureBox(
-  measure: HTMLElement,
-  inner: HTMLElement,
-  width: number,
-  height: number,
-) {
-  measure.style.width = `${width}px`;
-  measure.style.height = `${height}px`;
-  inner.style.width = `${width}px`;
-  inner.style.height = `${height}px`;
-  inner.style.maxHeight = `${height}px`;
-  inner.style.overflow = "hidden";
+/** Sincroniza la caja de medición con el hueco real del libro en pantalla. */
+function syncMeasureBox(inner: HTMLElement): boolean {
+  const width = Math.round(inner.clientWidth);
+  const height = Math.round(inner.clientHeight);
+  if (width < 48 || height < 120) return false;
   inner.dataset.pageHeight = String(height);
+  return true;
 }
 
 export function useBookPagination({ content, fontSize }: Args) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
+  const lastMeasureSize = useRef({ width: 0, height: 0 });
+  const hasPaginated = useRef(false);
   const [pages, setPages] = useState<BookPageData[]>([
     { blocks: content.blocks, includeTitle: true, includeSubtitle: false },
   ]);
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
-    const measure = measureRef.current;
-    if (!viewport || !measure) return;
+    const measureRoot = measureRef.current;
+    if (!viewport || !measureRoot) return;
+
+    hasPaginated.current = false;
+    lastMeasureSize.current = { width: 0, height: 0 };
 
     let frame = 0;
     let debounce: number | undefined;
 
     const run = () => {
-      const { width, height } = measurePageBox(viewport);
-      if (width < 48 || height < 160) return;
-
-      const inner = measure.querySelector<HTMLElement>(
+      const inner = measureRoot.querySelector<HTMLElement>(
         ".book-page__inner--measure",
       );
-      if (!inner) return;
+      if (!inner || !syncMeasureBox(inner)) return;
 
-      applyMeasureBox(measure, inner, width, height);
+      const width = inner.clientWidth;
+      const height = inner.clientHeight;
+      const last = lastMeasureSize.current;
+      const sizeDelta =
+        Math.abs(width - last.width) + Math.abs(height - last.height);
+
+      if (hasPaginated.current && sizeDelta < 8) return;
+
+      lastMeasureSize.current = { width, height };
       const built = paginateBookContent(inner, content);
+      hasPaginated.current = true;
       setPages((current) => (pagesEqual(current, built) ? current : built));
     };
 
@@ -107,16 +93,19 @@ export function useBookPagination({ content, fontSize }: Args) {
       debounce = window.setTimeout(() => {
         window.cancelAnimationFrame(frame);
         frame = window.requestAnimationFrame(run);
-      }, 64);
+      }, measureDebounceMs());
     };
 
     schedule();
-    const retryTimer = window.setTimeout(schedule, 200);
-    const retryTimer2 = window.setTimeout(schedule, 500);
+    const retryTimer = window.setTimeout(schedule, 220);
+    const retryTimer2 = window.setTimeout(schedule, 520);
 
     const observer = new ResizeObserver(schedule);
     observer.observe(viewport);
-    window.addEventListener("resize", schedule);
+
+    const visualViewport = window.visualViewport;
+    visualViewport?.addEventListener("resize", schedule);
+    visualViewport?.addEventListener("scroll", schedule);
     window.addEventListener("orientationchange", schedule);
 
     return () => {
@@ -125,7 +114,8 @@ export function useBookPagination({ content, fontSize }: Args) {
       window.clearTimeout(retryTimer2);
       window.cancelAnimationFrame(frame);
       observer.disconnect();
-      window.removeEventListener("resize", schedule);
+      visualViewport?.removeEventListener("resize", schedule);
+      visualViewport?.removeEventListener("scroll", schedule);
       window.removeEventListener("orientationchange", schedule);
     };
   }, [content, fontSize]);
@@ -133,13 +123,11 @@ export function useBookPagination({ content, fontSize }: Args) {
   const measureLayer = (
     <div
       ref={measureRef}
-      className="book-measure"
+      className="book-measure-in-viewport"
       style={{ fontSize: `${fontSize}rem` }}
       aria-hidden="true"
     >
-      <div className="book-page book-page--measure">
-        <div className="book-page__inner book-page__inner--measure" />
-      </div>
+      <div className="book-page__inner book-page__inner--measure" />
     </div>
   );
 
