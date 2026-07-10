@@ -51,10 +51,11 @@ export default function StoryPageBlocks({
       {includeSubtitle && subtitle ? (
         <p className="book-page__subtitle">{subtitle}</p>
       ) : null}
-      <div
-        className={`book-page__body${dropCap ? " book-page__body--drop" : ""}`}
-      >
-        {blocks.map((block, index) => {
+      <div className="book-page__sheet">
+        <div
+          className={`book-page__body${dropCap ? " book-page__body--drop" : ""}`}
+        >
+          {blocks.map((block, index) => {
           if (block.type === "divider") {
             return <hr key={index} className="book-page__divider" />;
           }
@@ -81,6 +82,7 @@ export default function StoryPageBlocks({
           }
           return <p key={index}>{renderInline(block.text)}</p>;
         })}
+        </div>
       </div>
     </div>
   );

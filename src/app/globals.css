@@ -2949,6 +2949,8 @@ body::before {
   --sheet-pad-bottom: 2.1rem;
   --line-step: 1.85em;
 
+  display: flex;
+  flex-direction: column;
   flex: 1 1 0;
   min-height: 0;
   height: 100%;
@@ -2967,6 +2969,22 @@ body::before {
     var(--paper-margin) calc(var(--sheet-margin) + 1.5px),
     transparent calc(var(--sheet-margin) + 1.5px)
   );
+}
+
+.book-page__sheet {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--line-step) - 1.5px),
+    var(--paper-rule) calc(var(--line-step) - 1.5px),
+    var(--paper-rule) var(--line-step)
+  );
+  background-size: 100% var(--line-step);
+  background-position: 0 0;
 }
 
 @media (max-width: 560px) {
@@ -3010,16 +3028,8 @@ body::before {
 
 /* Renglón alineado: el texto se apoya sobre la línea del cuaderno */
 .book-page__body {
+  flex: 0 0 auto;
   color: #2c2418;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent calc(var(--line-step) - 1.5px),
-    var(--paper-rule) calc(var(--line-step) - 1.5px),
-    var(--paper-rule) var(--line-step)
-  );
-  background-size: 100% var(--line-step);
-  background-position: 0 0;
 }
 
 .book-page__body p {

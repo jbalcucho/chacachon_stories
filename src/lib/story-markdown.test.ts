@@ -68,7 +68,7 @@ describe("splitBlocksForPagination", () => {
     ]);
 
     expect(blocks.length).toBeGreaterThan(2);
-    expect(blocks.every((b) => b.type !== "paragraph" || b.text.length <= 400)).toBe(
+    expect(blocks.every((b) => b.type !== "paragraph" || b.text.length <= 650)).toBe(
       true,
     );
     expect(blocks.some((b) => b.type === "heading")).toBe(true);

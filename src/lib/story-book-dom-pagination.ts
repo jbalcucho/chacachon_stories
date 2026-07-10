@@ -122,6 +122,7 @@ function maxParagraphPrefixThatFits(
   inner: HTMLElement,
   paragraphText: string,
   shell: RenderPage,
+  baseBlocks: StoryBlock[] = [],
 ): { prefix: string; suffix: string } | null {
   const sentences = splitIntoSentences(paragraphText);
   let fitCount = 0;
@@ -130,7 +131,7 @@ function maxParagraphPrefixThatFits(
     const candidate = joinSentences(sentences.slice(0, i + 1));
     renderPageToInner(inner, {
       ...shell,
-      blocks: [{ type: "paragraph", text: candidate }],
+      blocks: [...baseBlocks, { type: "paragraph", text: candidate }],
     });
     if (pageFits(inner)) fitCount = i + 1;
     else break;
@@ -155,7 +156,7 @@ function maxParagraphPrefixThatFits(
     const candidate = joinWords(words.slice(0, mid));
     renderPageToInner(inner, {
       ...shell,
-      blocks: [{ type: "paragraph", text: candidate }],
+      blocks: [...baseBlocks, { type: "paragraph", text: candidate }],
     });
     if (pageFits(inner)) {
       best = mid;
@@ -175,6 +176,62 @@ function maxParagraphPrefixThatFits(
   return {
     prefix: joinWords(words.slice(0, best)),
     suffix: joinWords(words.slice(best)),
+  };
+}
+
+const MIN_REMAINING_PX = 44;
+
+/** Añade trozos del siguiente bloque si aún cabe espacio en la página. */
+function growPageWithFollowingBlocks(
+  inner: HTMLElement,
+  shell: RenderPage,
+  pageBlocks: StoryBlock[],
+  blocks: StoryBlock[],
+  fromIndex: number,
+): {
+  pageBlocks: StoryBlock[];
+  nextIndex: number;
+  pendingParagraph: string | null;
+} {
+  let current = pageBlocks;
+  let index = fromIndex;
+  let pending: string | null = null;
+
+  for (;;) {
+    renderPageToInner(inner, { ...shell, blocks: current });
+    if (availableHeight(inner) - inner.scrollHeight < MIN_REMAINING_PX) break;
+
+    const nextBlock = blocks[index];
+    const sourceText =
+      pending ??
+      (nextBlock?.type === "paragraph" ? nextBlock.text : null);
+    if (!sourceText) break;
+
+    const split = maxParagraphPrefixThatFits(
+      inner,
+      sourceText,
+      shell,
+      current,
+    );
+    if (!split?.prefix.trim()) break;
+
+    current = [
+      ...current,
+      { type: "paragraph", text: split.prefix.trim() },
+    ];
+
+    if (split.suffix.trim()) {
+      pending = split.suffix;
+    } else {
+      pending = null;
+      index += 1;
+    }
+  }
+
+  return {
+    pageBlocks: current,
+    nextIndex: index,
+    pendingParagraph: pending,
   };
 }
 
@@ -233,17 +290,45 @@ export function paginateBookContent(
     }
 
     if (fitCount > 0) {
+      let pageBlocks = buildTryBlocks(
+        blocks,
+        blockIndex,
+        fitCount,
+        pendingParagraph,
+      );
+
+      if (!pendingParagraph) {
+        const nextIndex = blockIndex + fitCount;
+        const grown = growPageWithFollowingBlocks(
+          inner,
+          shell,
+          pageBlocks,
+          blocks,
+          nextIndex,
+        );
+        pageBlocks = grown.pageBlocks;
+        if (grown.pendingParagraph) {
+          pages.push({
+            blocks: pageBlocks,
+            includeTitle,
+            includeSubtitle,
+          });
+          pendingParagraph = grown.pendingParagraph;
+          blockIndex = grown.nextIndex;
+          isFirstPage = false;
+          continue;
+        }
+        blockIndex = grown.nextIndex;
+      } else {
+        pendingParagraph = null;
+        blockIndex += Math.max(fitCount - 1, 0);
+      }
+
       pages.push({
-        blocks: buildTryBlocks(blocks, blockIndex, fitCount, pendingParagraph),
+        blocks: pageBlocks,
         includeTitle,
         includeSubtitle,
       });
-      if (pendingParagraph) {
-        pendingParagraph = null;
-        blockIndex += Math.max(fitCount - 1, 0);
-      } else {
-        blockIndex += fitCount;
-      }
       isFirstPage = false;
       continue;
     }
