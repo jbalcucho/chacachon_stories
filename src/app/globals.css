@@ -2770,12 +2770,8 @@ body::before {
   background-color: #f8f4e8;
 }
 
-.book-measure .book-page__inner {
-  flex: 1 1 auto;
-  height: 100%;
-  min-height: 0;
-  width: 100%;
-  overflow: hidden;
+.book-measure .book-page__inner--measure {
+  flex: none;
   box-sizing: border-box;
 }
 
@@ -2832,14 +2828,6 @@ body::before {
   overflow: hidden;
   opacity: 1;
   transition: opacity 0.18s ease;
-}
-
-.book-shell[data-ready="false"] {
-  opacity: 0.92;
-}
-
-.book-shell[data-ready="false"] .book-page__surface {
-  filter: blur(1px);
 }
 
 .book-shell[data-turning] .book-page__surface {

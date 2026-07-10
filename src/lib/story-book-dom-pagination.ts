@@ -88,25 +88,39 @@ export function renderPageToInner(
   inner.appendChild(body);
 }
 
+function availableHeight(inner: HTMLElement): number {
+  const measured = Number.parseInt(inner.dataset.pageHeight ?? "", 10);
+  if (Number.isFinite(measured) && measured >= 24) return measured;
+  return inner.clientHeight;
+}
+
 export function pageFits(inner: HTMLElement): boolean {
-  const available = inner.clientHeight;
+  const available = availableHeight(inner);
   if (available < 24) return false;
   return inner.scrollHeight <= available + 1;
 }
 
-function blocksFit(
-  inner: HTMLElement,
-  shell: RenderPage,
+function buildTryBlocks(
   blocks: StoryBlock[],
-): boolean {
-  renderPageToInner(inner, { ...shell, blocks });
-  return pageFits(inner);
+  blockIndex: number,
+  tryCount: number,
+  pendingParagraph: string | null,
+): StoryBlock[] {
+  if (pendingParagraph) {
+    const pageBlocks: StoryBlock[] = [
+      { type: "paragraph", text: pendingParagraph },
+    ];
+    if (tryCount > 1) {
+      pageBlocks.push(...blocks.slice(blockIndex, blockIndex + tryCount - 1));
+    }
+    return pageBlocks;
+  }
+  return blocks.slice(blockIndex, blockIndex + tryCount);
 }
 
 function maxParagraphPrefixThatFits(
   inner: HTMLElement,
   paragraphText: string,
-  pageBlocks: StoryBlock[],
   shell: RenderPage,
 ): { prefix: string; suffix: string } | null {
   const sentences = splitIntoSentences(paragraphText);
@@ -114,16 +128,12 @@ function maxParagraphPrefixThatFits(
 
   for (let i = 0; i < sentences.length; i += 1) {
     const candidate = joinSentences(sentences.slice(0, i + 1));
-    if (
-      blocksFit(inner, shell, [
-        ...pageBlocks,
-        { type: "paragraph", text: candidate },
-      ])
-    ) {
-      fitCount = i + 1;
-    } else {
-      break;
-    }
+    renderPageToInner(inner, {
+      ...shell,
+      blocks: [{ type: "paragraph", text: candidate }],
+    });
+    if (pageFits(inner)) fitCount = i + 1;
+    else break;
   }
 
   if (fitCount > 0) {
@@ -143,12 +153,11 @@ function maxParagraphPrefixThatFits(
   while (lo <= hi) {
     const mid = Math.floor((lo + hi) / 2);
     const candidate = joinWords(words.slice(0, mid));
-    if (
-      blocksFit(inner, shell, [
-        ...pageBlocks,
-        { type: "paragraph", text: candidate },
-      ])
-    ) {
+    renderPageToInner(inner, {
+      ...shell,
+      blocks: [{ type: "paragraph", text: candidate }],
+    });
+    if (pageFits(inner)) {
       best = mid;
       lo = mid + 1;
     } else {
@@ -182,106 +191,90 @@ export function paginateBookContent(
   let pendingParagraph: string | null = null;
   let isFirstPage = true;
 
-  while (true) {
-    const includeTitle = isFirstPage && hasTitle;
-    const includeSubtitle = isFirstPage && hasSubtitle;
+  while (
+    pendingParagraph ||
+    blockIndex < blocks.length ||
+    (isFirstPage && (hasTitle || hasSubtitle))
+  ) {
+    const includeTitle = isFirstPage && hasTitle && !pendingParagraph;
+    const includeSubtitle = isFirstPage && hasSubtitle && !pendingParagraph;
     const shell: RenderPage = {
       blocks: [],
       includeTitle,
       includeSubtitle,
       title,
       subtitle,
-      dropCap: isFirstPage,
+      dropCap: isFirstPage && !pendingParagraph,
     };
 
-    const hasWork =
-      includeTitle ||
-      includeSubtitle ||
-      Boolean(pendingParagraph?.trim()) ||
-      blockIndex < blocks.length;
-
-    if (!hasWork) break;
-
-    const pageBlocks: StoryBlock[] = [];
-
-    while (pendingParagraph?.trim() || blockIndex < blocks.length) {
-      let unit: StoryBlock;
-      let fromPending = false;
-
-      if (pendingParagraph?.trim()) {
-        unit = { type: "paragraph", text: pendingParagraph };
-        fromPending = true;
-      } else {
-        unit = blocks[blockIndex];
-      }
-
-      if (blocksFit(inner, shell, [...pageBlocks, unit])) {
-        pageBlocks.push(unit);
-        if (fromPending) pendingParagraph = null;
-        else blockIndex += 1;
-        continue;
-      }
-
-      if (unit.type === "paragraph") {
-        const split = maxParagraphPrefixThatFits(
-          inner,
-          unit.text,
-          pageBlocks,
-          shell,
-        );
-        if (split?.prefix) {
-          pageBlocks.push({ type: "paragraph", text: split.prefix });
-          pendingParagraph = split.suffix.trim() ? split.suffix : null;
-          if (!fromPending && !pendingParagraph) blockIndex += 1;
-        } else if (pageBlocks.length === 0) {
-          pageBlocks.push(unit);
-          pendingParagraph = null;
-          if (!fromPending) blockIndex += 1;
-        }
-      } else if (pageBlocks.length === 0) {
-        pageBlocks.push(unit);
-        blockIndex += 1;
-      }
-
-      break;
-    }
-
-    if (pageBlocks.length === 0 && (includeTitle || includeSubtitle)) {
+    if (!pendingParagraph && blockIndex >= blocks.length) {
       renderPageToInner(inner, { ...shell, blocks: [] });
-      if (pageFits(inner)) {
+      if ((includeTitle || includeSubtitle) && pageFits(inner)) {
         pages.push({ blocks: [], includeTitle, includeSubtitle });
-        isFirstPage = false;
-        if (!pendingParagraph && blockIndex >= blocks.length) break;
-        continue;
       }
-      if (includeSubtitle && includeTitle) {
-        pages.push({
-          blocks: [],
-          includeTitle: true,
-          includeSubtitle: false,
-        });
-        isFirstPage = false;
-        continue;
-      }
+      break;
     }
 
-    if (
-      pageBlocks.length === 0 &&
-      !includeTitle &&
-      !includeSubtitle
-    ) {
-      break;
+    const maxTry = pendingParagraph
+      ? 1 + (blocks.length - blockIndex)
+      : blocks.length - blockIndex;
+
+    let fitCount = 0;
+    for (let tryCount = 1; tryCount <= maxTry; tryCount += 1) {
+      const candidate = buildTryBlocks(
+        blocks,
+        blockIndex,
+        tryCount,
+        pendingParagraph,
+      );
+      renderPageToInner(inner, { ...shell, blocks: candidate });
+      if (pageFits(inner)) fitCount = tryCount;
+      else break;
+    }
+
+    if (fitCount > 0) {
+      pages.push({
+        blocks: buildTryBlocks(blocks, blockIndex, fitCount, pendingParagraph),
+        includeTitle,
+        includeSubtitle,
+      });
+      if (pendingParagraph) {
+        pendingParagraph = null;
+        blockIndex += Math.max(fitCount - 1, 0);
+      } else {
+        blockIndex += fitCount;
+      }
+      isFirstPage = false;
+      continue;
+    }
+
+    const overflowBlock: StoryBlock = pendingParagraph
+      ? { type: "paragraph", text: pendingParagraph }
+      : blocks[blockIndex];
+
+    if (overflowBlock.type === "paragraph") {
+      const split = maxParagraphPrefixThatFits(inner, overflowBlock.text, shell);
+      if (split?.prefix.trim()) {
+        pages.push({
+          blocks: [{ type: "paragraph", text: split.prefix }],
+          includeTitle,
+          includeSubtitle,
+        });
+        pendingParagraph = split.suffix.trim() ? split.suffix : null;
+        if (!pendingParagraph) blockIndex += 1;
+        isFirstPage = false;
+        continue;
+      }
     }
 
     pages.push({
-      blocks: pageBlocks,
+      blocks: [overflowBlock],
       includeTitle,
       includeSubtitle,
     });
-
+    pendingParagraph = null;
+    blockIndex += 1;
     isFirstPage = false;
-
-    if (!pendingParagraph && blockIndex >= blocks.length) break;
   }
 
   if (pages.length === 0) {

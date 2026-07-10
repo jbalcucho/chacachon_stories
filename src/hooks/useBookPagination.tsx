@@ -34,27 +34,43 @@ function pagesEqual(a: BookPageData[], b: BookPageData[]): boolean {
   });
 }
 
-function measureViewportSize(viewport: HTMLElement): {
+function measurePageBox(viewport: HTMLElement): {
   width: number;
   height: number;
 } {
   const rect = viewport.getBoundingClientRect();
-  let width = rect.width;
-  let height = rect.height;
+  let width = Math.round(rect.width);
+  let height = Math.round(rect.height);
 
-  if (height < 120 || width < 48) {
-    const root = viewport.closest(".story-reader--book");
-    const toolbar = root?.querySelector<HTMLElement>(".story-reader__toolbar");
-    const footer = root?.querySelector<HTMLElement>(".book-reader__footer");
-    const chrome =
-      (toolbar?.getBoundingClientRect().height ?? 0) +
-      (footer?.getBoundingClientRect().height ?? 0) +
-      24;
-    width = width > 48 ? width : window.innerWidth;
-    height = Math.max(window.innerHeight - chrome, 280);
+  const root = viewport.closest(".story-reader--book");
+  const toolbar = root?.querySelector<HTMLElement>(".story-reader__toolbar");
+  const footer = root?.querySelector<HTMLElement>(".book-reader__footer");
+  const chrome =
+    Math.round(toolbar?.getBoundingClientRect().height ?? 0) +
+    Math.round(footer?.getBoundingClientRect().height ?? 0) +
+    16;
+
+  if (width < 48) width = Math.round(window.innerWidth);
+  if (height < 160) {
+    height = Math.max(Math.round(window.innerHeight - chrome), 280);
   }
 
   return { width, height };
+}
+
+function applyMeasureBox(
+  measure: HTMLElement,
+  inner: HTMLElement,
+  width: number,
+  height: number,
+) {
+  measure.style.width = `${width}px`;
+  measure.style.height = `${height}px`;
+  inner.style.width = `${width}px`;
+  inner.style.height = `${height}px`;
+  inner.style.maxHeight = `${height}px`;
+  inner.style.overflow = "hidden";
+  inner.dataset.pageHeight = String(height);
 }
 
 export function useBookPagination({ content, fontSize }: Args) {
@@ -63,7 +79,6 @@ export function useBookPagination({ content, fontSize }: Args) {
   const [pages, setPages] = useState<BookPageData[]>([
     { blocks: content.blocks, includeTitle: true, includeSubtitle: true },
   ]);
-  const [ready, setReady] = useState(false);
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -74,46 +89,29 @@ export function useBookPagination({ content, fontSize }: Args) {
     let debounce: number | undefined;
 
     const run = () => {
-      const { width: viewportWidth, height: viewportHeight } =
-        measureViewportSize(viewport);
-
-      if (viewportWidth < 48 || viewportHeight < 120) {
-        setReady(true);
-        return;
-      }
-
-      setReady(false);
-      measure.style.width = `${viewportWidth}px`;
-      measure.style.height = `${viewportHeight}px`;
+      const { width, height } = measurePageBox(viewport);
+      if (width < 48 || height < 160) return;
 
       const inner = measure.querySelector<HTMLElement>(".book-page__inner");
-      if (!inner) {
-        setReady(true);
-        return;
-      }
+      if (!inner) return;
 
+      applyMeasureBox(measure, inner, width, height);
       const built = paginateBookContent(inner, content);
       setPages((current) => (pagesEqual(current, built) ? current : built));
-      setReady(true);
     };
 
     const schedule = () => {
       window.clearTimeout(debounce);
       debounce = window.setTimeout(() => {
         window.cancelAnimationFrame(frame);
-        frame = window.requestAnimationFrame(() => {
-          window.requestAnimationFrame(run);
-        });
-      }, 32);
+        frame = window.requestAnimationFrame(run);
+      }, 64);
     };
 
     schedule();
 
     const observer = new ResizeObserver(schedule);
     observer.observe(viewport);
-    const reader = viewport.closest(".book-reader");
-    if (reader) observer.observe(reader);
-
     window.addEventListener("resize", schedule);
     window.addEventListener("orientationchange", schedule);
 
@@ -134,10 +132,10 @@ export function useBookPagination({ content, fontSize }: Args) {
       aria-hidden="true"
     >
       <div className="book-page book-page--measure">
-        <div className="book-page__inner" />
+        <div className="book-page__inner book-page__inner--measure" />
       </div>
     </div>
   );
 
-  return { viewportRef, pages, ready, measureLayer };
+  return { viewportRef, pages, measureLayer };
 }

@@ -45,7 +45,7 @@ export default function StoryReader({
   const progressRestored = useRef(false);
   const progressKey = `${PROGRESS_PREFIX}${storySlug}`;
 
-  const { viewportRef, pages, ready, measureLayer } = useBookPagination({
+  const { viewportRef, pages, measureLayer } = useBookPagination({
     content,
     fontSize,
   });
@@ -149,7 +149,7 @@ export default function StoryReader({
   }, []);
 
   useEffect(() => {
-    if (progressRestored.current || !ready || pageCount === 0) return;
+    if (progressRestored.current || pageCount === 0) return;
     progressRestored.current = true;
     try {
       const raw = window.localStorage.getItem(progressKey);
@@ -160,7 +160,7 @@ export default function StoryReader({
     } catch {
       // sin persistencia: arranca en la primera página
     }
-  }, [ready, pageCount, progressKey]);
+  }, [pageCount, progressKey]);
 
   useEffect(() => {
     if (!progressRestored.current) return;
@@ -282,14 +282,12 @@ export default function StoryReader({
         >
           <div
             className="book-shell"
-            data-ready={ready ? "true" : "false"}
             data-turning={turning ?? undefined}
           >
             {currentPage ? (
               <div
                 className="book-page__surface"
                 aria-hidden={Boolean(turning)}
-                aria-busy={!ready}
               >
                 <StoryPageBlocks
                   blocks={currentPage.blocks}
