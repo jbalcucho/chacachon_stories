@@ -2987,6 +2987,12 @@ body::before {
   background-position: 0 0;
 }
 
+.book-page__sheet--measure {
+  flex: none;
+  display: block;
+  min-height: 0;
+}
+
 @media (max-width: 560px) {
   .book-page__inner {
     --sheet-margin: 1.75rem;
@@ -3030,10 +3036,11 @@ body::before {
 .book-page__body {
   flex: 0 0 auto;
   color: #2c2418;
+  --para-gap: var(--line-step);
 }
 
 .book-page__body p {
-  margin: 0 0 var(--line-step);
+  margin: 0;
   text-align: left;
   hyphens: auto;
   -webkit-hyphens: auto;
@@ -3043,8 +3050,19 @@ body::before {
   word-break: break-word;
 }
 
-.book-page__body p:last-child {
-  margin-bottom: 0;
+.book-page__body p + p,
+.book-page__body .book-page__heading + p,
+.book-page__body p + .book-page__heading,
+.book-page__body .book-page__divider + p,
+.book-page__body p + .book-page__divider,
+.book-page__body .book-page__list + p,
+.book-page__body p + .book-page__list {
+  margin-top: var(--para-gap);
+}
+
+.book-page__body .book-page__heading,
+.book-page__body h2.book-page__heading {
+  margin-top: calc(var(--para-gap) * 2);
 }
 
 .book-page__body strong {
@@ -3057,7 +3075,7 @@ body::before {
 }
 
 .book-page__list {
-  margin: 0 0 var(--line-step);
+  margin: 0;
   padding-left: 1.4em;
   list-style-position: outside;
 }
@@ -3089,7 +3107,7 @@ body::before {
 }
 
 .book-page__heading {
-  margin: var(--line-step) 0 0;
+  margin: 0;
   font-family: var(--font-fredoka), var(--font-nunito), system-ui, sans-serif;
   font-size: 0.98em;
   font-weight: 700;
@@ -3137,17 +3155,31 @@ body::before {
 }
 
 .book-reader__footer {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 0.5rem;
   width: 100%;
   max-width: min(96vw, 52rem);
+  margin-inline: auto;
   margin-top: 0.35rem;
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
   flex-shrink: 0;
   font-family: var(--font-nunito), system-ui, sans-serif;
   font-size: 0.85rem;
+}
+
+.book-reader__footer .book-reader__nav-btn:first-of-type {
+  justify-self: end;
+}
+
+.book-reader__footer .book-reader__progress {
+  justify-self: center;
+  text-align: center;
+}
+
+.book-reader__footer .book-reader__nav-btn:last-of-type {
+  justify-self: start;
 }
 
 @media (max-width: 560px) {

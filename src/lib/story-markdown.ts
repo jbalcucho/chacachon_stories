@@ -111,7 +111,7 @@ export function parseBodyBlocks(body: string): StoryBlock[] {
   return blocks;
 }
 
-const PAGINATION_PARAGRAPH_MAX_CHARS = 650;
+const PAGINATION_PARAGRAPH_MAX_CHARS = 900;
 
 /** Trocea párrafos largos (plantillas) para que la paginación DOM sea estable. */
 export function splitBlocksForPagination(

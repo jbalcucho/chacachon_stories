@@ -61,14 +61,14 @@ describe("parseBodyBlocks", () => {
 
 describe("splitBlocksForPagination", () => {
   it("trocea párrafos largos de plantilla sin romper oraciones cortas", () => {
-    const long = `${"Una frase. ".repeat(80)}Fin.`;
+    const long = `${"Una frase. ".repeat(120)}Fin.`;
     const blocks = splitBlocksForPagination([
       { type: "paragraph", text: long },
       { type: "heading", text: "Capítulo" },
     ]);
 
     expect(blocks.length).toBeGreaterThan(2);
-    expect(blocks.every((b) => b.type !== "paragraph" || b.text.length <= 650)).toBe(
+    expect(blocks.every((b) => b.type !== "paragraph" || b.text.length <= 900)).toBe(
       true,
     );
     expect(blocks.some((b) => b.type === "heading")).toBe(true);

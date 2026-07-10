@@ -78,6 +78,9 @@ export function renderPageToInner(
     inner.appendChild(sub);
   }
 
+  const sheet = document.createElement("div");
+  sheet.className = "book-page__sheet book-page__sheet--measure";
+
   const body = document.createElement("div");
   body.className = page.dropCap
     ? "book-page__body book-page__body--drop"
@@ -85,7 +88,8 @@ export function renderPageToInner(
   for (const block of page.blocks) {
     appendBlock(body, block);
   }
-  inner.appendChild(body);
+  sheet.appendChild(body);
+  inner.appendChild(sheet);
 }
 
 function availableHeight(inner: HTMLElement): number {
@@ -179,7 +183,26 @@ function maxParagraphPrefixThatFits(
   };
 }
 
-const MIN_REMAINING_PX = 44;
+const MIN_REMAINING_PX = 28;
+
+function appendParagraphChunk(
+  blocks: StoryBlock[],
+  text: string,
+  mergeWithLast: boolean,
+): StoryBlock[] {
+  const chunk = text.trim();
+  if (!chunk) return blocks;
+
+  const last = blocks.at(-1);
+  if (mergeWithLast && last?.type === "paragraph") {
+    return [
+      ...blocks.slice(0, -1),
+      { type: "paragraph", text: `${last.text} ${chunk}` },
+    ];
+  }
+
+  return [...blocks, { type: "paragraph", text: chunk }];
+}
 
 /** Añade trozos del siguiente bloque si aún cabe espacio en la página. */
 function growPageWithFollowingBlocks(
@@ -201,6 +224,7 @@ function growPageWithFollowingBlocks(
     renderPageToInner(inner, { ...shell, blocks: current });
     if (availableHeight(inner) - inner.scrollHeight < MIN_REMAINING_PX) break;
 
+    const continuing = pending !== null;
     const nextBlock = blocks[index];
     const sourceText =
       pending ??
@@ -215,10 +239,11 @@ function growPageWithFollowingBlocks(
     );
     if (!split?.prefix.trim()) break;
 
-    current = [
-      ...current,
-      { type: "paragraph", text: split.prefix.trim() },
-    ];
+    current = appendParagraphChunk(
+      current,
+      split.prefix,
+      continuing,
+    );
 
     if (split.suffix.trim()) {
       pending = split.suffix;
@@ -338,15 +363,46 @@ export function paginateBookContent(
       : blocks[blockIndex];
 
     if (overflowBlock.type === "paragraph") {
-      const split = maxParagraphPrefixThatFits(inner, overflowBlock.text, shell);
+      const split = maxParagraphPrefixThatFits(
+        inner,
+        overflowBlock.text,
+        shell,
+      );
       if (split?.prefix.trim()) {
+        let pageBlocks = appendParagraphChunk([], split.prefix, false);
+        const suffix = split.suffix.trim();
+
+        if (!suffix) {
+          pendingParagraph = null;
+          const grown = growPageWithFollowingBlocks(
+            inner,
+            shell,
+            pageBlocks,
+            blocks,
+            blockIndex + 1,
+          );
+          pageBlocks = grown.pageBlocks;
+          if (grown.pendingParagraph) {
+            pages.push({
+              blocks: pageBlocks,
+              includeTitle,
+              includeSubtitle,
+            });
+            pendingParagraph = grown.pendingParagraph;
+            blockIndex = grown.nextIndex;
+            isFirstPage = false;
+            continue;
+          }
+          blockIndex = grown.nextIndex;
+        } else {
+          pendingParagraph = suffix;
+        }
+
         pages.push({
-          blocks: [{ type: "paragraph", text: split.prefix }],
+          blocks: pageBlocks,
           includeTitle,
           includeSubtitle,
         });
-        pendingParagraph = split.suffix.trim() ? split.suffix : null;
-        if (!pendingParagraph) blockIndex += 1;
         isFirstPage = false;
         continue;
       }
