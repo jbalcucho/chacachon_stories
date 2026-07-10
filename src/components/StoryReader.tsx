@@ -16,6 +16,7 @@ type Props = {
   storySlug: string;
   /** Destino del botón «volver». Por defecto: estante con libro abierto. */
   backHref?: string;
+  backLabel?: string;
   /** Muestra compartir (solo catálogo público). */
   shareable?: boolean;
   /** Login con retorno al cuento actual (modo demo). */
