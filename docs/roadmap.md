@@ -120,7 +120,7 @@ Documentado en `ContextoChacachon.md` y `contextonew.md`:
 
 1. Completar Fase A (esta semana). ✅ (A8 aplazado: pulir demos antes de plan de pago)
 2. Desplegar y verificar en móvil + web.
-3. Fase B completa (B1–B7). Siguiente foco: **pulir cuentos demo** (en curso: `nico-dia-sin-pantallas` ✅; faltan lobo, operación, cerditos).
+3. Fase B completa (B1–B7). Cuentos demo pulidos ✅ (jul 2026) + `story-quality` QA. Siguiente foco: **A8** (Gemini pago) o monetización/Fase C según prioridad.
 
 ---
 

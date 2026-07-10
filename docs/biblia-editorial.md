@@ -231,6 +231,7 @@ Antes de dar por bueno un cuento generado (o revisar demos con `npm run validate
 | `src/lib/story-mock.ts`             | Fallback sin IA (no sustituye calidad)                   |
 | `src/lib/story-quality.ts`          | Rúbrica automática (palabras, escenas, sermón, sensorial) |
 | `docs/ia-generacion.md`             | Infra, keys, Vercel, persistencia                        |
+| `docs/guia-neuroeducacion-cuentos.md` | Referencia neuro (adopción selectiva; no sustituye §1–7) |
 
 
 **Próximo paso técnico:** mantener `buildStorySystemPrompt()` y `buildFewShotBlock()` alineados con este doc;
