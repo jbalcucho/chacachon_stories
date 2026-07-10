@@ -145,10 +145,18 @@ export async function getPublishedStories(): Promise<StoryCard[]> {
   }
 }
 
+export function isReadableLibraryStory(story: StoryCard): boolean {
+  return story.status === "PUBLISHED" && Boolean(story.openPath);
+}
+
+function filterReadableLibraryStories(stories: StoryCard[]): StoryCard[] {
+  return stories.filter(isReadableLibraryStory);
+}
+
 async function fetchLibraryStoriesFromDb(): Promise<StoryCard[]> {
   const { prisma } = await import("@/lib/prisma");
   const rows = await prisma.story.findMany({
-    where: { familyTag: "chacachon" },
+    where: { familyTag: "chacachon", status: "PUBLISHED" },
     orderBy: { sortOrder: "asc" },
     select: {
       slug: true,
@@ -167,23 +175,24 @@ async function fetchLibraryStoriesFromDb(): Promise<StoryCard[]> {
 const getCachedLibraryStories = unstable_cache(
   async () => {
     if (!process.env.DATABASE_URL) {
-      return STORY_CATALOG_FALLBACK.filter((s) => s.familyTag === "chacachon");
+      return filterReadableLibraryStories(
+        STORY_CATALOG_FALLBACK.filter((s) => s.familyTag === "chacachon"),
+      );
     }
     try {
-      return await fetchLibraryStoriesFromDb();
+      return filterReadableLibraryStories(await fetchLibraryStoriesFromDb());
     } catch {
-      return STORY_CATALOG_FALLBACK.filter((s) => s.familyTag === "chacachon");
+      return filterReadableLibraryStories(
+        STORY_CATALOG_FALLBACK.filter((s) => s.familyTag === "chacachon"),
+      );
     }
   },
-  ["library-stories-v1"],
+  ["library-stories-v2-readable"],
   { revalidate: 300, tags: ["library-stories"] },
 );
 
 export async function getLibraryStories(): Promise<StoryCard[]> {
-  const stories = await getCachedLibraryStories();
-  return stories.filter(
-    (story) => story.status === "PUBLISHED" && Boolean(story.openPath),
-  );
+  return getCachedLibraryStories();
 }
 
 /** Catálogo completo (todos los estados) para vistas administrativas. */

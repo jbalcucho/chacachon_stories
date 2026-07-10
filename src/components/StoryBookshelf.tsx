@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import BookSpine from "@/components/BookSpine";
 import CreateStorySlot from "@/components/CreateStorySlot";
 import StoryBook from "@/components/StoryBook";
-import type { StoryCard } from "@/lib/stories";
+import { isReadableLibraryStory, type StoryCard } from "@/lib/stories";
 import { CREATE_STORY_SLUG } from "@/lib/create-story";
 import {
   getBalancedStackedSides,
@@ -63,10 +63,14 @@ type Props = {
 };
 
 export default function StoryBookshelf({
-  stories,
+  stories: storiesProp,
   label = "Mi biblioteca",
   initialSlug = null,
 }: Props) {
+  const stories = useMemo(
+    () => storiesProp.filter(isReadableLibraryStory),
+    [storiesProp],
+  );
   const router = useRouter();
   const catalogSlug =
     initialSlug === CREATE_STORY_SLUG ? null : (initialSlug ?? null);
@@ -252,13 +256,6 @@ export default function StoryBookshelf({
             ✨ Crear cuento
           </Link>
         </div>
-        <p className="bookshelf-hint hidden text-center text-xs sm:block sm:text-right">
-          Selecciona el libro que quieres leer o crea una nueva histor
-          <span className="title-ia" title="Historia con inteligencia artificial">
-            IA
-          </span>
-          .
-        </p>
       </div>
 
       <div className="library-controls">
@@ -332,19 +329,6 @@ export default function StoryBookshelf({
         </button>
       </div>
 
-      <p className="bookshelf-hint-mobile sm:hidden">
-        Selecciona el libro que quieres leer o crea una nueva histor
-        <span className="title-ia" title="Historia con inteligencia artificial">
-          IA
-        </span>
-        .
-      </p>
-
-      {activeStory ? (
-        <p className="library-active-hint" aria-live="polite">
-          <span className="text-honey-glow font-bold">{activeStory.title}</span>
-        </p>
-      ) : null}
     </section>
   );
 }

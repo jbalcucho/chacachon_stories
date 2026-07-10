@@ -1,6 +1,6 @@
 /**
  * Genera iconos de app (PWA + favicon) desde la ilustración de marca.
- * Luna más pequeña, fondo nocturno, texto «Chacachón Stories».
+ * Luna centrada sobre fondo nocturno — sin texto en la imagen.
  *
  * Uso: npm run generate:icons
  */
@@ -23,8 +23,6 @@ const APP_DIR = path.join(ROOT, "src/app");
 const NIGHT_TOP = "#2a3d6e";
 const NIGHT_MID = "#1a2848";
 const NIGHT_BOTTOM = "#141f3d";
-const HONEY = "#ffca5c";
-const CREAM = "#eef2ff";
 
 function backgroundSvg(size) {
   return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
@@ -39,22 +37,6 @@ function backgroundSvg(size) {
 </svg>`);
 }
 
-function labelSvg(size) {
-  const titleSize = Math.round(size * 0.082);
-  const subSize = Math.round(size * 0.052);
-  const titleY = Math.round(size * 0.9);
-  const subY = Math.round(size * 0.965);
-
-  return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
-  <text x="50%" y="${titleY}" text-anchor="middle"
-    font-family="Fredoka, Nunito, system-ui, sans-serif"
-    font-weight="700" font-size="${titleSize}" fill="${HONEY}">Chacachón</text>
-  <text x="50%" y="${subY}" text-anchor="middle"
-    font-family="Nunito, system-ui, sans-serif"
-    font-weight="600" font-size="${subSize}" fill="${CREAM}">Stories</text>
-</svg>`);
-}
-
 async function buildIcon(size, illustrationScale) {
   const illustMax = Math.round(size * illustrationScale);
   const illustration = await sharp(BRAND_PNG)
@@ -66,13 +48,10 @@ async function buildIcon(size, illustrationScale) {
   const illustW = meta.width ?? illustMax;
   const illustH = meta.height ?? illustMax;
   const left = Math.round((size - illustW) / 2);
-  const top = Math.round(size * 0.06);
+  const top = Math.round((size - illustH) / 2);
 
   return sharp(backgroundSvg(size))
-    .composite([
-      { input: illustration, left, top },
-      { input: labelSvg(size), left: 0, top: 0 },
-    ])
+    .composite([{ input: illustration, left, top }])
     .png()
     .toBuffer();
 }
@@ -85,10 +64,10 @@ async function writePng(buffer, filePath) {
 async function main() {
   await mkdir(OUT_DIR, { recursive: true });
 
-  console.log("Generando iconos Chacachón Stories…");
+  console.log("Generando iconos Chacachón Stories (sin texto en imagen)…");
 
-  const icon512 = await buildIcon(512, 0.52);
-  const icon512Maskable = await buildIcon(512, 0.42);
+  const icon512 = await buildIcon(512, 0.72);
+  const icon512Maskable = await buildIcon(512, 0.58);
   const icon192 = await sharp(icon512).resize(192, 192).png().toBuffer();
   const apple180 = await sharp(icon512).resize(180, 180).png().toBuffer();
   const favicon32 = await sharp(icon512).resize(32, 32).png().toBuffer();
