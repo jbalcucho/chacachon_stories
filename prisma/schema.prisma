@@ -60,7 +60,7 @@ model Story {
   description String?
   moraleja    String?
   familyTag   String?      @map("family_tag")
-  accentCode  String       @default("bogota_ninos") @map("accent_code")
+  accentCode  String       @default("neutro") @map("accent_code")
   htmlPath    String?      @map("html_path")
   variant     StoryVariant @default(NARRATIVE)
   status      StoryStatus  @default(DRAFT)

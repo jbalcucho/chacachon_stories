@@ -36,7 +36,7 @@ Catálogo de cuentos. En Sprint 0 el contenido largo vive en HTML estático; la 
 | slug | string | unique, URL-friendly |
 | title, description, moraleja | string | UI biblioteca |
 | family_tag | string? | ej. `chacachon` |
-| accent_code | string | default `bogota_ninos` |
+| accent_code | string | default `neutro` (acentos regionales solo si el usuario los elige al generar) |
 | html_path | string? | ej. `/cuentos/familia-chacachon-....html` |
 | variant | NARRATIVE \| APARTMENT \| PILOT | |
 | status | DRAFT \| PUBLISHED | |

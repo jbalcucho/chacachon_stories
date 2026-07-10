@@ -12,6 +12,12 @@ export type StoryAccentCode = (typeof STORY_ACCENT_CODES)[number];
 
 export const DEFAULT_STORY_ACCENT: StoryAccentCode = "neutro";
 
+/**
+ * Regla de producto: el default es siempre español colombiano neutro.
+ * `bogota_*` solo aplica si el usuario lo elige en /crear.
+ * El perfil familiar (`codigo_acento`) no impone el acento del cuento.
+ */
+
 export const storyAccentCodeSchema = z.enum(STORY_ACCENT_CODES);
 
 /** Opciones visibles en el wizard de /crear (MVP). */

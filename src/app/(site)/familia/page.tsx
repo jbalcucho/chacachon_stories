@@ -205,7 +205,7 @@ export default function FamiliaPage() {
             ciudad: ciudad.trim() || undefined,
             apellido_hogar: apellido.trim() || undefined,
             como_le_dicen_al_hogar: hogar.trim() || undefined,
-            codigo_acento: "bogota_ninos",
+            codigo_acento: "neutro",
           },
           adultos,
           ninos,
