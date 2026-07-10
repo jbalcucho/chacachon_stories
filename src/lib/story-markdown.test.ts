@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { parseBodyBlocks, parseStoryHeader } from "@/lib/story-markdown";
+import {
+  parseBodyBlocks,
+  parseStoryHeader,
+  splitBlocksForPagination,
+} from "@/lib/story-markdown";
 
 describe("parseStoryHeader", () => {
   it("extrae título y subtítulo de cita", () => {
@@ -52,5 +56,21 @@ describe("parseBodyBlocks", () => {
       "divider",
       "paragraph",
     ]);
+  });
+});
+
+describe("splitBlocksForPagination", () => {
+  it("trocea párrafos largos de plantilla sin romper oraciones cortas", () => {
+    const long = `${"Una frase. ".repeat(80)}Fin.`;
+    const blocks = splitBlocksForPagination([
+      { type: "paragraph", text: long },
+      { type: "heading", text: "Capítulo" },
+    ]);
+
+    expect(blocks.length).toBeGreaterThan(2);
+    expect(blocks.every((b) => b.type !== "paragraph" || b.text.length <= 400)).toBe(
+      true,
+    );
+    expect(blocks.some((b) => b.type === "heading")).toBe(true);
   });
 });

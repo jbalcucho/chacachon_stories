@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import StoryReader from "@/components/StoryReader";
 import { getGeneratedStory } from "@/lib/generated-stories.server";
 import type { PersonalizedStoryContent } from "@/lib/story-reader";
-import { parseBodyBlocks, parseStoryHeader } from "@/lib/story-markdown";
+import { parseBodyBlocks, parseStoryHeader, splitBlocksForPagination } from "@/lib/story-markdown";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -27,7 +27,7 @@ function toContent(markdown: string): PersonalizedStoryContent {
   return {
     title: parsed.title,
     subtitle: null,
-    blocks: parseBodyBlocks(parsed.body),
+    blocks: splitBlocksForPagination(parseBodyBlocks(parsed.body)),
   };
 }
 

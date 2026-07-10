@@ -1,3 +1,5 @@
+import { splitIntoSentences } from "@/lib/story-paragraph-split";
+
 export type StoryBlock =
   | { type: "paragraph"; text: string }
   | { type: "heading"; text: string }
@@ -107,4 +109,35 @@ export function parseBodyBlocks(body: string): StoryBlock[] {
   }
 
   return blocks;
+}
+
+const PAGINATION_PARAGRAPH_MAX_CHARS = 400;
+
+/** Trocea párrafos largos (plantillas) para que la paginación DOM sea estable. */
+export function splitBlocksForPagination(
+  blocks: StoryBlock[],
+  maxChars = PAGINATION_PARAGRAPH_MAX_CHARS,
+): StoryBlock[] {
+  return blocks.flatMap((block) => {
+    if (block.type !== "paragraph" || block.text.length <= maxChars) {
+      return [block];
+    }
+
+    const sentences = splitIntoSentences(block.text);
+    const chunks: StoryBlock[] = [];
+    let buffer = "";
+
+    for (const sentence of sentences) {
+      const candidate = buffer ? `${buffer} ${sentence}` : sentence;
+      if (candidate.length > maxChars && buffer) {
+        chunks.push({ type: "paragraph", text: buffer });
+        buffer = sentence;
+      } else {
+        buffer = candidate;
+      }
+    }
+
+    if (buffer) chunks.push({ type: "paragraph", text: buffer });
+    return chunks.length > 0 ? chunks : [{ type: "paragraph", text: block.text }];
+  });
 }

@@ -3,7 +3,7 @@ import { parseFrontmatter } from "@/lib/markdown-frontmatter";
 import { personalizeStoryText } from "@/lib/story-personalization";
 import { readStorySourceFile } from "@/lib/story-content-loader.server";
 import { getStoryContentSource } from "@/lib/story-content-index";
-import { parseBodyBlocks, parseStoryHeader } from "@/lib/story-markdown";
+import { parseBodyBlocks, parseStoryHeader, splitBlocksForPagination } from "@/lib/story-markdown";
 import type { StoryBlock } from "@/lib/story-markdown";
 
 export type { StoryBlock } from "@/lib/story-markdown";
@@ -59,11 +59,13 @@ export async function loadPersonalizedStory(
   };
 
   const title = personalizeStoryText(parsed.title, perfil, personalizeOptions);
-  const bodyBlocks = parseBodyBlocks(parsed.body);
+  const bodyBlocks = splitBlocksForPagination(
+    personalizeBlocks(parseBodyBlocks(parsed.body), perfil, personalizeOptions),
+  );
 
   return {
     title,
     subtitle: null,
-    blocks: personalizeBlocks(bodyBlocks, perfil, personalizeOptions),
+    blocks: bodyBlocks,
   };
 }
