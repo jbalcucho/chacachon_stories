@@ -45,9 +45,9 @@ Objetivo: abrir a usuarios reales sin riesgo de abuso, fuga de PII ni costo desc
 | A3 | Propiedad en `/leer/generado/[id]` (solo el dueño lee) | 🔴 | ✅ |
 | A4 | Moderación de texto libre («+ Otro») antes del LLM | 🔴 | ✅ |
 | A5 | Sin fallback en memoria en producción al guardar cuentos | 🟠 | ✅ |
-| A6 | Tests de API / moderación / cuotas | 🟠 | Parcial (unitarios) |
-| A7 | Logging estructurado + alerta de costo LLM | 🟡 | Pendiente |
-| A8 | Migrar Gemini a plan de pago antes de tráfico masivo | 🟡 | Pendiente |
+| A6 | Tests de API / moderación / cuotas | 🟠 | ✅ |
+| A7 | Logging estructurado + alerta de costo LLM | 🟡 | ✅ |
+| A8 | Migrar Gemini a plan de pago antes de tráfico masivo | 🟡 | Pendiente (tras pulir demos) |
 
 ---
 
@@ -55,15 +55,15 @@ Objetivo: abrir a usuarios reales sin riesgo de abuso, fuga de PII ni costo desc
 
 Objetivo: medir retención semanal (W4) antes de monetizar.
 
-| # | Tarea | Impacto |
-|---|--------|---------|
+| # | Tarea | Impacto | Estado |
+|---|--------|---------|--------|
 | B1 | Biblioteca personal de cuentos generados | Alto | ✅ |
 | B2 | Vista previa de receta antes de gastar generación | Alto | ✅ |
 | B3 | Modo demo sin login (leer catálogo con familia de ejemplo) | Medio | ✅ |
 | B4 | Pre-llenado `?plantilla=slug` en wizard | Medio | ✅ |
 | B5 | OG dinámico por cuento para compartir en WhatsApp | Alto (viral) | ✅ |
-| B6 | Barra de progreso visual en lector | Bajo |
-| B7 | Recordar tamaño de fuente entre sesiones | Bajo |
+| B6 | Barra de progreso visual en lector | Bajo | ✅ |
+| B7 | Recordar tamaño de fuente entre sesiones | Bajo | ✅ |
 
 ---
 
@@ -118,9 +118,9 @@ Documentado en `ContextoChacachon.md` y `contextonew.md`:
 
 ## 8. Próximos pasos inmediatos
 
-1. Completar Fase A (esta semana). ✅
+1. Completar Fase A (esta semana). ✅ (A8 aplazado: pulir demos antes de plan de pago)
 2. Desplegar y verificar en móvil + web.
-3. ~~B3~~ ~~B4~~ ~~B5~~ → **B6** barra de progreso lector o **B7** recordar tamaño de fuente.
+3. Fase B completa (B1–B7). Siguiente foco: pulir cuentos demo / contenido, luego C o A8.
 
 ---
 

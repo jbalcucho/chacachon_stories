@@ -112,6 +112,20 @@ ANTHROPIC_MODEL="claude-3-5-sonnet-latest"
 
 Solo se usa si **no** hay `GEMINI_API_KEY` o si Gemini falló en todos los modelos.
 
+### Cuotas y telemetría
+
+```bash
+GENERATION_DAILY_LIMIT="3"          # cuentos IA / usuario / 24 h
+GENERATION_COST_ALERT_USD="0.05"    # warn en logs si el costo estimado supera el umbral
+```
+
+Cada generación exitosa escribe un log JSON (`[generation]` o `[generation-cost-alert]`)
+con `source`, `model`, tokens (si el proveedor los reporta), `estimatedUsd` y `durationMs`.
+Ver `src/lib/generation-telemetry.ts`.
+
+> **A8 aplazado:** seguimos en capa gratis de Gemini mientras se pulen los cuentos
+> demo. Activar facturación en AI Studio antes de tráfico masivo.
+
 ---
 
 ## Configuración en Vercel (producción)
@@ -126,6 +140,8 @@ Las keys **no van en el código**. Se configuran en el panel de Vercel o por CLI
 |----------|-------|----------|
 | `GEMINI_API_KEY` | Key de AI Studio | Production, Preview |
 | `GEMINI_MODEL` | `gemini-3.1-flash-lite-preview` | Production, Preview |
+| `GENERATION_DAILY_LIMIT` | `3` (opcional) | Production, Preview |
+| `GENERATION_COST_ALERT_USD` | `0.05` (opcional) | Production, Preview |
 
 Marcar `GEMINI_API_KEY` como **Sensitive**. Después: **Deployments → Redeploy**.
 
@@ -146,7 +162,8 @@ curl -s -X POST https://chacachon-stories.vercel.app/api/cuentos/generar \
   -d '{"selection":{"heroes":[{"id":"p-nico","kind":"persona","label":"Nico"}],"reto":[{"id":"dil-dormir","kind":"dilema","label":"Ir a dormir"}],"aprenden":[],"lugar":[],"mascota":[],"acompanantes":[],"rolReto":[],"objeto":[],"molde":[]}}'
 ```
 
-Respuesta esperada: `{"id":"...","source":"gemini"}`.
+Respuesta esperada sin sesión: `401` (`Entra con Google…`). Con cookie de sesión
+válida y cuota disponible: `{"id":"...","source":"gemini"}`.
 
 ---
 
@@ -206,10 +223,12 @@ Ver [docs/database.md](./database.md).
 | Código | Respuesta |
 |--------|-----------|
 | **200** | `{ "id": "uuid", "source": "gemini" \| "claude" \| "mock" }` |
-| **400** | Receta inválida o falta protagonista/reto |
+| **400** | Receta inválida, falta protagonista/reto, o texto libre rechazado |
+| **401** | Sin sesión |
+| **429** | Cuota diaria agotada |
 | **500** | Error inesperado |
 
-Mínimo obligatorio: al menos un **protagonista** y un **reto**.
+Mínimo obligatorio: al menos un **protagonista** y un **reto**. Requiere login.
 
 ---
 
@@ -237,6 +256,8 @@ Parser: `parseStoryHeader` + `parseBodyBlocks` (`src/lib/story-markdown.ts`).
 | `src/lib/story-prompt.ts` | System prompt + mensaje de usuario |
 | `src/lib/story-mock.ts` | Plantilla local (no es IA) |
 | `src/lib/story-generation.server.ts` | Gemini → Claude → mock + fallback de modelos |
+| `src/lib/generate-story-guards.ts` | Auth + Zod + moderación (tests de API) |
+| `src/lib/generation-telemetry.ts` | Log JSON + alerta de costo estimado |
 | `src/lib/generated-stories.server.ts` | Guardar/leer (Neon o memoria) |
 | `src/app/api/cuentos/generar/route.ts` | Endpoint POST |
 | `src/app/(reader)/leer/generado/[id]/page.tsx` | Lector del cuento generado |
@@ -267,11 +288,14 @@ Las reglas de voz, estructura y ejemplos buenos/malos viven en
 
 ## Pendientes (siguientes fases)
 
-- **Moderación** de campos «+ Otro» antes del prompt.
-- **Freemium:** límite de cuentos generados por usuario.
+- ~~**Moderación** de campos «+ Otro» antes del prompt.~~ ✅
+- ~~**Freemium / cuota** de cuentos generados por usuario.~~ ✅ (`GENERATION_DAILY_LIMIT`)
+- ~~**Logging + alerta de costo**~~ ✅ (`generation-telemetry`)
 - ~~**Perfil en el prompt**~~ ✅ — ver `describeProfile()` en `story-prompt.ts`.
+- ~~**Listado** de cuentos generados en biblioteca del usuario.~~ ✅ (`/mis-cuentos`)
+- **A8:** plan de pago Gemini antes de tráfico masivo (aplazado mientras se pulen demos).
 - **Imagen/voz:** portada (fal.ai) y narración (ElevenLabs).
-- **Listado** de cuentos generados en biblioteca del usuario.
+- **Calidad:** few-shot más ricos y evaluación humana de demos.
 
 ---
 

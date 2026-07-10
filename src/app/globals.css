@@ -3256,8 +3256,33 @@ body::before {
   justify-self: end;
 }
 
-.book-reader__footer .book-reader__progress {
+.book-reader__footer .book-reader__progress-block {
   justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 7.5rem;
+  max-width: 11rem;
+  width: 100%;
+}
+
+.book-reader__progress-track {
+  width: 100%;
+  height: 0.28rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.book-reader__progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7dd3c0, #f0c674);
+  transition: width 0.35s ease;
+}
+
+.book-reader__footer .book-reader__progress {
   text-align: center;
 }
 

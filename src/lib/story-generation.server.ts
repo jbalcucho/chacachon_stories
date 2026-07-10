@@ -1,5 +1,6 @@
 import "server-only";
 import type { FamilyProfileDocument } from "@/lib/family-profile-schema";
+import type { LlmUsage } from "@/lib/generation-telemetry";
 import type { RecipeSelectionSlice } from "@/lib/recipe-summary";
 import { parseStoryHeader } from "@/lib/story-markdown";
 import { buildMockStoryMarkdown } from "@/lib/story-mock";
@@ -18,6 +19,7 @@ export type GeneratedStoryDraft = {
   bodyMarkdown: string;
   source: StorySource;
   model: string | null;
+  usage: LlmUsage | null;
 };
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
@@ -48,7 +50,7 @@ function geminiModelCandidates(): string[] {
 async function callClaude(
   ctx: StoryGenerationContext,
   apiKey: string,
-): Promise<string> {
+): Promise<{ markdown: string; usage: LlmUsage | null }> {
   const { system, user } = buildStoryPrompt({
     selection: ctx.selection,
     perfil: ctx.perfil,
@@ -77,6 +79,7 @@ async function callClaude(
 
   const data = (await res.json()) as {
     content?: Array<{ type: string; text?: string }>;
+    usage?: { input_tokens?: number; output_tokens?: number };
   };
   const text = (data.content ?? [])
     .filter((b) => b.type === "text" && typeof b.text === "string")
@@ -85,14 +88,25 @@ async function callClaude(
     .trim();
 
   if (!text) throw new Error("Anthropic devolvió una respuesta vacía.");
-  return text;
+
+  const usage: LlmUsage | null =
+    data.usage?.input_tokens != null || data.usage?.output_tokens != null
+      ? {
+          inputTokens: data.usage.input_tokens,
+          outputTokens: data.usage.output_tokens,
+          totalTokens:
+            (data.usage.input_tokens ?? 0) + (data.usage.output_tokens ?? 0),
+        }
+      : null;
+
+  return { markdown: text, usage };
 }
 
 async function callGeminiModel(
   ctx: StoryGenerationContext,
   apiKey: string,
   model: string,
-): Promise<string> {
+): Promise<{ markdown: string; usage: LlmUsage | null }> {
   const { system, user } = buildStoryPrompt({
     selection: ctx.selection,
     perfil: ctx.perfil,
@@ -124,6 +138,11 @@ async function callGeminiModel(
     candidates?: Array<{
       content?: { parts?: Array<{ text?: string }> };
     }>;
+    usageMetadata?: {
+      promptTokenCount?: number;
+      candidatesTokenCount?: number;
+      totalTokenCount?: number;
+    };
   };
   const text = (data.candidates?.[0]?.content?.parts ?? [])
     .map((p) => p.text ?? "")
@@ -131,20 +150,30 @@ async function callGeminiModel(
     .trim();
 
   if (!text) throw new Error(`Gemini ${model} devolvió una respuesta vacía.`);
-  return text;
+
+  const meta = data.usageMetadata;
+  const usage: LlmUsage | null = meta
+    ? {
+        inputTokens: meta.promptTokenCount,
+        outputTokens: meta.candidatesTokenCount,
+        totalTokens: meta.totalTokenCount,
+      }
+    : null;
+
+  return { markdown: text, usage };
 }
 
 async function callGemini(
   ctx: StoryGenerationContext,
   apiKey: string,
-): Promise<{ markdown: string; model: string }> {
+): Promise<{ markdown: string; model: string; usage: LlmUsage | null }> {
   const candidates = geminiModelCandidates();
   let lastError: Error | null = null;
 
   for (const model of candidates) {
     try {
-      const markdown = await callGeminiModel(ctx, apiKey, model);
-      return { markdown, model };
+      const { markdown, usage } = await callGeminiModel(ctx, apiKey, model);
+      return { markdown, model, usage };
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
       console.error("[story-generation]", lastError.message);
@@ -170,12 +199,13 @@ export async function generateStory(
 
   if (geminiKey) {
     try {
-      const { markdown, model } = await callGemini(ctx, geminiKey);
+      const { markdown, model, usage } = await callGemini(ctx, geminiKey);
       return {
         title: titleFromMarkdown(markdown, fallbackTitle),
         bodyMarkdown: markdown,
         source: "gemini",
         model,
+        usage,
       };
     } catch (error) {
       console.error("[story-generation] Gemini falló:", error);
@@ -184,12 +214,13 @@ export async function generateStory(
 
   if (anthropicKey) {
     try {
-      const markdown = await callClaude(ctx, anthropicKey);
+      const { markdown, usage } = await callClaude(ctx, anthropicKey);
       return {
         title: titleFromMarkdown(markdown, fallbackTitle),
         bodyMarkdown: markdown,
         source: "claude",
         model: anthropicModel(),
+        usage,
       };
     } catch (error) {
       console.error("[story-generation] Claude falló:", error);
@@ -202,5 +233,6 @@ export async function generateStory(
     bodyMarkdown: markdown,
     source: "mock",
     model: null,
+    usage: null,
   };
 }

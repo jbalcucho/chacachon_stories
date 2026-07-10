@@ -31,11 +31,30 @@ const MAX_FONT = 1.75;
 const STEP = 0.1;
 const TURN_MS = 680;
 const PAPER_KEY = "chacachon-paper";
+const FONT_KEY = "chacachon-font-size";
 const PROGRESS_PREFIX = "chacachon.reader-progress:";
+
+function defaultFontSize(): number {
+  if (typeof window === "undefined") return 1.2;
+  return window.innerWidth < 560 ? 1.1 : 1.28;
+}
+
+function clampFontSize(value: number): number {
+  return Math.min(MAX_FONT, Math.max(MIN_FONT, Math.round(value * 100) / 100));
+}
 
 function initialFontSize(): number {
   if (typeof window === "undefined") return 1.2;
-  return window.innerWidth < 560 ? 1.1 : 1.28;
+  try {
+    const raw = window.localStorage.getItem(FONT_KEY);
+    if (raw !== null) {
+      const saved = Number.parseFloat(raw);
+      if (Number.isFinite(saved)) return clampFontSize(saved);
+    }
+  } catch {
+    // localStorage no disponible
+  }
+  return defaultFontSize();
 }
 
 export default function StoryReader({
@@ -66,6 +85,8 @@ export default function StoryReader({
   });
 
   const pageCount = pages.length;
+  const progressPct =
+    pageCount > 0 ? ((pageIndex + 1) / pageCount) * 100 : 0;
   const currentPage = pages[pageIndex] ?? pages[0];
   const pendingPage =
     turning === "next"
@@ -136,11 +157,11 @@ export default function StoryReader({
   }
 
   const decrease = useCallback(() => {
-    setFontSize((s) => Math.max(MIN_FONT, Math.round((s - STEP) * 100) / 100));
+    setFontSize((s) => clampFontSize(s - STEP));
   }, []);
 
   const increase = useCallback(() => {
-    setFontSize((s) => Math.min(MAX_FONT, Math.round((s + STEP) * 100) / 100));
+    setFontSize((s) => clampFontSize(s + STEP));
   }, []);
 
   useEffect(() => {
@@ -162,6 +183,14 @@ export default function StoryReader({
       // localStorage no disponible: se queda con el tema por defecto
     }
   }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(FONT_KEY, String(fontSize));
+    } catch {
+      // ignorar si no se puede persistir
+    }
+  }, [fontSize]);
 
   useEffect(() => {
     if (progressRestored.current || pageCount === 0) return;
@@ -418,9 +447,24 @@ export default function StoryReader({
           >
             ‹ Anterior
           </button>
-          <p className="book-reader__progress" aria-live="polite">
-            Página {pageIndex + 1} de {pageCount}
-          </p>
+          <div className="book-reader__progress-block">
+            <div
+              className="book-reader__progress-track"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(progressPct)}
+              aria-label={`Progreso de lectura: página ${pageIndex + 1} de ${pageCount}`}
+            >
+              <div
+                className="book-reader__progress-fill"
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+            <p className="book-reader__progress" aria-live="polite">
+              Página {pageIndex + 1} de {pageCount}
+            </p>
+          </div>
           <button
             type="button"
             onClick={goNext}
