@@ -97,6 +97,8 @@ Rutas protegidas (middleware): `/familia/*`, `/admin/*` (Sprint 1+).
 | Ilustración PNG/WebP | `public/images/brand/hero-luna-chacachon.*` | UI (`BrandIllustration`) |
 | Favicon | `src/app/icon.png` | Pestaña del navegador |
 | Apple touch | `src/app/apple-icon.png` | iOS «Añadir a inicio» |
+| Web manifest | `src/app/manifest.ts` | Instalable como app (Android / iOS) |
+| Service worker | `public/sw.js` | Requisito Chrome para «Instalar app» |
 | OG embebido | `src/lib/brand-illustration-server.ts` | `ImageResponse` (solo servidor) |
 
 ---

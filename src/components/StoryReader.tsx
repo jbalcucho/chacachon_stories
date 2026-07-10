@@ -190,68 +190,80 @@ export default function StoryReader({
           <Link
             href={`/?libro=${encodeURIComponent(storySlug)}`}
             className="story-reader__back"
+            aria-label="Volver a biblioteca"
           >
-            ← Biblioteca
+            <span className="story-reader__back-icon" aria-hidden="true">
+              ←
+            </span>
+            <span className="story-reader__back-label">Biblioteca</span>
           </Link>
 
-          <div className="story-reader__font-controls">
-            <button
-              type="button"
-              onClick={decrease}
-              className="story-reader__font-btn"
-              aria-label="Texto más pequeño"
+          <div className="story-reader__toolbar-actions">
+            <div
+              className="story-reader__paper-toggle"
+              role="group"
+              aria-label="Estilo de hoja"
             >
-              A−
-            </button>
-            <button
-              type="button"
-              onClick={increase}
-              className="story-reader__font-btn"
-              aria-label="Texto más grande"
-            >
-              A+
-            </button>
+              <button
+                type="button"
+                className="story-reader__paper-btn"
+                data-active={paper === "cuento"}
+                aria-pressed={paper === "cuento"}
+                aria-label="Hoja de cuento"
+                title="Hoja de cuento"
+                onClick={() => changePaper("cuento")}
+              >
+                <span className="story-reader__paper-icon" aria-hidden="true">
+                  📖
+                </span>
+                <span className="story-reader__paper-label">Cuento</span>
+              </button>
+              <button
+                type="button"
+                className="story-reader__paper-btn"
+                data-active={paper === "cuaderno"}
+                aria-pressed={paper === "cuaderno"}
+                aria-label="Hoja de cuaderno"
+                title="Hoja de cuaderno"
+                onClick={() => changePaper("cuaderno")}
+              >
+                <span className="story-reader__paper-icon" aria-hidden="true">
+                  📓
+                </span>
+                <span className="story-reader__paper-label">Cuaderno</span>
+              </button>
+            </div>
+
+            <div className="story-reader__font-controls">
+              <button
+                type="button"
+                onClick={decrease}
+                className="story-reader__font-btn"
+                aria-label="Texto más pequeño"
+              >
+                A−
+              </button>
+              <button
+                type="button"
+                onClick={increase}
+                className="story-reader__font-btn"
+                aria-label="Texto más grande"
+              >
+                A+
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="story-reader__toolbar-row story-reader__toolbar-row--title">
-          <div className="story-reader__toolbar-center">
-            <span className="story-reader__toolbar-title">{storyTitle}</span>
-            {profileSource === "user" ? (
-              <span className="story-reader__badge">Tu familia</span>
-            ) : (
-              <span className="story-reader__badge story-reader__badge--demo">
-                Demo Chacachón
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="story-reader__toolbar-row story-reader__toolbar-row--paper">
-          <div
-            className="story-reader__paper-toggle"
-            role="group"
-            aria-label="Estilo de hoja"
-          >
-            <button
-              type="button"
-              className="story-reader__paper-btn"
-              data-active={paper === "cuento"}
-              aria-pressed={paper === "cuento"}
-              onClick={() => changePaper("cuento")}
-            >
-              Cuento
-            </button>
-            <button
-              type="button"
-              className="story-reader__paper-btn"
-              data-active={paper === "cuaderno"}
-              aria-pressed={paper === "cuaderno"}
-              onClick={() => changePaper("cuaderno")}
-            >
-              Cuaderno
-            </button>
-          </div>
+        <div className="story-reader__toolbar-row story-reader__toolbar-row--meta">
+          <span className="story-reader__toolbar-title">{storyTitle}</span>
+          {profileSource === "user" ? (
+            <span className="story-reader__badge">Tu familia</span>
+          ) : (
+            <span className="story-reader__badge story-reader__badge--demo">
+              Demo
+            </span>
+          )}
         </div>
       </header>
 
@@ -273,8 +285,12 @@ export default function StoryReader({
             data-ready={ready ? "true" : "false"}
             data-turning={turning ?? undefined}
           >
-            {ready && currentPage ? (
-              <div className="book-page__surface" aria-hidden={Boolean(turning)}>
+            {currentPage ? (
+              <div
+                className="book-page__surface"
+                aria-hidden={Boolean(turning)}
+                aria-busy={!ready}
+              >
                 <StoryPageBlocks
                   blocks={currentPage.blocks}
                   title={content.title}

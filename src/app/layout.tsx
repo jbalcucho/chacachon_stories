@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -24,6 +25,15 @@ export const metadata: Metadata = {
   description:
     "Cuentos infantiles hiperlocalizados con IA para leer en familia. Humor bogotano, personajes de la familia Chacachón.",
   metadataBase: new URL(siteUrl),
+  applicationName: "Chacachón",
+  appleWebApp: {
+    capable: true,
+    title: "Chacachón",
+    statusBarStyle: "black-translucent",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     type: "website",
     locale: "es_CO",
@@ -64,6 +74,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${nunito.variable} ${fredoka.variable}`}>
       <body className="page-bg flex min-h-screen flex-col font-sans text-cream">
+        <ServiceWorkerRegister />
         {children}
       </body>
     </html>

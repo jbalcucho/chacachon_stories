@@ -2421,12 +2421,36 @@ body::before {
   gap: 0.5rem;
 }
 
-.story-reader__toolbar-row--title {
+.story-reader__toolbar-row--meta {
   justify-content: center;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
 }
 
-.story-reader__toolbar-row--paper {
-  justify-content: center;
+.story-reader__toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.story-reader__back-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.story-reader__back-label {
+  line-height: 1.1;
+}
+
+.story-reader__paper-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.story-reader__paper-label {
+  line-height: 1.1;
 }
 
 .story-reader__back {
@@ -2490,25 +2514,14 @@ body::before {
 
   .story-reader__toolbar-row--nav {
     order: 1;
-    flex: 0 0 auto;
+    flex: 1 1 auto;
   }
 
-  .story-reader__toolbar-row--title {
+  .story-reader__toolbar-row--meta {
     order: 2;
     flex: 1 1 12rem;
     justify-content: center;
     min-width: 0;
-  }
-
-  .story-reader__toolbar-row--paper {
-    order: 3;
-    flex: 0 0 auto;
-    justify-content: flex-end;
-  }
-
-  .story-reader__toolbar-center {
-    width: auto;
-    max-width: 28rem;
   }
 
   .story-reader__toolbar-title {
@@ -2517,6 +2530,47 @@ body::before {
     white-space: nowrap;
     text-overflow: ellipsis;
     display: block;
+    max-width: 28rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .story-reader__toolbar {
+    gap: 0;
+    padding-bottom: 0.35rem;
+  }
+
+  .story-reader__toolbar-row--meta {
+    display: none;
+  }
+
+  .story-reader__back {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    padding: 0.45rem;
+    justify-content: center;
+  }
+
+  .story-reader__back-label {
+    display: none;
+  }
+
+  .story-reader__paper-label {
+    display: none;
+  }
+
+  .story-reader__paper-btn {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    padding: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .story-reader__font-btn {
+    width: 2.35rem;
+    height: 2.35rem;
   }
 }
 
@@ -2612,10 +2666,10 @@ body::before {
 /* ——— Lector tipo libro ——— */
 
 .story-reader--book {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   width: 100%;
-  height: 100dvh;
+  height: 100%;
   min-height: 100dvh;
   overflow: hidden;
   font-family: var(--font-fredoka), var(--font-nunito), system-ui, sans-serif;
@@ -2691,13 +2745,6 @@ body::before {
 @media (max-width: 639px) {
   .story-reader__paper-btn {
     font-size: 0.78rem;
-    padding: 0.35rem 0.85rem;
-    min-width: 5.5rem;
-  }
-
-  .story-reader__font-btn {
-    width: 2.5rem;
-    height: 2.5rem;
   }
 }
 
@@ -2714,7 +2761,7 @@ body::before {
 }
 
 .book-measure .book-page--measure {
-  flex: 1 1 0;
+  height: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -2724,7 +2771,8 @@ body::before {
 }
 
 .book-measure .book-page__inner {
-  flex: 1 1 0;
+  flex: 1 1 auto;
+  height: 100%;
   min-height: 0;
   width: 100%;
   overflow: hidden;
@@ -2734,24 +2782,22 @@ body::before {
 .book-reader {
   position: relative;
   z-index: 1;
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+  overflow: hidden;
   width: 100%;
   padding: 0.25rem 0.5rem 0;
-  min-height: 0;
 }
 
 .book-reader__viewport {
   position: relative;
   display: flex;
   flex-direction: column;
-  flex: 1 1 0;
-  align-self: stretch;
+  min-height: 0;
+  height: 100%;
   width: 100%;
   max-width: min(96vw, 52rem);
-  min-height: 0;
   margin-inline: auto;
 }
 
@@ -2769,8 +2815,9 @@ body::before {
   position: relative;
   display: flex;
   flex-direction: column;
-  flex: 1 1 0;
+  flex: 1 1 auto;
   width: 100%;
+  height: 100%;
   min-height: 0;
   border-radius: 0.65rem;
   background-color: var(--paper-bg-color);
@@ -2788,7 +2835,11 @@ body::before {
 }
 
 .book-shell[data-ready="false"] {
-  opacity: 0;
+  opacity: 0.92;
+}
+
+.book-shell[data-ready="false"] .book-page__surface {
+  filter: blur(1px);
 }
 
 .book-shell[data-turning] .book-page__surface {

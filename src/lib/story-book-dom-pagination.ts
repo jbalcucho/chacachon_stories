@@ -246,17 +246,31 @@ export function paginateBookContent(
       break;
     }
 
+    if (pageBlocks.length === 0 && (includeTitle || includeSubtitle)) {
+      renderPageToInner(inner, { ...shell, blocks: [] });
+      if (pageFits(inner)) {
+        pages.push({ blocks: [], includeTitle, includeSubtitle });
+        isFirstPage = false;
+        if (!pendingParagraph && blockIndex >= blocks.length) break;
+        continue;
+      }
+      if (includeSubtitle && includeTitle) {
+        pages.push({
+          blocks: [],
+          includeTitle: true,
+          includeSubtitle: false,
+        });
+        isFirstPage = false;
+        continue;
+      }
+    }
+
     if (
       pageBlocks.length === 0 &&
       !includeTitle &&
       !includeSubtitle
     ) {
       break;
-    }
-
-    if (pageBlocks.length === 0 && (includeTitle || includeSubtitle)) {
-      renderPageToInner(inner, { ...shell, blocks: [] });
-      if (!pageFits(inner)) break;
     }
 
     pages.push({

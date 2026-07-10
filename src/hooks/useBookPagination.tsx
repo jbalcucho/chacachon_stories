@@ -34,6 +34,29 @@ function pagesEqual(a: BookPageData[], b: BookPageData[]): boolean {
   });
 }
 
+function measureViewportSize(viewport: HTMLElement): {
+  width: number;
+  height: number;
+} {
+  const rect = viewport.getBoundingClientRect();
+  let width = rect.width;
+  let height = rect.height;
+
+  if (height < 120 || width < 48) {
+    const root = viewport.closest(".story-reader--book");
+    const toolbar = root?.querySelector<HTMLElement>(".story-reader__toolbar");
+    const footer = root?.querySelector<HTMLElement>(".book-reader__footer");
+    const chrome =
+      (toolbar?.getBoundingClientRect().height ?? 0) +
+      (footer?.getBoundingClientRect().height ?? 0) +
+      24;
+    width = width > 48 ? width : window.innerWidth;
+    height = Math.max(window.innerHeight - chrome, 280);
+  }
+
+  return { width, height };
+}
+
 export function useBookPagination({ content, fontSize }: Args) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
@@ -51,20 +74,23 @@ export function useBookPagination({ content, fontSize }: Args) {
     let debounce: number | undefined;
 
     const run = () => {
-      const viewportHeight =
-        viewport.clientHeight > 80
-          ? viewport.clientHeight
-          : Math.max(window.innerHeight * 0.58, 320);
-      const viewportWidth = viewport.clientWidth;
+      const { width: viewportWidth, height: viewportHeight } =
+        measureViewportSize(viewport);
 
-      if (viewportWidth < 48 || viewportHeight < 80) return;
+      if (viewportWidth < 48 || viewportHeight < 120) {
+        setReady(true);
+        return;
+      }
 
       setReady(false);
       measure.style.width = `${viewportWidth}px`;
       measure.style.height = `${viewportHeight}px`;
 
       const inner = measure.querySelector<HTMLElement>(".book-page__inner");
-      if (!inner) return;
+      if (!inner) {
+        setReady(true);
+        return;
+      }
 
       const built = paginateBookContent(inner, content);
       setPages((current) => (pagesEqual(current, built) ? current : built));
@@ -85,10 +111,18 @@ export function useBookPagination({ content, fontSize }: Args) {
 
     const observer = new ResizeObserver(schedule);
     observer.observe(viewport);
+    const reader = viewport.closest(".book-reader");
+    if (reader) observer.observe(reader);
+
+    window.addEventListener("resize", schedule);
+    window.addEventListener("orientationchange", schedule);
+
     return () => {
       window.clearTimeout(debounce);
       window.cancelAnimationFrame(frame);
       observer.disconnect();
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("orientationchange", schedule);
     };
   }, [content, fontSize]);
 

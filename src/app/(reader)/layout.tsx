@@ -3,5 +3,5 @@ export default function ReaderShellLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div className="min-h-screen w-full">{children}</div>;
+  return <div className="h-dvh w-full overflow-hidden">{children}</div>;
 }
