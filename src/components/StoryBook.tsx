@@ -54,6 +54,9 @@ export default function StoryBook({
           ) : null}
         </div>
         <h2 className="book-title">{story.title}</h2>
+        {story.moraleja ? (
+          <p className="book-moraleja">{story.moraleja}</p>
+        ) : null}
       </div>
     </>
   );

@@ -25,10 +25,10 @@ export const metadata: Metadata = {
   description:
     "Cuentos infantiles hiperlocalizados con IA para leer en familia. Humor bogotano, personajes de la familia Chacachón.",
   metadataBase: new URL(siteUrl),
-  applicationName: "Chacachón Stories",
+  applicationName: "HistorIAs Chacachon",
   appleWebApp: {
     capable: true,
-    title: "Chacachón Stories",
+    title: "HistorIAs Chacachon",
     statusBarStyle: "black-translucent",
   },
   formatDetection: {

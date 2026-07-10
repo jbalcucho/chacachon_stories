@@ -5,8 +5,8 @@ export default function manifest(): MetadataRoute.Manifest {
   const siteUrl = getSiteUrl();
 
   return {
-    name: "Chacachón Stories",
-    short_name: "Chacachón Stories",
+    name: "HistorIAs Chacachon",
+    short_name: "HistorIAs Chacachon",
     description:
       "Cuentos infantiles personalizados para leer en familia, de noche o en cualquier momento.",
     start_url: "/",
