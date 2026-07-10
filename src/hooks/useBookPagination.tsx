@@ -57,7 +57,6 @@ export function useBookPagination({ content, fontSize }: Args) {
 
     let frame = 0;
     let debounce: number | undefined;
-    let retryTimer: number | undefined;
 
     const run = () => {
       const inner = measureRoot.querySelector<HTMLElement>(
@@ -78,7 +77,7 @@ export function useBookPagination({ content, fontSize }: Args) {
     };
 
     schedule();
-    retryTimer = window.setTimeout(schedule, 200);
+    const retryTimer = window.setTimeout(schedule, 200);
     const retryTimer2 = window.setTimeout(schedule, 500);
 
     const observer = new ResizeObserver(schedule);
