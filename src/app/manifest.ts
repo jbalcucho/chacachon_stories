@@ -19,20 +19,20 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["books", "education", "kids"],
     icons: [
       {
-        src: "/icon",
-        sizes: "any",
+        src: "/icons/icon-192.png",
+        sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/apple-icon",
-        sizes: "180x180",
+        src: "/icons/icon-512.png",
+        sizes: "512x512",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/apple-icon",
-        sizes: "180x180",
+        src: "/icons/icon-512.png",
+        sizes: "512x512",
         type: "image/png",
         purpose: "maskable",
       },

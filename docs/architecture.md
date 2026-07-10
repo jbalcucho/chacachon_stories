@@ -98,6 +98,7 @@ Rutas protegidas (middleware): `/familia/*`, `/admin/*` (Sprint 1+).
 | Favicon | `src/app/icon.png` | Pestaña del navegador |
 | Apple touch | `src/app/apple-icon.png` | iOS «Añadir a inicio» |
 | Web manifest | `src/app/manifest.ts` | Instalable como app (Android / iOS) |
+| Iconos PWA | `public/icons/icon-192.png`, `icon-512.png` | «Añadir a inicio» en Android/Samsung |
 | Service worker | `public/sw.js` | Requisito Chrome para «Instalar app» |
 | OG embebido | `src/lib/brand-illustration-server.ts` | `ImageResponse` (solo servidor) |
 
