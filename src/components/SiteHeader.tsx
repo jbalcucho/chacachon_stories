@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import BrandIllustration from "@/components/BrandIllustration";
 import LoginButton from "@/components/LoginButton";
 
 export default function SiteHeader() {
+  const { data: session } = useSession();
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
 
@@ -50,6 +52,14 @@ export default function SiteHeader() {
           </div>
         </Link>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          {session?.user ? (
+            <Link
+              href="/mis-cuentos"
+              className="hidden text-xs font-semibold text-cream-muted transition hover:text-cream sm:inline"
+            >
+              Mis cuentos
+            </Link>
+          ) : null}
           <Link
             href="/familia"
             className="hidden text-xs font-semibold text-cream-muted transition hover:text-cream sm:inline"

@@ -28,7 +28,7 @@ export type ReaderProfile = {
   source: ReaderProfileSource;
 };
 
-/** Perfil del lector: usuario autenticado o demo Chacachón. */
+/** Perfil del lector: usuario autenticado o demo Chacachón (ver docs/demo-mode.md). */
 export async function getReaderProfile(
   userId: string | null,
 ): Promise<ReaderProfile> {

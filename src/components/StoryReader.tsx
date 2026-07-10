@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import DemoModeBanner from "@/components/DemoModeBanner";
 import StoryPageBlocks from "@/components/StoryPageBlocks";
+import StoryShareButton from "@/components/StoryShareButton";
 import { useBookPagination } from "@/hooks/useBookPagination";
 import type { PersonalizedStoryContent } from "@/lib/story-reader";
 import type { ReaderProfileSource } from "@/lib/reader-profile";
@@ -12,6 +14,12 @@ type Props = {
   profileSource: ReaderProfileSource;
   storyTitle: string;
   storySlug: string;
+  /** Destino del botón «volver». Por defecto: estante con libro abierto. */
+  backHref?: string;
+  /** Muestra compartir (solo catálogo público). */
+  shareable?: boolean;
+  /** Login con retorno al cuento actual (modo demo). */
+  loginCallbackUrl?: string;
 };
 
 type TurnDirection = "next" | "prev";
@@ -34,6 +42,10 @@ export default function StoryReader({
   profileSource,
   storyTitle,
   storySlug,
+  backHref,
+  backLabel = "Biblioteca",
+  shareable = false,
+  loginCallbackUrl,
 }: Props) {
   const [fontSize, setFontSize] = useState(initialFontSize);
   const [paper, setPaper] = useState<PaperStyle>("cuento");
@@ -44,6 +56,8 @@ export default function StoryReader({
   const reduceMotion = useRef(false);
   const progressRestored = useRef(false);
   const progressKey = `${PROGRESS_PREFIX}${storySlug}`;
+  const libraryHref =
+    backHref ?? `/?libro=${encodeURIComponent(storySlug)}`;
 
   const { viewportRef, pages, measureLayer } = useBookPagination({
     content,
@@ -186,17 +200,21 @@ export default function StoryReader({
       <header className="story-reader__toolbar">
         <div className="story-reader__toolbar-row story-reader__toolbar-row--nav">
           <Link
-            href={`/?libro=${encodeURIComponent(storySlug)}`}
+            href={libraryHref}
             className="story-reader__back"
-            aria-label="Volver a biblioteca"
+            aria-label={`Volver a ${backLabel.toLowerCase()}`}
           >
             <span className="story-reader__back-icon" aria-hidden="true">
               ←
             </span>
-            <span className="story-reader__back-label">Biblioteca</span>
+            <span className="story-reader__back-label">{backLabel}</span>
           </Link>
 
           <div className="story-reader__toolbar-actions">
+            {shareable ? (
+              <StoryShareButton title={storyTitle} />
+            ) : null}
+
             <div
               className="story-reader__paper-toggle"
               role="group"
@@ -255,14 +273,23 @@ export default function StoryReader({
 
         <div className="story-reader__toolbar-row story-reader__toolbar-row--meta">
           <span className="story-reader__toolbar-title">{storyTitle}</span>
-          {profileSource === "user" ? (
-            <span className="story-reader__badge">Tu familia</span>
-          ) : (
-            <span className="story-reader__badge story-reader__badge--demo">
-              Demo
-            </span>
-          )}
+          <div className="story-reader__meta-badges">
+            {profileSource === "user" ? (
+              <span className="story-reader__badge">Tu familia</span>
+            ) : (
+              <span className="story-reader__badge story-reader__badge--demo">
+                Demo
+              </span>
+            )}
+          </div>
         </div>
+
+        {profileSource === "demo" ? (
+          <DemoModeBanner
+            compact
+            loginCallbackUrl={loginCallbackUrl ?? `/leer/${storySlug}`}
+          />
+        ) : null}
       </header>
 
       <div className="book-reader">

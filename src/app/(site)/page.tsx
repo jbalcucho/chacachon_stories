@@ -1,5 +1,7 @@
 import BrandIllustration from "@/components/BrandIllustration";
+import DemoModeBanner from "@/components/DemoModeBanner";
 import StoryBookshelf from "@/components/StoryBookshelf";
+import { getSessionUser } from "@/lib/session";
 import { getLibraryStories } from "@/lib/stories";
 
 export default async function HomePage({
@@ -9,6 +11,7 @@ export default async function HomePage({
 }) {
   const stories = await getLibraryStories();
   const { libro } = await searchParams;
+  const user = await getSessionUser();
 
   return (
     <main className="home-main mx-auto max-w-5xl px-4 py-4 pb-8 sm:px-6 sm:py-6 sm:pb-10">
@@ -25,6 +28,12 @@ export default async function HomePage({
           ¿Qué vamos a leer hoy?
         </p>
       </header>
+
+      {!user ? (
+        <div className="mx-auto mb-4 max-w-2xl">
+          <DemoModeBanner loginCallbackUrl="/" />
+        </div>
+      ) : null}
 
       <StoryBookshelf
         stories={stories}

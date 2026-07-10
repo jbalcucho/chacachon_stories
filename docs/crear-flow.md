@@ -15,7 +15,9 @@ Documenta lo construido hasta aquí en el hub `/crear`, el asistente de receta y
 | Receta interactiva | ✅ Tap + drag (desktop) | `/crear/adaptar` · `StoryRecipeBuilder.tsx` |
 | Perfil familiar | ✅ JSONB + completitud % | `/familia` · `family-profile-completion.ts` |
 | Generación IA | ✅ Gemini (POC gratis) + fallback mock | `POST /api/cuentos/generar` · `/leer/generado/[id]` · [docs/ia-generacion.md](./ia-generacion.md) |
-| Marca luna + libro | ✅ Ilustración en header, home, footer, crear, OG, favicon | `BrandIllustration.tsx` · `public/images/brand/hero-luna-chacachon.{png,webp}` |
+| Vista previa antes de IA | ✅ Sin gastar cuota | `RecipeGenerationPreview.tsx` · [docs/crear-flow.md](./crear-flow.md) |
+| Modo demo sin login | ✅ Catálogo + receta | [docs/demo-mode.md](./demo-mode.md) |
+| Compartir cuento (OG) | ✅ WhatsApp / Web Share | [docs/compartir-cuentos.md](./compartir-cuentos.md) |
 
 ---
 
@@ -25,9 +27,9 @@ Documenta lo construido hasta aquí en el hub `/crear`, el asistente de receta y
 
 - Hero: *Tu cuento, tu familia* — cuento **inspirado en ti y tu familia**, o basado en un clásico; perfil opcional.
 - Tres caminos:
-  1. **Inspirado en tu vida** → `/crear/adaptar` (requiere perfil válido).
+  1. **Inspirado en tu vida** → `/crear/adaptar` (con perfil propio o familia demo si no hay login).
   2. **Basado en un cuento tradicional** → `/crear/plantillas` (cerditos, Caperucita, hombre de jengibre…; no incluye cuentos propios como Operación a dormir).
-  3. **Edita tu perfil de cuentos** → `/familia`.
+  3. **Edita tu perfil de cuentos** → `/familia` (requiere login).
 
 ### UX interactiva (`CrearHub.tsx`)
 
@@ -70,7 +72,8 @@ Flujo **siempre guiado** — una etapa visible a la vez:
 - En protagonistas: enlace **«¿Falta alguien fijo? Editar perfil»** → `/familia`.
 - **«+ Otro»** en los 4 pasos obligatorios (texto libre, máx. 40 caracteres) además de chips del perfil o listas curadas.
 - Navegación bajo el panel (no flotante): **← Volver/Atrás** · icono biblioteca → `/` · **Siguiente →** (u **Omitir** en opcionales).
-- Último paso: encabezado **«Chacachón va a crear este cuento:»**, título generado, sinopsis enriquecida (`buildRecipeSynopsis`), recap por pasos y **✨ Crear mi cuento**.
+- Último paso: encabezado **«Chacachón va a crear este cuento:»**, título generado, sinopsis enriquecida (`buildRecipeSynopsis`), recap por pasos, acento y **Ver vista previa →**.
+- **Vista previa (B2):** muestra ingredientes para la IA, extracto local de ejemplo (`buildRecipePreviewExcerpt`) y cuota diaria restante **sin gastar generación**. Confirmación explícita con **✨ Crear mi cuento con IA**.
 
 ### Confirmación de pasos
 
@@ -90,6 +93,22 @@ En el paso de revisión, el usuario elige **acento narrativo** (default: **neutr
 - Reto: dormir.
 - Aprenden: responsabilidad.
 - Lugar: apartamento.
+
+---
+
+## Plantillas → wizard (B4)
+
+Flujo: `/crear/plantillas` → `/crear/adaptar?plantilla=<slug>`.
+
+| Pieza | Archivo |
+|-------|---------|
+| Catálogo + mapeo molde/dilema | `src/lib/story-plantillas.ts` |
+| Pre-llenado de la receta | `buildInitialRecipeSelection(..., plantillaSlug)` |
+| Listado (solo clásicos) | `/crear/plantillas` |
+| Badge + paso «Clásico» promovido | `StoryRecipeBuilder` si hay `moldeId` |
+
+Clásicos actuales: `cerditos-del-edificio`, `el-lobo-y-las-palabras`.  
+Cuentos propios (`operacion-a-dormir`, etc.) también aceptan `?plantilla=` (solo dilema), pero no salen en el listado tradicional.
 
 ---
 
@@ -131,10 +150,10 @@ Schema: `familyProfileEssentialSchema` en `src/lib/family-profile-schema.ts`.
 
 ## Próximos pasos (producto)
 
-1. ~~Conectar **API de generación IA**~~ ✅ · ~~calidad: biblia + perfil en prompt~~ ✅ (jul 2026).
-2. Pasar `?plantilla=slug` desde plantillas a la receta (pre-rellenar molde clásico).
-3. Moderación de «+ Otro», freemium por usuario y listado de cuentos generados en biblioteca.
-4. CI en GitHub Actions — archivo `.github/workflows/ci.yml` listo localmente; requiere push con scope `workflow` en GitHub.
+1. ~~Conectar **API de generación IA**~~ ✅ · ~~calidad: biblia + perfil en prompt~~ ✅.
+2. ~~Pasar `?plantilla=slug` desde plantillas a la receta~~ ✅ (B4).
+3. ~~Moderación, freemium básico, biblioteca personal~~ ✅ (Fase A + B1).
+4. CI en GitHub Actions — `.github/workflows/ci.yml` listo; requiere push con scope `workflow`.
 
 ---
 

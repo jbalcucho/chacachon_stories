@@ -2,6 +2,9 @@
 
 import BrandIllustration from "@/components/BrandIllustration";
 import Link from "next/link";
+import RecipeGenerationPreview, {
+  isGenerationQuotaExhausted,
+} from "@/components/RecipeGenerationPreview";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
@@ -33,11 +36,16 @@ import {
   STORY_ACCENT_OPTIONS,
   type StoryAccentCode,
 } from "@/lib/story-accent";
+import type { GenerationQuota } from "@/lib/generation-limits";
 
 type Props = {
   ingredients: RecipeIngredients;
   profileSource: "user" | "demo";
   plantillaSlug?: string | null;
+  /** Nombre legible de la plantilla (badge). */
+  plantillaLabel?: string | null;
+  isLoggedIn?: boolean;
+  generationQuota?: GenerationQuota | null;
 };
 
 type ZoneKey = keyof RecipeSelectionSlice;
@@ -399,6 +407,9 @@ export default function StoryRecipeBuilder({
   ingredients,
   profileSource,
   plantillaSlug = null,
+  plantillaLabel = null,
+  isLoggedIn = false,
+  generationQuota = null,
 }: Props) {
   const router = useRouter();
   const promoteMolde = hasPlantillaMolde(plantillaSlug);
@@ -417,6 +428,10 @@ export default function StoryRecipeBuilder({
   const [notice, setNotice] = useState<string | null>(null);
   const [pulseTokenId, setPulseTokenId] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [showGenerationPreview, setShowGenerationPreview] = useState(false);
+  const [liveQuota, setLiveQuota] = useState<GenerationQuota | null>(
+    generationQuota,
+  );
   const [accentCode, setAccentCode] = useState<StoryAccentCode>(
     DEFAULT_STORY_ACCENT,
   );
@@ -559,8 +574,28 @@ export default function StoryRecipeBuilder({
   }, [stepIndex, wizardSteps.length]);
 
   const goBack = useCallback(() => {
+    if (isReviewStep && showGenerationPreview) {
+      setShowGenerationPreview(false);
+      return;
+    }
     setStepIndex((i) => Math.max(0, i - 1));
-  }, []);
+  }, [isReviewStep, showGenerationPreview]);
+
+  const openGenerationPreview = useCallback(() => {
+    if (!canGenerate) return;
+    setShowGenerationPreview(true);
+  }, [canGenerate]);
+
+  const quotaBlocksGenerate =
+    isLoggedIn && isGenerationQuotaExhausted(liveQuota);
+
+  useEffect(() => {
+    if (!isReviewStep) setShowGenerationPreview(false);
+  }, [isReviewStep]);
+
+  useEffect(() => {
+    setLiveQuota(generationQuota);
+  }, [generationQuota]);
 
   const goToStep = useCallback(
     (index: number) => {
@@ -574,6 +609,11 @@ export default function StoryRecipeBuilder({
 
   const handleGenerate = useCallback(async () => {
     if (!canGenerate || generating) return;
+    if (!isLoggedIn) {
+      router.push("/login?callbackUrl=/crear/adaptar");
+      return;
+    }
+    if (quotaBlocksGenerate) return;
     setGenerating(true);
     setNotice(null);
     try {
@@ -585,6 +625,22 @@ export default function StoryRecipeBuilder({
       const data = (await res.json().catch(() => null)) as
         | { id?: string; message?: string }
         | null;
+      if (res.status === 401) {
+        flashNotice(
+          data?.message ?? "Entra con Google para crear tu cuento.",
+        );
+        router.push("/login?callbackUrl=/crear/adaptar");
+        setGenerating(false);
+        return;
+      }
+      if (res.status === 429) {
+        flashNotice(
+          data?.message ??
+            "Límite diario alcanzado. Vuelve mañana para crear otro cuento.",
+        );
+        setGenerating(false);
+        return;
+      }
       if (!res.ok || !data?.id) {
         flashNotice(data?.message ?? "No pudimos crear el cuento. Intenta de nuevo.");
         setGenerating(false);
@@ -595,7 +651,16 @@ export default function StoryRecipeBuilder({
       flashNotice("Sin conexión. Revisa tu internet e intenta de nuevo.");
       setGenerating(false);
     }
-  }, [canGenerate, flashNotice, generating, router, selection, accentCode]);
+  }, [
+    canGenerate,
+    flashNotice,
+    generating,
+    isLoggedIn,
+    quotaBlocksGenerate,
+    router,
+    selection,
+    accentCode,
+  ]);
 
   const currentOther =
     currentStep.zoneKey != null
@@ -623,9 +688,20 @@ export default function StoryRecipeBuilder({
         </p>
       ) : null}
 
-      {plantillaSlug && selection.molde[0] ? (
+      {plantillaSlug ? (
         <p className="recipe-plantilla-badge" role="status">
-          Plantilla: <strong>{selection.molde[0].label}</strong>
+          Plantilla:{" "}
+          <strong>
+            {plantillaLabel ??
+              selection.molde[0]?.label ??
+              selection.reto[0]?.label ??
+              plantillaSlug}
+          </strong>
+          {selection.molde[0] && selection.reto[0]
+            ? " · molde y reto listos"
+            : selection.reto[0]
+              ? " · reto listo"
+              : null}
         </p>
       ) : null}
 
@@ -705,56 +781,68 @@ export default function StoryRecipeBuilder({
 
         {isReviewStep ? (
           <div className="recipe-wizard__review">
-            {suggestion ? (
-              <p className="recipe-suggestion" role="note">
-                💡 {suggestion}
-              </p>
-            ) : null}
-
-            <div className="recipe-summary">
-              <div className="recipe-summary__cover" aria-hidden="true">
-                <BrandIllustration variant="recipe" />
-              </div>
-              <div className="recipe-summary__body">
-                <p className="recipe-summary__label">
-                  Chacachón va a crear este cuento:
-                </p>
-                {title ? (
-                  <h3 className="recipe-summary__title">{title}</h3>
+            {showGenerationPreview ? (
+              <RecipeGenerationPreview
+                selection={selection}
+                accentCode={accentCode}
+                isLoggedIn={isLoggedIn}
+                initialQuota={generationQuota}
+                onQuotaChange={setLiveQuota}
+              />
+            ) : (
+              <>
+                {suggestion ? (
+                  <p className="recipe-suggestion" role="note">
+                    💡 {suggestion}
+                  </p>
                 ) : null}
-                <p className="recipe-summary__text">
-                  {synopsis ??
-                    "Completa los pasos anteriores para ver la idea del cuento."}
-                </p>
-              </div>
-            </div>
 
-            <RecipeRecap selection={selection} steps={wizardSteps} />
+                <div className="recipe-summary">
+                  <div className="recipe-summary__cover" aria-hidden="true">
+                    <BrandIllustration variant="recipe" />
+                  </div>
+                  <div className="recipe-summary__body">
+                    <p className="recipe-summary__label">
+                      Chacachón va a crear este cuento:
+                    </p>
+                    {title ? (
+                      <h3 className="recipe-summary__title">{title}</h3>
+                    ) : null}
+                    <p className="recipe-summary__text">
+                      {synopsis ??
+                        "Completa los pasos anteriores para ver la idea del cuento."}
+                    </p>
+                  </div>
+                </div>
 
-            <fieldset className="recipe-accent">
-              <legend className="recipe-accent__legend">
-                ¿Cómo quieres que suene el cuento?
-              </legend>
-              <p className="recipe-accent__hint">
-                Por defecto usamos español neutro colombiano. Los acentos regionales
-                son opcionales.
-              </p>
-              <div className="recipe-accent__options">
-                {STORY_ACCENT_OPTIONS.map((opt) => (
-                  <label key={opt.code} className="recipe-accent__option">
-                    <input
-                      type="radio"
-                      name="story-accent"
-                      value={opt.code}
-                      checked={accentCode === opt.code}
-                      onChange={() => setAccentCode(opt.code)}
-                    />
-                    <span className="recipe-accent__label">{opt.label}</span>
-                    <span className="recipe-accent__desc">{opt.hint}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
+                <RecipeRecap selection={selection} steps={wizardSteps} />
+
+                <fieldset className="recipe-accent">
+                  <legend className="recipe-accent__legend">
+                    ¿Cómo quieres que suene el cuento?
+                  </legend>
+                  <p className="recipe-accent__hint">
+                    Por defecto usamos español neutro colombiano. Los acentos
+                    regionales son opcionales.
+                  </p>
+                  <div className="recipe-accent__options">
+                    {STORY_ACCENT_OPTIONS.map((opt) => (
+                      <label key={opt.code} className="recipe-accent__option">
+                        <input
+                          type="radio"
+                          name="story-accent"
+                          value={opt.code}
+                          checked={accentCode === opt.code}
+                          onChange={() => setAccentCode(opt.code)}
+                        />
+                        <span className="recipe-accent__label">{opt.label}</span>
+                        <span className="recipe-accent__desc">{opt.hint}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              </>
+            )}
           </div>
         ) : isExtrasStep ? (
           <div className="recipe-wizard__extras">
@@ -810,7 +898,7 @@ export default function StoryRecipeBuilder({
               className="recipe-wizard__nav recipe-wizard__nav--back"
               onClick={goBack}
             >
-              ← Atrás
+              {isReviewStep && showGenerationPreview ? "← Editar receta" : "← Atrás"}
             </button>
           )}
 
@@ -824,19 +912,36 @@ export default function StoryRecipeBuilder({
           </Link>
 
           {isReviewStep ? (
-            <button
-              type="button"
-              className={`recipe-generate recipe-wizard__nav recipe-wizard__nav--next${canGenerate ? " recipe-generate--ready" : ""}`}
-              disabled={!canGenerate || generating}
-              aria-busy={generating}
-              onClick={handleGenerate}
-            >
-              {generating
-                ? "Creando tu cuento…"
-                : canGenerate
-                  ? "✨ Crear mi cuento"
-                  : blocker}
-            </button>
+            showGenerationPreview ? (
+              <button
+                type="button"
+                className={`recipe-generate recipe-wizard__nav recipe-wizard__nav--next${canGenerate && !quotaBlocksGenerate ? " recipe-generate--ready" : ""}`}
+                disabled={
+                  !canGenerate || generating || quotaBlocksGenerate
+                }
+                aria-busy={generating}
+                onClick={handleGenerate}
+              >
+                {generating
+                  ? "Creando tu cuento…"
+                  : !isLoggedIn
+                    ? "Entrar para crear"
+                    : quotaBlocksGenerate
+                      ? "Cuota de hoy agotada"
+                      : canGenerate
+                        ? "✨ Crear mi cuento con IA"
+                        : blocker}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={`recipe-generate recipe-wizard__nav recipe-wizard__nav--next${canGenerate ? " recipe-generate--ready" : ""}`}
+                disabled={!canGenerate}
+                onClick={openGenerationPreview}
+              >
+                {canGenerate ? "Ver vista previa →" : blocker}
+              </button>
+            )
           ) : (
             <button
               type="button"
@@ -862,7 +967,9 @@ export default function StoryRecipeBuilder({
           </p>
         ) : (
           <p className="crear-footnote recipe-wizard__footnote">
-            Chacachón escribe tu cuento al tocar el botón ✨
+            {showGenerationPreview
+              ? "La IA escribe solo cuando confirmas ✨"
+              : "Revisa la receta y mira la vista previa antes de crear"}
           </p>
         )}
       </div>

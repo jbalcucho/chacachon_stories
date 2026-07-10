@@ -54,13 +54,24 @@ function buildOptions(
 ): CrearHubOption[] {
   const vida: CrearHubOption = {
     id: "vida",
-    href: user && profileReady ? "/crear/adaptar" : "/familia",
-    primary: profileReady,
-    kicker: profileReady ? "Recomendado" : "Requiere perfil",
+    href:
+      user && profileReady ? "/crear/adaptar" : user ? "/familia" : "/crear/adaptar",
+    primary: user ? profileReady : true,
+    kicker: user
+      ? profileReady
+        ? "Recomendado"
+        : "Requiere perfil"
+      : "Modo demo",
     emoji: "✨",
     title: "Inspirado en tu vida",
-    body: "Arma la receta con tu familia, el reto del día y —si quieres— un molde clásico. La IA escribe con sus nombres y su tono.",
-    cta: profileReady ? "Armar mi receta →" : "Completa tu familia →",
+    body: user
+      ? "Arma la receta con tu familia, el reto del día y —si quieres— un molde clásico. La IA escribe con sus nombres y su tono."
+      : "Prueba el asistente con la familia demo Chacachón. Entra con Google para guardar y usar tus nombres.",
+    cta: user
+      ? profileReady
+        ? "Armar mi receta →"
+        : "Completa tu familia →"
+      : "Probar con familia demo →",
     preview: previews.vida,
     locked: user && !profileReady,
   };
@@ -126,12 +137,22 @@ export default async function CrearPage() {
 
       {!user ? (
         <p className="crear-banner crear-banner--info mt-6" role="status">
+          Puedes leer el catálogo y armar recetas con la{" "}
+          <strong className="text-cream">familia demo</strong>.{" "}
           <Link href="/login" className="font-bold text-honey-glow underline">
             Entra con Google
           </Link>{" "}
-          para guardar tus cuentos y usar el perfil familiar.
+          para guardar cuentos y usar tu perfil.
         </p>
-      ) : null}
+      ) : (
+        <p className="crear-banner crear-banner--info mt-6" role="status">
+          Tus cuentos generados están en{" "}
+          <Link href="/mis-cuentos" className="font-bold text-honey-glow underline">
+            Mis cuentos
+          </Link>
+          .
+        </p>
+      )}
 
       <CrearHub
         options={options}

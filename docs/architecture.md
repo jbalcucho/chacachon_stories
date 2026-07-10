@@ -82,11 +82,13 @@ Documentación relacionada: [StackTecnico.md](../StackTecnico.md) · [database.m
 | `/privacidad` | Page | Política de privacidad (piloto) |
 | `/cuentos/*.html` | Static | Readers HTML legacy |
 | `/opengraph-image` | OG | Tarjeta de preview del sitio (ilustración + título) |
-| `/leer/[slug]/opengraph-image` | OG | Preview por cuento |
+| `/leer/[slug]/opengraph-image` | OG | Preview por cuento (WhatsApp) — ver [compartir-cuentos.md](./compartir-cuentos.md) |
 | `/api/auth/*` | API | NextAuth handlers |
 | `/api/cuentos/generar` | API | POST — receta → cuento (Gemini/Claude/mock) → `generated_stories` |
 
-Generación IA: ver [docs/ia-generacion.md](./ia-generacion.md).
+Generación IA: ver [docs/ia-generacion.md](./ia-generacion.md).  
+Modo demo sin login: [docs/demo-mode.md](./demo-mode.md).  
+Compartir cuentos: [docs/compartir-cuentos.md](./compartir-cuentos.md).
 
 Rutas protegidas (middleware): `/familia/*`, `/admin/*` (Sprint 1+).
 

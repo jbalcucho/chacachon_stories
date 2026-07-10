@@ -1,4 +1,8 @@
 import type { RecipeIngredient } from "@/lib/story-recipe";
+import {
+  plantillaSlugToDilemaId,
+  plantillaSlugToMoldeId,
+} from "@/lib/story-plantillas";
 
 export type RecipeSelectionSlice = {
   heroes: RecipeIngredient[];
@@ -18,30 +22,11 @@ export type RecipeChecklistItem = {
   done: boolean;
 };
 
-const PLANTILLA_TO_MOLDE: Record<string, string> = {
-  "cerditos-del-edificio": "mol-cerditos",
-  "el-lobo-y-las-palabras": "mol-caperucita",
-};
-
-const PLANTILLA_TO_DILEMA: Record<string, string> = {
-  "operacion-a-dormir": "dil-dormir",
-  "nico-dia-sin-pantallas": "dil-pantallas",
-  "cerditos-del-edificio": "dil-miedos",
-  "el-lobo-y-las-palabras": "dil-respeto",
-};
-
-export function plantillaSlugToMoldeId(slug: string): string | null {
-  return PLANTILLA_TO_MOLDE[slug] ?? null;
-}
-
-export function plantillaSlugToDilemaId(slug: string): string | null {
-  return PLANTILLA_TO_DILEMA[slug] ?? null;
-}
-
-export function hasPlantillaMolde(slug: string | null | undefined): boolean {
-  if (!slug) return false;
-  return slug in PLANTILLA_TO_MOLDE;
-}
+export {
+  hasPlantillaMolde,
+  plantillaSlugToDilemaId,
+  plantillaSlugToMoldeId,
+} from "@/lib/story-plantillas";
 
 export function getStepBlocker(
   zoneKey: keyof RecipeSelectionSlice,
@@ -124,7 +109,7 @@ export function buildRecipeWizardSteps(
   steps.push({
     id: "review",
     title: promoteMolde ? "Paso 7 · Tu cuento" : "Paso 6 · Tu cuento",
-    subtitle: "Revisa cómo quedó la receta antes de crear.",
+    subtitle: "Revisa la receta, elige el acento y mira la vista previa antes de crear.",
     optional: true,
   });
 

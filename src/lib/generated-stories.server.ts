@@ -17,6 +17,13 @@ export type SaveGeneratedStoryInput = GeneratedStoryDraft & {
   recipe: RecipeSelectionPayload;
 };
 
+export type GeneratedStoryListItem = {
+  id: string;
+  title: string;
+  source: string;
+  createdAt: Date;
+};
+
 /**
  * Fallback en memoria para el demo cuando no hay DATABASE_URL (o la migración no
  * se aplicó aún). Se cuelga de `globalThis` para compartirse entre la route y la
@@ -38,6 +45,19 @@ function hasDatabase(): boolean {
   return Boolean(process.env.DATABASE_URL);
 }
 
+function isProduction(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
+/** Solo el dueño puede leer cuentos con `userId`; anónimos legacy solo en dev. */
+export function canReadGeneratedStory(
+  story: StoredGeneratedStory,
+  userId: string | null,
+): boolean {
+  if (!story.userId) return !isProduction();
+  return Boolean(userId && story.userId === userId);
+}
+
 function saveToMemory(input: SaveGeneratedStoryInput): string {
   const id = randomUUID();
   memoryStore.set(id, {
@@ -54,7 +74,12 @@ function saveToMemory(input: SaveGeneratedStoryInput): string {
 export async function saveGeneratedStory(
   input: SaveGeneratedStoryInput,
 ): Promise<string> {
-  if (!hasDatabase()) return saveToMemory(input);
+  if (!hasDatabase()) {
+    if (isProduction()) {
+      throw new Error("DATABASE_URL es obligatorio en producción.");
+    }
+    return saveToMemory(input);
+  }
 
   try {
     const { prisma } = await import("@/lib/prisma");
@@ -71,7 +96,8 @@ export async function saveGeneratedStory(
     });
     return row.id;
   } catch (error) {
-    // p.ej. migración aún no aplicada: no rompas el demo, guarda en memoria.
+    if (isProduction()) throw error;
+    // Dev sin migración aplicada: fallback en memoria para no bloquear el demo local.
     console.error("[generated-stories] DB falló, uso memoria:", error);
     return saveToMemory(input);
   }
@@ -100,4 +126,42 @@ export async function getGeneratedStory(
     }
   }
   return memoryStore.get(id) ?? null;
+}
+
+export async function getGeneratedStoryForReader(
+  id: string,
+  userId: string | null,
+): Promise<StoredGeneratedStory | null> {
+  const story = await getGeneratedStory(id);
+  if (!story) return null;
+  if (!canReadGeneratedStory(story, userId)) return null;
+  return story;
+}
+
+/** Lista los cuentos generados del usuario, más recientes primero. */
+export async function listGeneratedStoriesForUser(
+  userId: string,
+): Promise<GeneratedStoryListItem[]> {
+  if (hasDatabase()) {
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      return prisma.generatedStory.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, title: true, source: true, createdAt: true },
+      });
+    } catch {
+      // cae al store en memoria (dev sin migración)
+    }
+  }
+
+  return [...memoryStore.values()]
+    .filter((story) => story.userId === userId)
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .map(({ id, title, source, createdAt }) => ({
+      id,
+      title,
+      source,
+      createdAt,
+    }));
 }

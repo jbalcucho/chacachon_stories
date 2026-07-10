@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import StoryReader from "@/components/StoryReader";
-import { getGeneratedStory } from "@/lib/generated-stories.server";
+import {
+  canReadGeneratedStory,
+  getGeneratedStory,
+} from "@/lib/generated-stories.server";
 import type { PersonalizedStoryContent } from "@/lib/story-reader";
-import { parseBodyBlocks, parseStoryHeader, splitBlocksForPagination } from "@/lib/story-markdown";
+import {
+  parseBodyBlocks,
+  parseStoryHeader,
+  splitBlocksForPagination,
+} from "@/lib/story-markdown";
+import { getSessionUserId } from "@/lib/session";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -15,9 +23,11 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
+  const userId = await getSessionUserId();
   const story = await getGeneratedStory(id);
+  const readable = story && canReadGeneratedStory(story, userId);
   return {
-    title: story?.title ?? "Cuento",
+    title: readable ? story.title : "Cuento",
     robots: { index: false, follow: false },
   };
 }
@@ -33,17 +43,29 @@ function toContent(markdown: string): PersonalizedStoryContent {
 
 export default async function LeerGeneradoPage({ params }: PageProps) {
   const { id } = await params;
+  const userId = await getSessionUserId();
   const story = await getGeneratedStory(id);
   if (!story) notFound();
+
+  if (!canReadGeneratedStory(story, userId)) {
+    if (!userId && story.userId) {
+      redirect(
+        `/login?callbackUrl=${encodeURIComponent(`/leer/generado/${id}`)}`,
+      );
+    }
+    notFound();
+  }
 
   const content = toContent(story.bodyMarkdown);
 
   return (
     <StoryReader
       content={content}
-      profileSource={story.userId ? "user" : "demo"}
+      profileSource="user"
       storyTitle={content.title}
       storySlug={`generado/${id}`}
+      backHref="/mis-cuentos"
+      backLabel="Mis cuentos"
     />
   );
 }

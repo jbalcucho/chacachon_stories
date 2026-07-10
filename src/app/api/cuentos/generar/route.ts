@@ -1,15 +1,28 @@
 import { NextResponse } from "next/server";
+import { moderateRecipeSelection } from "@/lib/content-moderation";
+import { saveGeneratedStory } from "@/lib/generated-stories.server";
+import {
+  GenerationLimitError,
+  assertGenerationAllowed,
+} from "@/lib/generation-limits";
 import {
   generateStoryRequestSchema,
   selectionMissingRequired,
   toSelectionSlice,
 } from "@/lib/recipe-selection";
-import { saveGeneratedStory } from "@/lib/generated-stories.server";
 import { getReaderProfile } from "@/lib/reader-profile";
-import { getSessionUserId } from "@/lib/session";
+import { getSessionUser } from "@/lib/session";
 import { generateStory } from "@/lib/story-generation.server";
 
 export async function POST(request: Request) {
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json(
+      { message: "Entra con Google para crear tu cuento." },
+      { status: 401 },
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -34,10 +47,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: missing }, { status: 400 });
   }
 
+  const moderation = moderateRecipeSelection(parsed.data.selection);
+  if (moderation) {
+    return NextResponse.json({ message: moderation }, { status: 400 });
+  }
+
   try {
-    const userId = await getSessionUserId();
+    await assertGenerationAllowed(user.id);
+  } catch (error) {
+    if (error instanceof GenerationLimitError) {
+      return NextResponse.json({ message: error.message }, { status: 429 });
+    }
+    throw error;
+  }
+
+  try {
     const slice = toSelectionSlice(parsed.data.selection);
-    const { perfil } = await getReaderProfile(userId);
+    const { perfil } = await getReaderProfile(user.id);
     const draft = await generateStory({
       selection: slice,
       perfil,
@@ -45,7 +71,7 @@ export async function POST(request: Request) {
     });
     const id = await saveGeneratedStory({
       ...draft,
-      userId,
+      userId: user.id,
       recipe: parsed.data.selection,
     });
 

@@ -7,11 +7,13 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 type ImageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
+/** Tarjeta OG por cuento — WhatsApp, iMessage, X. Ver docs/compartir-cuentos.md */
 export default async function OpengraphImage({ params }: ImageProps) {
-  const story = await getPublishedStoryBySlug(params.slug).catch(() => null);
+  const { slug } = await params;
+  const story = await getPublishedStoryBySlug(slug).catch(() => null);
   const title = story?.title ?? "Las historias de Chacachón";
   const moraleja = story?.moraleja ?? null;
 
