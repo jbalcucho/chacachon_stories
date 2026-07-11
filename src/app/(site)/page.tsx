@@ -31,9 +31,6 @@ export default async function HomePage({
             </span>
             s de Chacachón
           </h1>
-          <p className="intro-copy mx-auto mt-2 max-w-lg text-sm sm:mt-3 sm:text-base">
-            Para leer juntos en casa, de paseo o en cualquier momento.
-          </p>
           <ul className="home-diffs" aria-label="Lo que nos hace distintos">
             <li className="home-diffs__item">De tu familia</li>
             <li className="home-diffs__item" aria-hidden="true">
@@ -43,8 +40,11 @@ export default async function HomePage({
             <li className="home-diffs__item" aria-hidden="true">
               ·
             </li>
-            <li className="home-diffs__item">Cuando los necesiten</li>
+            <li className="home-diffs__item">Tú en la historia</li>
           </ul>
+          <p className="intro-copy mx-auto mt-2 max-w-lg text-sm sm:mt-3 sm:text-base">
+            Para leer juntos en casa, de paseo o en cualquier momento.
+          </p>
         </header>
 
         {!isGuest ? (
