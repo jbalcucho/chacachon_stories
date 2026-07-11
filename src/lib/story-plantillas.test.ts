@@ -35,17 +35,13 @@ const ingredients = {
 };
 
 describe("story-plantillas", () => {
-  it("mapea clásicos a molde y dilema", () => {
-    expect(plantillaSlugToMoldeId("cerditos-del-edificio")).toBe("mol-cerditos");
-    expect(plantillaSlugToDilemaId("cerditos-del-edificio")).toBe("dil-miedos");
-    expect(hasPlantillaMolde("el-lobo-y-las-palabras")).toBe(true);
-    expect(isClassicPlantillaSlug("cerditos-del-edificio")).toBe(true);
-  });
-
-  it("prellena cuentos propios solo con dilema", () => {
+  it("no tiene plantillas clásicas mientras el estante está vacío", () => {
+    expect(CLASSIC_PLANTILLAS).toHaveLength(0);
+    expect(getPlantillaPrefill("cerditos-del-edificio")).toBeNull();
+    expect(hasPlantillaMolde("el-lobo-y-las-palabras")).toBe(false);
+    expect(isClassicPlantillaSlug("cerditos-del-edificio")).toBe(false);
     expect(plantillaSlugToMoldeId("operacion-a-dormir")).toBeNull();
-    expect(plantillaSlugToDilemaId("operacion-a-dormir")).toBe("dil-dormir");
-    expect(isClassicPlantillaSlug("operacion-a-dormir")).toBe(false);
+    expect(plantillaSlugToDilemaId("operacion-a-dormir")).toBeNull();
   });
 
   it("arma href del wizard", () => {
@@ -53,20 +49,16 @@ describe("story-plantillas", () => {
       "/crear/adaptar?plantilla=cerditos-del-edificio",
     );
   });
-
-  it("lista al menos dos clásicos", () => {
-    expect(CLASSIC_PLANTILLAS.length).toBeGreaterThanOrEqual(2);
-  });
 });
 
 describe("buildInitialRecipeSelection + plantilla", () => {
-  it("prellena molde y reto desde ?plantilla=", () => {
+  it("ignora slug sin prefill y usa defaults", () => {
     const selection = buildInitialRecipeSelection(
       ingredients,
       "cerditos-del-edificio",
     );
-    expect(selection.molde[0]?.id).toBe("mol-cerditos");
-    expect(selection.reto[0]?.id).toBe("dil-miedos");
+    expect(selection.molde).toHaveLength(0);
+    expect(selection.reto[0]?.id).toBe("dil-dormir");
     expect(selection.heroes[0]?.label).toBe("Nico");
   });
 
@@ -74,11 +66,5 @@ describe("buildInitialRecipeSelection + plantilla", () => {
     const selection = buildInitialRecipeSelection(ingredients, "no-existe");
     expect(selection.molde).toHaveLength(0);
     expect(selection.reto[0]?.id).toBe("dil-dormir");
-  });
-
-  it("resuelve label legible", () => {
-    expect(getPlantillaPrefill("el-lobo-y-las-palabras")?.label).toBe(
-      "Caperucita Roja",
-    );
   });
 });

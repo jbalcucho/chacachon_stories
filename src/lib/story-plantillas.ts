@@ -1,6 +1,9 @@
 /**
  * Plantillas clásicas → pre-llenado del wizard (`?plantilla=slug`).
  * Ver docs/crear-flow.md (B4).
+ *
+ * Vacío a propósito mientras no hay demos publicados en el estante.
+ * Al publicar un cuento demo nuevo, añadir aquí el prefill correspondiente.
  */
 
 export type PlantillaPrefill = {
@@ -13,40 +16,14 @@ export type PlantillaPrefill = {
 };
 
 /** Solo clásicos van en `/crear/plantillas`. */
-export const CLASSIC_PLANTILLAS: readonly PlantillaPrefill[] = [
-  {
-    slug: "cerditos-del-edificio",
-    moldeId: "mol-cerditos",
-    dilemaId: "dil-miedos",
-    label: "Los tres cerditos",
-  },
-  {
-    slug: "el-lobo-y-las-palabras",
-    moldeId: "mol-caperucita",
-    dilemaId: "dil-respeto",
-    label: "Caperucita Roja",
-  },
-] as const;
+export const CLASSIC_PLANTILLAS: readonly PlantillaPrefill[] = [];
 
 /**
  * Prefills extra (cuentos propios Chacachón).
  * No aparecen en el listado de plantillas tradicionales, pero
  * `?plantilla=slug` sigue funcionando si alguien llega con el enlace.
  */
-const OWN_STORY_PREFILLS: readonly PlantillaPrefill[] = [
-  {
-    slug: "operacion-a-dormir",
-    moldeId: null,
-    dilemaId: "dil-dormir",
-    label: "Operación a dormir",
-  },
-  {
-    slug: "nico-dia-sin-pantallas",
-    moldeId: null,
-    dilemaId: "dil-pantallas",
-    label: "Día sin pantallas",
-  },
-] as const;
+const OWN_STORY_PREFILLS: readonly PlantillaPrefill[] = [];
 
 const ALL_BY_SLUG = new Map<string, PlantillaPrefill>(
   [...CLASSIC_PLANTILLAS, ...OWN_STORY_PREFILLS].map((p) => [p.slug, p]),

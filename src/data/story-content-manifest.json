@@ -1,34 +1,17 @@
 {
-  "generatedAt": "2026-07-10T17:33:23.065Z",
+  "generatedAt": "2026-07-11T01:36:10.521Z",
   "sources": {
     "hora-del-nono": {
       "slug": "hora-del-nono",
       "kind": "markdown",
-      "filePath": "cuentos/familia-balcutron-hora-del-nono.md"
+      "filePath": "cuentos/familia-balcutron-hora-del-nono.md",
+      "familyTag": "balcutron"
     },
-    "operacion-a-dormir": {
-      "slug": "operacion-a-dormir",
-      "kind": "template",
-      "filePath": "cuentos/familia-chacachon-operacion-a-dormir.template.md",
-      "familyTag": "chacachon"
-    },
-    "cerditos-del-edificio": {
-      "slug": "cerditos-del-edificio",
+    "balcutron-operacion-a-dormir": {
+      "slug": "balcutron-operacion-a-dormir",
       "kind": "markdown",
-      "filePath": "cuentos/familia-chacachon-cerditos-caperucita.md",
-      "familyTag": "chacachon"
-    },
-    "el-lobo-y-las-palabras": {
-      "slug": "el-lobo-y-las-palabras",
-      "kind": "markdown",
-      "filePath": "cuentos/familia-chacachon-el-lobo-y-las-palabras.md",
-      "familyTag": "chacachon"
-    },
-    "nico-dia-sin-pantallas": {
-      "slug": "nico-dia-sin-pantallas",
-      "kind": "markdown",
-      "filePath": "cuentos/familia-chacachon-nico-dia-sin-pantallas.md",
-      "familyTag": "chacachon"
+      "filePath": "cuentos/familia-balcutron-operacion-a-dormir.md",
+      "familyTag": "balcutron"
     }
   }
 }

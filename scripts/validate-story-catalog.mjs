@@ -23,26 +23,7 @@ const redirectDestinations = new Set(
   redirects.map((r) => r.destination.replace(/^\/leer\//, "")),
 );
 
-const publishedChacachonSlugs = [
-  "el-lobo-y-las-palabras",
-  "cerditos-del-edificio",
-  "operacion-a-dormir",
-  "nico-dia-sin-pantallas",
-];
-
 const errors = [];
-
-for (const slug of publishedChacachonSlugs) {
-  if (!manifestSlugs.has(slug)) {
-    errors.push(`manifest: falta slug publicado "${slug}"`);
-  }
-  if (!redirectDestinations.has(slug)) {
-    errors.push(`redirects: falta /leer/${slug}`);
-  }
-  if (!seedSource.includes(`slug: "${slug}"`)) {
-    errors.push(`seed: falta slug "${slug}"`);
-  }
-}
 
 for (const slug of manifestSlugs) {
   const source = manifest.sources[slug];
@@ -53,6 +34,16 @@ for (const slug of manifestSlugs) {
     errors.push(
       `manifest: clave "${slug}" ≠ source.slug "${source.slug}"`,
     );
+  }
+}
+
+for (const redirect of redirects) {
+  const slug = redirect.destination.replace(/^\/leer\//, "");
+  if (!seedSource.includes(`slug: "${slug}"`)) {
+    errors.push(`redirects: /leer/${slug} sin entrada en seed`);
+  }
+  if (!redirectDestinations.has(slug)) {
+    errors.push(`redirects: destino inválido ${redirect.destination}`);
   }
 }
 

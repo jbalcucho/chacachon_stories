@@ -1,3 +1,8 @@
+---
+slug: hora-del-nono
+familyTag: balcutron
+---
+
 # Cuento base MVP — Familia Balcutron: La hora del nono
 
 > **Cuento piloto** para validar tono, paginación, acentos e interpolación de nombres.  

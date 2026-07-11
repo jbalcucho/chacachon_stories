@@ -10,28 +10,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 
-const PAIRS = [
-  {
-    md: "cuentos/familia-chacachon-el-lobo-y-las-palabras.md",
-    html: "public/cuentos/familia-chacachon-el-lobo-y-las-palabras.html",
-    badge: "Chacachón · Vereda y bosque",
-  },
-  {
-    md: "cuentos/familia-chacachon-cerditos-caperucita.md",
-    html: "public/cuentos/familia-chacachon-cerditos-caperucita.html",
-    badge: "Chacachón · Edificio",
-  },
-  {
-    md: "cuentos/familia-chacachon-nico-dia-sin-pantallas.md",
-    html: "public/cuentos/familia-chacachon-nico-dia-sin-pantallas.html",
-    badge: "Chacachón · Apartamento",
-  },
-  {
-    md: "cuentos/familia-chacachon-operacion-a-dormir.md",
-    html: "public/cuentos/familia-chacachon-operacion-a-dormir.html",
-    badge: "Chacachón · Apartamento",
-  },
-];
+const PAIRS = [];
 
 function stripFrontmatter(raw) {
   if (!raw.startsWith("---")) return raw;

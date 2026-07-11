@@ -1,18 +1,1 @@
-[
-  {
-    "source": "/cuentos/familia-chacachon-el-lobo-y-las-palabras.html",
-    "destination": "/leer/el-lobo-y-las-palabras"
-  },
-  {
-    "source": "/cuentos/familia-chacachon-cerditos-caperucita.html",
-    "destination": "/leer/cerditos-del-edificio"
-  },
-  {
-    "source": "/cuentos/familia-chacachon-operacion-a-dormir.html",
-    "destination": "/leer/operacion-a-dormir"
-  },
-  {
-    "source": "/cuentos/familia-chacachon-nico-dia-sin-pantallas.html",
-    "destination": "/leer/nico-dia-sin-pantallas"
-  }
-]
+[]

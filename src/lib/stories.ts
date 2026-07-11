@@ -23,9 +23,9 @@ const STORY_CATALOG_SEEDS: Omit<StoryCard, "openPath">[] = [
       "Vereda, bosque de eucaliptos y tres casitas. Bingo es el lobo, Betty la abuelita.",
     moraleja: "Cuidar las palabras y no contestarle feo a mamá y papá.",
     familyTag: "chacachon",
-    htmlPath: "/cuentos/familia-chacachon-el-lobo-y-las-palabras.html",
+    htmlPath: null,
     variant: "NARRATIVE",
-    status: "PUBLISHED",
+    status: "DRAFT",
   },
   {
     slug: "cerditos-del-edificio",
@@ -35,9 +35,9 @@ const STORY_CATALOG_SEEDS: Omit<StoryCard, "openPath">[] = [
     moraleja:
       "Las palabras feas alimentan al lobo; el respeto protege la casa.",
     familyTag: "chacachon",
-    htmlPath: "/cuentos/familia-chacachon-cerditos-caperucita.html",
+    htmlPath: null,
     variant: "APARTMENT",
-    status: "PUBLISHED",
+    status: "DRAFT",
   },
   {
     slug: "operacion-a-dormir",
@@ -46,9 +46,9 @@ const STORY_CATALOG_SEEDS: Omit<StoryCard, "openPath">[] = [
       "Nico, Simónchin, Josefina la aspiradora y la batalla nocturna del apartamento.",
     moraleja: "La rutina de noche: tablet, chanclas, chichi y la lista de Pauleta.",
     familyTag: "chacachon",
-    htmlPath: "/cuentos/familia-chacachon-operacion-a-dormir.html",
+    htmlPath: null,
     variant: "APARTMENT",
-    status: "PUBLISHED",
+    status: "DRAFT",
   },
   {
     slug: "el-ascensor-de-las-sorpresas",
@@ -91,9 +91,9 @@ const STORY_CATALOG_SEEDS: Omit<StoryCard, "openPath">[] = [
     moraleja:
       "Desconectarse un rato deja espacio para jugar juntos… y para verse de verdad.",
     familyTag: "chacachon",
-    htmlPath: "/cuentos/familia-chacachon-nico-dia-sin-pantallas.html",
+    htmlPath: null,
     variant: "APARTMENT",
-    status: "PUBLISHED",
+    status: "DRAFT",
   },
   {
     slug: "chacachon-en-la-luna",

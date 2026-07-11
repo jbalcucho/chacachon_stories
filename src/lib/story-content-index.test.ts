@@ -6,27 +6,27 @@ import {
 
 describe("story-content-index", () => {
   it("conoce cuentos del manifest", () => {
-    expect(hasPersonalizedReader("operacion-a-dormir")).toBe(true);
+    expect(hasPersonalizedReader("hora-del-nono")).toBe(true);
     expect(hasPersonalizedReader("no-existe")).toBe(false);
   });
 
   it("resuelve openPath a /leer cuando hay fuente", () => {
     expect(
       resolveStoryOpenPath({
-        slug: "operacion-a-dormir",
+        slug: "hora-del-nono",
         status: "PUBLISHED",
         htmlPath: "/cuentos/x.html",
       }),
-    ).toBe("/leer/operacion-a-dormir");
+    ).toBe("/leer/hora-del-nono");
   });
 
   it("cae a htmlPath si no hay fuente personalizada", () => {
     expect(
       resolveStoryOpenPath({
-        slug: "balcutron-operacion-a-dormir",
+        slug: "cuento-solo-html",
         status: "PUBLISHED",
-        htmlPath: "/cuentos/familia-balcutron-operacion-a-dormir.html",
+        htmlPath: "/cuentos/solo-html.html",
       }),
-    ).toBe("/cuentos/familia-balcutron-operacion-a-dormir.html");
+    ).toBe("/cuentos/solo-html.html");
   });
 });
