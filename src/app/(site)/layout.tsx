@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/components/AuthProvider";
+import ProfileGate from "@/components/family/ProfileGate";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import SkyScenery from "@/components/SkyScenery";
@@ -11,10 +12,12 @@ export default function SiteLayout({
   return (
     <>
       <SkyScenery />
-      <div className="relative z-[1] flex flex-1 flex-col">
+      <div className="site-shell relative z-[1] flex min-h-0 flex-1 flex-col">
         <AuthProvider>
           <SiteHeader />
-          <div className="flex-1">{children}</div>
+          <div className="site-shell__content flex min-h-0 flex-1 flex-col">
+            <ProfileGate>{children}</ProfileGate>
+          </div>
           <SiteFooter />
         </AuthProvider>
       </div>

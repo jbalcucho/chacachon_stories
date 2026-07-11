@@ -5,6 +5,7 @@ import {
   isStorySoon,
 } from "@/lib/book-theme";
 import { isCreateStoryCard } from "@/lib/create-story";
+import { isDemoShowcaseStory } from "@/lib/onboarding";
 
 type Props = {
   story: StoryCard;
@@ -23,6 +24,7 @@ export default function StoryBook({
 }: Props) {
   const isSoon = isStorySoon(story.status, story.openPath);
   const isCreate = isCreateStoryCard(story);
+  const isDemo = isDemoShowcaseStory(story);
   const theme = getBookTheme(story);
 
   const bookInner = (
@@ -51,6 +53,11 @@ export default function StoryBook({
           </span>
           {isCreate ? (
             <span className="book-badge book-badge--create">IA ✨</span>
+          ) : null}
+          {isDemo ? (
+            <span className="book-badge book-badge--demo" aria-label="Muestra">
+              <span className="book-badge__demo-text">Muestra</span>
+            </span>
           ) : null}
         </div>
         <h2 className="book-title">{story.title}</h2>

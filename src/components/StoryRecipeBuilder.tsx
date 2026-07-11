@@ -32,6 +32,10 @@ import {
   type RecipeWizardStep,
 } from "@/lib/recipe-summary";
 import {
+  preferredHeroIdFromActive,
+  readActiveProfile,
+} from "@/lib/active-profile";
+import {
   DEFAULT_STORY_ACCENT,
   STORY_ACCENT_OPTIONS,
   type StoryAccentCode,
@@ -420,7 +424,11 @@ export default function StoryRecipeBuilder({
   );
 
   const [selection, setSelection] = useState<RecipeSelectionSlice>(() =>
-    buildInitialRecipeSelection(ingredients, plantillaSlug),
+    buildInitialRecipeSelection(
+      ingredients,
+      plantillaSlug,
+      preferredHeroIdFromActive(readActiveProfile()),
+    ),
   );
   const [stepIndex, setStepIndex] = useState(0);
   const [furthestConfirmedIndex, setFurthestConfirmedIndex] = useState(-1);

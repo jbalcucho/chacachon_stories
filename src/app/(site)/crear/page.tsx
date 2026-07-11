@@ -146,7 +146,11 @@ export default async function CrearPage() {
         </p>
       ) : (
         <p className="crear-banner crear-banner--info mt-6" role="status">
-          Tus cuentos generados están en{" "}
+          Elige{" "}
+          <Link href="/perfiles" className="font-bold text-honey-glow underline">
+            quién crea hoy
+          </Link>{" "}
+          y encuentra tus cuentos en{" "}
           <Link href="/mis-cuentos" className="font-bold text-honey-glow underline">
             Mis cuentos
           </Link>

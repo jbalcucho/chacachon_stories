@@ -19,12 +19,16 @@ import {
   type FamilyMemberDraft,
   type FamilyWizardStepId,
 } from "@/lib/family-profile-builder";
+import { writeFamilyReadyCache } from "@/lib/onboarding";
+import { isSafeAppPath } from "@/lib/active-profile";
 
 type Status = "idle" | "saving" | "saved" | "error";
 
 type Props = {
   initialState: FamilyBuilderState;
   userFirstName?: string;
+  /** Tras guardar + elegir perfil (default `/`). */
+  afterSaveHref?: string;
   onSave: (state: FamilyBuilderState) => Promise<void>;
   onExport: () => void;
   onDeleteAccount: (confirm: string) => Promise<void>;
@@ -33,6 +37,7 @@ type Props = {
 export default function FamilyProfileBuilder({
   initialState,
   userFirstName,
+  afterSaveHref = "/",
   onSave,
   onExport,
   onDeleteAccount,
@@ -146,9 +151,10 @@ export default function FamilyProfileBuilder({
     try {
       await onSave(state);
       setStatus("saved");
-      if (andCreate) {
-        window.location.href = "/crear";
-      }
+      writeFamilyReadyCache(true);
+      const next = isSafeAppPath(afterSaveHref) ? afterSaveHref : "/";
+      const dest = andCreate ? "/crear" : next;
+      window.location.href = `/perfiles?next=${encodeURIComponent(dest)}&required=1`;
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo guardar");
       setStatus("error");
@@ -157,336 +163,389 @@ export default function FamilyProfileBuilder({
 
   return (
     <div className="family-builder">
-      <header className="family-builder__hero">
-        <p className="family-builder__hello">
-          Hola, {userFirstName ?? "familia"}
-        </p>
-        <h1 className="title-display family-builder__title">Tu casa</h1>
-        <p className="intro-copy family-builder__lead">
-          Arma el elenco del cuento: nombres, apodos y un poco de sabor. En ~2
-          minutos ya puedes crear.
-        </p>
-      </header>
-
-      <FamilyStage
-        state={state}
-        selectedId={selected?.id ?? null}
-        onSelect={openMember}
-        onAdd={addToZone}
-        onReorderChild={(fromId, toId) =>
-          setState((prev) => ({
-            ...prev,
-            ninos: reorderChildren(prev.ninos, fromId, toId),
-          }))
-        }
-      />
-
-      <p className="family-preview" role="status">
-        {preview}
-      </p>
-
-      <div className="family-meter" aria-label="Completitud del perfil">
-        <div className="family-meter__row">
-          <span>Listo para cuentos</span>
-          <strong>{readiness.completeness}%</strong>
+      <div className="family-house">
+        <div className="family-house__roof" aria-hidden="true">
+          <span className="family-house__chimney" />
+          <svg
+            className="family-house__roof-svg"
+            viewBox="0 0 320 72"
+            preserveAspectRatio="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id="fh-roof" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ffe9b8" />
+                <stop offset="42%" stopColor="#ffca5c" />
+                <stop offset="100%" stopColor="#f0a84a" />
+              </linearGradient>
+              <linearGradient id="fh-roof-shade" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="rgba(42,61,110,0.18)" />
+                <stop offset="50%" stopColor="rgba(42,61,110,0)" />
+                <stop offset="100%" stopColor="rgba(42,61,110,0.12)" />
+              </linearGradient>
+            </defs>
+            {/* Aleros de borde a borde: más anchos que el cuerpo vía CSS */}
+            <path
+              d="M0 58 L36 40 L148 8 C154 5 166 5 172 8 L284 40 L320 58 L320 68 L0 68 Z"
+              fill="url(#fh-roof)"
+            />
+            <path
+              d="M0 58 L36 40 L148 8 C154 5 166 5 172 8 L284 40 L320 58 L320 68 L0 68 Z"
+              fill="url(#fh-roof-shade)"
+            />
+            <ellipse cx="160" cy="10" rx="14" ry="4" fill="rgba(255,248,242,0.55)" />
+          </svg>
         </div>
-        <div className="family-meter__track">
-          <div
-            className="family-meter__fill"
-            style={{ width: `${readiness.completeness}%` }}
+
+        <div className="family-house__body">
+          <header className="family-builder__hero">
+            <p className="family-builder__hello">
+              Hola, {userFirstName ?? "familia"}
+            </p>
+            <h1 className="title-display family-builder__title">Tu casa</h1>
+            <p className="family-builder__address">
+              {state.home.hogar.trim() || "el hogar"}
+              {state.home.ciudad.trim()
+                ? ` · ${state.home.ciudad.trim()}`
+                : ""}
+            </p>
+            <p className="intro-copy family-builder__lead">
+              Arma el elenco del cuento dentro de casa. En ~2 minutos ya puedes
+              crear.
+            </p>
+          </header>
+
+          <FamilyStage
+            state={state}
+            selectedId={selected?.id ?? null}
+            onSelect={openMember}
+            onAdd={addToZone}
+            onReorderChild={(fromId, toId) =>
+              setState((prev) => ({
+                ...prev,
+                ninos: reorderChildren(prev.ninos, fromId, toId),
+              }))
+            }
           />
-        </div>
-      </div>
 
-      <nav className="family-steps" aria-label="Pasos del perfil">
-        {FAMILY_WIZARD_STEPS.map((s, index) => (
-          <button
-            key={s.id}
-            type="button"
-            className={`family-steps__item${step === s.id ? " family-steps__item--active" : ""}${index < stepIndex ? " family-steps__item--done" : ""}`}
-            onClick={() => setStep(s.id)}
-          >
-            <span className="family-steps__num">{index + 1}</span>
-            <span className="family-steps__label">{s.title}</span>
-          </button>
-        ))}
-      </nav>
+          <div className="family-house__main">
+            <div className="family-house__cast">
+              <p className="family-preview" role="status">
+                {preview}
+              </p>
 
-      <section className="family-panel">
-        {step === "ninos" ? (
-          <>
-            <h2 className="family-panel__title">¿Para quién es el cuento?</h2>
-            <p className="family-panel__hint">
-              Añade 1 a 3 niños. El apodo es lo que más suena en el cuento.
-              Arrastra para ordenar (mayor → menor) en escritorio.
-            </p>
-            <div className="family-panel__list">
-              {state.ninos.map((nino, index) => (
-                <div key={nino.id} className="family-row">
-                  <button
-                    type="button"
-                    className="family-row__main"
-                    onClick={() => openMember(nino)}
-                  >
-                    <span className="family-row__title">
-                      {nino.apodo || nino.nombre || `Niño ${index + 1}`}
-                    </span>
-                    <span className="family-row__sub">
-                      {nino.traits.length
-                        ? `${nino.traits.length} detalle(s)`
-                        : "Toca para editar"}
-                    </span>
-                  </button>
-                  <div className="family-row__move">
-                    <button
-                      type="button"
-                      aria-label="Subir"
-                      disabled={index === 0}
-                      onClick={() =>
-                        setState((prev) => ({
-                          ...prev,
-                          ninos: moveChild(prev.ninos, nino.id, -1),
-                        }))
-                      }
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      aria-label="Bajar"
-                      disabled={index === state.ninos.length - 1}
-                      onClick={() =>
-                        setState((prev) => ({
-                          ...prev,
-                          ninos: moveChild(prev.ninos, nino.id, 1),
-                        }))
-                      }
-                    >
-                      ↓
-                    </button>
-                  </div>
+              <div className="family-meter" aria-label="Completitud del perfil">
+                <div className="family-meter__row">
+                  <span>Listo para cuentos</span>
+                  <strong>{readiness.completeness}%</strong>
                 </div>
-              ))}
+                <div className="family-meter__track">
+                  <div
+                    className="family-meter__fill"
+                    style={{ width: `${readiness.completeness}%` }}
+                  />
+                </div>
+              </div>
             </div>
-            <button
-              type="button"
-              className="family-btn family-btn--ghost"
-              onClick={() => addToZone("ninos")}
-            >
-              + Añadir niño/a
-            </button>
-          </>
-        ) : null}
 
-        {step === "adultos" ? (
-          <>
-            <h2 className="family-panel__title">¿Quiénes viven en casa?</h2>
-            <p className="family-panel__hint">
-              Mamá, papá, cuidador… Al menos uno. La frase típica da mucho sabor.
-            </p>
-            <div className="family-panel__list">
-              {state.adultos.map((adulto) => (
+            <div className="family-house__edit">
+              <nav className="family-steps" aria-label="Pasos del perfil">
+                {FAMILY_WIZARD_STEPS.map((s, index) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className={`family-steps__item${step === s.id ? " family-steps__item--active" : ""}${index < stepIndex ? " family-steps__item--done" : ""}`}
+                    onClick={() => setStep(s.id)}
+                  >
+                    <span className="family-steps__num">{index + 1}</span>
+                    <span className="family-steps__label">{s.title}</span>
+                  </button>
+                ))}
+              </nav>
+
+              <section className="family-panel">
+            {step === "ninos" ? (
+              <>
+                <h2 className="family-panel__title">¿Para quién es el cuento?</h2>
+                <p className="family-panel__hint">
+                  Añade 1 a 3 niños. El apodo es lo que más suena en el cuento.
+                  Arrastra para ordenar (mayor → menor) en escritorio.
+                </p>
+                <div className="family-panel__list">
+                  {state.ninos.map((nino, index) => (
+                    <div key={nino.id} className="family-row">
+                      <button
+                        type="button"
+                        className="family-row__main"
+                        onClick={() => openMember(nino)}
+                      >
+                        <span className="family-row__title">
+                          {nino.apodo || nino.nombre || `Niño ${index + 1}`}
+                        </span>
+                        <span className="family-row__sub">
+                          {nino.traits.length
+                            ? `${nino.traits.length} detalle(s)`
+                            : "Toca para editar"}
+                        </span>
+                      </button>
+                      <div className="family-row__move">
+                        <button
+                          type="button"
+                          aria-label="Subir"
+                          disabled={index === 0}
+                          onClick={() =>
+                            setState((prev) => ({
+                              ...prev,
+                              ninos: moveChild(prev.ninos, nino.id, -1),
+                            }))
+                          }
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Bajar"
+                          disabled={index === state.ninos.length - 1}
+                          onClick={() =>
+                            setState((prev) => ({
+                              ...prev,
+                              ninos: moveChild(prev.ninos, nino.id, 1),
+                            }))
+                          }
+                        >
+                          ↓
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
                 <button
-                  key={adulto.id}
                   type="button"
-                  className="family-row family-row--solo"
-                  onClick={() => openMember(adulto)}
+                  className="family-btn family-btn--ghost"
+                  onClick={() => addToZone("ninos")}
                 >
-                  <span className="family-row__title">
-                    {adulto.apodo || adulto.nombre || "Adulto"}
-                  </span>
-                  <span className="family-row__sub">
-                    {adulto.frase || "Toca para editar"}
-                  </span>
+                  + Añadir niño/a
                 </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="family-btn family-btn--ghost"
-              onClick={() => addToZone("adultos")}
-            >
-              + Añadir adulto
-            </button>
-          </>
-        ) : null}
+              </>
+            ) : null}
 
-        {step === "hogar" ? (
-          <>
-            <h2 className="family-panel__title">¿Cómo le dicen a casa?</h2>
-            <p className="family-panel__hint">
-              Elige una etiqueta. La ciudad es libre — no tiene que ser Bogotá.
-            </p>
-            <div className="family-home-chips">
-              {HOME_LABEL_CHIPS.map((label) => (
+            {step === "adultos" ? (
+              <>
+                <h2 className="family-panel__title">¿Quiénes viven en casa?</h2>
+                <p className="family-panel__hint">
+                  Mamá, papá, cuidador… Al menos uno. La frase típica da mucho
+                  sabor.
+                </p>
+                <div className="family-panel__list">
+                  {state.adultos.map((adulto) => (
+                    <button
+                      key={adulto.id}
+                      type="button"
+                      className="family-row family-row--solo"
+                      onClick={() => openMember(adulto)}
+                    >
+                      <span className="family-row__title">
+                        {adulto.apodo || adulto.nombre || "Adulto"}
+                      </span>
+                      <span className="family-row__sub">
+                        {adulto.frase || "Toca para editar"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
                 <button
-                  key={label}
                   type="button"
-                  className={`family-home-chip${state.home.hogar === label ? " family-home-chip--on" : ""}`}
-                  onClick={() =>
-                    setState((prev) => ({
-                      ...prev,
-                      home: { ...prev.home, hogar: label },
-                    }))
-                  }
+                  className="family-btn family-btn--ghost"
+                  onClick={() => addToZone("adultos")}
                 >
-                  {label}
+                  + Añadir adulto
                 </button>
-              ))}
-            </div>
-            <label className="family-field">
-              O escribe otra
-              <input
-                value={state.home.hogar}
-                onChange={(e) =>
-                  setState((prev) => ({
-                    ...prev,
-                    home: { ...prev.home, hogar: e.target.value },
-                  }))
-                }
-                placeholder="el apartamento"
-              />
-            </label>
-            <label className="family-field">
-              Ciudad
-              <input
-                value={state.home.ciudad}
-                onChange={(e) =>
-                  setState((prev) => ({
-                    ...prev,
-                    home: { ...prev.home, ciudad: e.target.value },
-                  }))
-                }
-                placeholder="Tu ciudad"
-              />
-            </label>
-            <label className="family-field">
-              Apellido / nombre del hogar (opcional)
-              <input
-                value={state.home.apellido}
-                onChange={(e) =>
-                  setState((prev) => ({
-                    ...prev,
-                    home: { ...prev.home, apellido: e.target.value },
-                  }))
-                }
-                placeholder="Familia García"
-              />
-            </label>
-          </>
-        ) : null}
+              </>
+            ) : null}
 
-        {step === "sabor" ? (
-          <>
-            <h2 className="family-panel__title">Un poco de sabor</h2>
-            <p className="family-panel__hint">
-              Opcional. Mascotas y detalles del niño mejoran el cuento, pero no
-              bloquean.
-            </p>
-            <div className="family-panel__list">
-              {state.mascotas.map((pet) => (
+            {step === "hogar" ? (
+              <>
+                <h2 className="family-panel__title">¿Cómo le dicen a casa?</h2>
+                <p className="family-panel__hint">
+                  Elige una etiqueta. La ciudad es libre — no tiene que ser
+                  Bogotá.
+                </p>
+                <div className="family-home-chips">
+                  {HOME_LABEL_CHIPS.map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      className={`family-home-chip${state.home.hogar === label ? " family-home-chip--on" : ""}`}
+                      onClick={() =>
+                        setState((prev) => ({
+                          ...prev,
+                          home: { ...prev.home, hogar: label },
+                        }))
+                      }
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <label className="family-field">
+                  O escribe otra
+                  <input
+                    value={state.home.hogar}
+                    onChange={(e) =>
+                      setState((prev) => ({
+                        ...prev,
+                        home: { ...prev.home, hogar: e.target.value },
+                      }))
+                    }
+                    placeholder="el apartamento"
+                  />
+                </label>
+                <label className="family-field">
+                  Ciudad
+                  <input
+                    value={state.home.ciudad}
+                    onChange={(e) =>
+                      setState((prev) => ({
+                        ...prev,
+                        home: { ...prev.home, ciudad: e.target.value },
+                      }))
+                    }
+                    placeholder="Tu ciudad"
+                  />
+                </label>
+                <label className="family-field">
+                  Apellido / nombre del hogar (opcional)
+                  <input
+                    value={state.home.apellido}
+                    onChange={(e) =>
+                      setState((prev) => ({
+                        ...prev,
+                        home: { ...prev.home, apellido: e.target.value },
+                      }))
+                    }
+                    placeholder="Familia García"
+                  />
+                </label>
+              </>
+            ) : null}
+
+            {step === "sabor" ? (
+              <>
+                <h2 className="family-panel__title">Un poco de sabor</h2>
+                <p className="family-panel__hint">
+                  Opcional. Mascotas y detalles del niño mejoran el cuento, pero
+                  no bloquean.
+                </p>
+                <div className="family-panel__list">
+                  {state.mascotas.map((pet) => (
+                    <button
+                      key={pet.id}
+                      type="button"
+                      className="family-row family-row--solo"
+                      onClick={() => openMember(pet)}
+                    >
+                      <span className="family-row__title">
+                        {pet.nombre || "Mascota"}
+                      </span>
+                      <span className="family-row__sub">
+                        {pet.personalidad || "Toca para editar"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
                 <button
-                  key={pet.id}
                   type="button"
-                  className="family-row family-row--solo"
-                  onClick={() => openMember(pet)}
+                  className="family-btn family-btn--ghost"
+                  onClick={() => addToZone("mascotas")}
                 >
-                  <span className="family-row__title">
-                    {pet.nombre || "Mascota"}
-                  </span>
-                  <span className="family-row__sub">
-                    {pet.personalidad || "Toca para editar"}
-                  </span>
+                  + Añadir mascota
                 </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="family-btn family-btn--ghost"
-              onClick={() => addToZone("mascotas")}
-            >
-              + Añadir mascota
-            </button>
-            <p className="family-panel__hint family-panel__hint--spaced">
-              Tip: abre un niño en la casa y marca “pantallas”, “dormir”, etc.
-            </p>
-          </>
-        ) : null}
+                <p className="family-panel__hint family-panel__hint--spaced">
+                  Tip: abre un niño arriba y marca “pantallas”, “dormir”, etc.
+                </p>
+              </>
+            ) : null}
 
-        {step === "listo" ? (
-          <>
-            <h2 className="family-panel__title">¿Listos para el cuento?</h2>
-            <p className="family-panel__hint">{preview}</p>
-            {!readiness.ready ? (
-              <p className="family-alert" role="alert">
-                Falta: {readiness.missing.join("; ")}.
-              </p>
+            {step === "listo" ? (
+              <>
+                <h2 className="family-panel__title">¿Listos para el cuento?</h2>
+                <p className="family-panel__hint">{preview}</p>
+                {!readiness.ready ? (
+                  <p className="family-alert" role="alert">
+                    Falta: {readiness.missing.join("; ")}.
+                  </p>
+                ) : (
+                  <p className="family-ok" role="status">
+                    Perfil suficiente para personalizar cuentos.
+                  </p>
+                )}
+              </>
+            ) : null}
+          </section>
+
+          {error ? (
+            <p className="family-alert" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {status === "saved" ? (
+            <p className="family-ok" role="status">
+              Perfil guardado.
+            </p>
+          ) : null}
+
+          <div className="family-actions">
+            {stepIndex > 0 ? (
+              <button
+                type="button"
+                className="family-btn family-btn--ghost"
+                onClick={() =>
+                  setStep(FAMILY_WIZARD_STEPS[stepIndex - 1].id)
+                }
+              >
+                Atrás
+              </button>
             ) : (
-              <p className="family-ok" role="status">
-                Perfil suficiente para personalizar cuentos.
-              </p>
+              <span />
             )}
-          </>
-        ) : null}
-      </section>
-
-      {error ? (
-        <p className="family-alert" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {status === "saved" ? (
-        <p className="family-ok" role="status">
-          Perfil guardado.
-        </p>
-      ) : null}
-
-      <div className="family-actions">
-        {stepIndex > 0 ? (
-          <button
-            type="button"
-            className="family-btn family-btn--ghost"
-            onClick={() =>
-              setStep(FAMILY_WIZARD_STEPS[stepIndex - 1].id)
-            }
-          >
-            Atrás
-          </button>
-        ) : (
-          <span />
-        )}
-        {stepIndex < FAMILY_WIZARD_STEPS.length - 1 ? (
-          <button
-            type="button"
-            className="family-btn family-btn--primary"
-            onClick={() =>
-              setStep(FAMILY_WIZARD_STEPS[stepIndex + 1].id)
-            }
-          >
-            Siguiente
-          </button>
-        ) : (
-          <div className="family-actions__stack">
-            <button
-              type="button"
-              className="family-btn family-btn--primary"
-              disabled={status === "saving"}
-              onClick={() => handleSave(true)}
-            >
-              {status === "saving"
-                ? "Guardando…"
-                : "Guardar y crear cuento"}
-            </button>
-            <button
-              type="button"
-              className="family-btn family-btn--ghost"
-              disabled={status === "saving"}
-              onClick={() => handleSave(false)}
-            >
-              Solo guardar
-            </button>
+            {stepIndex < FAMILY_WIZARD_STEPS.length - 1 ? (
+              <button
+                type="button"
+                className="family-btn family-btn--primary"
+                onClick={() =>
+                  setStep(FAMILY_WIZARD_STEPS[stepIndex + 1].id)
+                }
+              >
+                Siguiente
+              </button>
+            ) : (
+              <div className="family-actions__stack">
+                <button
+                  type="button"
+                  className="family-btn family-btn--primary"
+                  disabled={status === "saving"}
+                  onClick={() => handleSave(true)}
+                >
+                  {status === "saving"
+                    ? "Guardando…"
+                    : "Guardar y crear cuento"}
+                </button>
+                <button
+                  type="button"
+                  className="family-btn family-btn--ghost"
+                  disabled={status === "saving"}
+                  onClick={() => handleSave(false)}
+                >
+                  Solo guardar
+                </button>
+              </div>
+            )}
           </div>
-        )}
+            </div>
+          </div>
+        </div>
+
+        <div className="family-house__doorstep" aria-hidden="true" />
       </div>
 
       <section className="family-privacy">

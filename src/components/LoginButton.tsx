@@ -2,7 +2,15 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 
-export default function LoginButton() {
+/** Tras login el gate decide: casa → perfiles → home. */
+const AFTER_LOGIN = "/";
+
+type Props = {
+  /** ghost = secundario (estilo Krea Log in); honey = acento cálido */
+  tone?: "ghost" | "honey";
+};
+
+export default function LoginButton({ tone = "ghost" }: Props) {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
@@ -23,13 +31,18 @@ export default function LoginButton() {
     );
   }
 
+  const className =
+    tone === "honey"
+      ? "rounded-full border-2 border-honey/45 bg-honey/20 px-3 py-1.5 text-xs font-bold text-honey-glow transition hover:bg-honey/30"
+      : "rounded-full border border-honey-glow/35 bg-transparent px-3 py-1.5 text-xs font-bold text-cream transition hover:border-honey-glow/55 hover:bg-white/10 hover:text-honey-glow";
+
   return (
     <button
       type="button"
-      onClick={() => signIn("google", { callbackUrl: "/familia" })}
-      className="rounded-full border-2 border-honey/45 bg-honey/20 px-3 py-1.5 text-xs font-bold text-honey-glow transition hover:bg-honey/30"
+      onClick={() => signIn("google", { callbackUrl: AFTER_LOGIN })}
+      className={className}
     >
-      Entrar
+      Ingresar
     </button>
   );
 }

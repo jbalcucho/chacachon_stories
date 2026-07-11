@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import FamilyProfileBuilder from "@/components/family/FamilyProfileBuilder";
+import { isSafeAppPath } from "@/lib/active-profile";
 import {
   emptyFamilyBuilderState,
   familyBuilderFromDocument,
@@ -11,9 +13,18 @@ import {
   type FamilyBuilderState,
 } from "@/lib/family-profile-builder";
 import type { FamilyProfileDocument } from "@/lib/family-profile-schema";
+import {
+  clearFamilyReadyCache,
+  householdIsReady,
+  writeFamilyReadyCache,
+} from "@/lib/onboarding";
 
-export default function FamiliaPage() {
+function FamiliaContent() {
   const { data: session, status: authStatus } = useSession();
+  const searchParams = useSearchParams();
+  const nextRaw = searchParams.get("next") || "/";
+  const afterSaveHref = isSafeAppPath(nextRaw) ? nextRaw : "/";
+
   const [loading, setLoading] = useState(true);
   const [initialState, setInitialState] = useState<FamilyBuilderState | null>(
     null,
@@ -37,11 +48,13 @@ export default function FamiliaPage() {
         };
         if (cancelled) return;
         setInitialState(familyBuilderFromDocument(data.perfil));
+        writeFamilyReadyCache(householdIsReady(data.perfil));
         setLoadError(null);
       } catch (e) {
         if (!cancelled) {
           setLoadError(e instanceof Error ? e.message : "Error");
           setInitialState(emptyFamilyBuilderState());
+          clearFamilyReadyCache();
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -83,13 +96,10 @@ export default function FamiliaPage() {
   }
 
   async function deleteAccount(confirm: string) {
-    if (confirm !== "ELIMINAR") {
-      throw new Error("Escribe ELIMINAR para confirmar el borrado.");
-    }
     const res = await fetch("/api/familia/cuenta", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ confirm: "ELIMINAR" }),
+      body: JSON.stringify({ confirm }),
     });
     if (!res.ok) {
       const data = (await res.json().catch(() => null)) as {
@@ -97,6 +107,7 @@ export default function FamiliaPage() {
       } | null;
       throw new Error(data?.message ?? "No se pudo eliminar");
     }
+    clearFamilyReadyCache();
     await signOut({ callbackUrl: "/" });
   }
 
@@ -116,7 +127,7 @@ export default function FamiliaPage() {
           Inicia sesión para armar tu casa y personalizar cuentos.
         </p>
         <Link
-          href="/login"
+          href="/login?callbackUrl=/familia"
           className="mt-6 inline-block rounded-xl border-2 border-honey/45 bg-honey/20 px-5 py-2.5 text-sm font-bold text-honey-glow"
         >
           Entrar con Google
@@ -134,7 +145,7 @@ export default function FamiliaPage() {
   }
 
   return (
-    <main className="family-page mx-auto max-w-lg px-4 py-8 pb-20 sm:px-5">
+    <main className="family-page px-4 sm:px-5">
       {loadError ? (
         <p className="family-alert mb-4" role="status">
           {loadError} — puedes seguir editando y guardar.
@@ -144,6 +155,7 @@ export default function FamiliaPage() {
         key={session?.user?.email ?? "family"}
         initialState={initialState}
         userFirstName={session?.user?.name?.split(" ")[0]}
+        afterSaveHref={afterSaveHref}
         onSave={saveProfile}
         onExport={() => {
           void exportData().catch(() => undefined);
@@ -157,5 +169,19 @@ export default function FamiliaPage() {
         }}
       />
     </main>
+  );
+}
+
+export default function FamiliaPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="mx-auto max-w-lg px-5 py-12 text-center text-cream-muted">
+          Cargando tu casa…
+        </main>
+      }
+    >
+      <FamiliaContent />
+    </Suspense>
   );
 }

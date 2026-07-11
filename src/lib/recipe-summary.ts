@@ -355,9 +355,13 @@ export function buildInitialRecipeSelection(
     moldes: RecipeIngredient[];
   },
   plantillaSlug?: string | null,
+  preferredHeroId?: string | null,
 ): RecipeSelectionSlice {
+  const preferred = preferredHeroId
+    ? ingredients.personas.find((p) => p.id === preferredHeroId)
+    : undefined;
   const selection: RecipeSelectionSlice = {
-    heroes: ingredients.personas.slice(0, 1),
+    heroes: preferred ? [preferred] : ingredients.personas.slice(0, 1),
     reto: ingredients.dilemas.filter((d) => d.id === "dil-dormir"),
     aprenden: ingredients.emociones.filter((e) => e.id === "emo-responsabilidad"),
     lugar: ingredients.lugares.filter((l) => l.id === "lug-apartamento"),

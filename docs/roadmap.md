@@ -13,12 +13,13 @@ Fase actual: **MVP** (Sprint 0–1)
 | Área | Estado |
 |------|--------|
 | Estantería interactiva + lector tipo libro (paginación DOM) | ✅ |
-| Login Google + perfil familiar (JSONB en Neon) | ✅ |
-| Personalización en lectura (`/leer/[slug]`, 5 cuentos en manifest) | ✅ |
+| Login Google + perfil familiar (JSONB en Neon) + perfiles activos | ✅ |
+| Guest home: muestras, Crear gratis (`/probar`), Ingresar secundario | ✅ |
+| Personalización en lectura (`/leer/[slug]`) | ✅ |
 | Hub `/crear` + asistente de receta + acentos | ✅ |
 | Generación IA (Gemini → Claude → mock) | ✅ |
 | PWA instalable, iconos, OG, CSP enforce | ✅ |
-| Tests unitarios (48) sobre parsing, prompt, receta | ✅ |
+| Tests unitarios sobre parsing, prompt, receta, onboarding, trial | ✅ |
 
 ### Stack
 
@@ -27,9 +28,10 @@ Modelo federado Balcu: DB, auth y deploy propios; hub solo vitrina.
 
 ### Contenido
 
-- **Catálogo vacío** (jul 2026): sin demos publicados; se rediseña el próximo cuento desde cero.
-- Perfil de marca Chacachón sigue en `perfiles/familia-chacachon.json` (sin lista de cuentos).
-- Fuentes futuras en `cuentos/*.md`; manifest en `src/data/story-content-manifest.json`.
+- **Muestras guest** (jul 2026): `demo-noche-en-casa`, `demo-el-trancon`, `demo-bingo-detective` en `public/cuentos/` + `DEMO_SHOWCASE_STORIES`.
+- Perfil de marca Chacachón en `perfiles/familia-chacachon.json`.
+- Fuentes editoriales en `cuentos/*.md`; manifest en `src/data/story-content-manifest.json`.
+- Home guest: leer primero; **Crear gratis** → `/probar`; login secundario. Ver `docs/demo-mode.md`.
 
 ---
 
@@ -58,7 +60,7 @@ Objetivo: medir retención semanal (W4) antes de monetizar.
 |---|--------|---------|--------|
 | B1 | Biblioteca personal de cuentos generados | Alto | ✅ |
 | B2 | Vista previa de receta antes de gastar generación | Alto | ✅ |
-| B3 | Modo demo sin login (leer catálogo con familia de ejemplo) | Medio | ✅ |
+| B3 | Modo demo/guest sin login (muestras + trial `/probar` + familia ejemplo) | Medio | ✅ |
 | B4 | Pre-llenado `?plantilla=slug` en wizard | Medio | ✅ |
 | B5 | OG dinámico por cuento para compartir en WhatsApp | Alto (viral) | ✅ |
 | B6 | Barra de progreso visual en lector | Bajo | ✅ |
@@ -117,9 +119,10 @@ Documentado en `ContextoChacachon.md` y `contextonew.md`:
 
 ## 8. Próximos pasos inmediatos
 
-1. Completar Fase A (esta semana). ✅ (A8 aplazado: pulir demos antes de plan de pago)
-2. Desplegar y verificar en móvil + web.
-3. Fase B completa (B1–B7). Catálogo de cuentos **vaciado** (jul 2026). Siguiente foco editorial: **contexto + primer demo nuevo**.
+1. Completar Fase A. ✅ (A8 aplazado: tráfico real antes de plan de pago Gemini)
+2. **Desplegar guest home + muestras + trial** y verificar en móvil + web. ← en curso
+3. Fase B (B1–B7) ✅ en producto. Siguiente foco editorial: **pulir demos** (voz, longitud, ritual) y medir funnel guest → login.
+4. No priorizar varios estantes: un carrusel + búsqueda/filtros cuando la biblioteca crezca.
 
 ---
 

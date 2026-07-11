@@ -2,12 +2,16 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import BrandIllustration from "@/components/BrandIllustration";
+import ActiveProfileNav from "@/components/family/ActiveProfileNav";
 import LoginButton from "@/components/LoginButton";
+import { navigateWithFade } from "@/lib/route-fade";
 
 export default function SiteHeader() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
 
@@ -47,31 +51,39 @@ export default function SiteHeader() {
               Chacachón
             </p>
             <p className="site-header__tagline hidden text-xs font-semibold text-cream-muted sm:block">
-              Cuentos en familia
+              Cuentos donde los necesiten
             </p>
           </div>
         </Link>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {session?.user ? (
+            <>
+              <ActiveProfileNav />
+              <Link
+                href="/mis-cuentos"
+                className="hidden text-xs font-semibold text-cream-muted transition hover:text-cream sm:inline"
+              >
+                Mis cuentos
+              </Link>
+              <Link
+                href="/familia"
+                className="hidden text-xs font-semibold text-cream-muted transition hover:text-cream sm:inline"
+              >
+                Mi familia
+              </Link>
+            </>
+          ) : (
             <Link
-              href="/mis-cuentos"
-              className="hidden text-xs font-semibold text-cream-muted transition hover:text-cream sm:inline"
+              href="/probar"
+              className="site-header__cta-free"
+              onClick={(event) => {
+                event.preventDefault();
+                navigateWithFade((path) => router.push(path), "/probar");
+              }}
             >
-              Mis cuentos
+              Crear gratis
             </Link>
-          ) : null}
-          <Link
-            href="/familia"
-            className="hidden text-xs font-semibold text-cream-muted transition hover:text-cream sm:inline"
-          >
-            Mi familia
-          </Link>
-          <Link
-            href="/privacidad"
-            className="hidden text-xs font-semibold text-cream-muted transition hover:text-cream sm:inline"
-          >
-            Privacidad
-          </Link>
+          )}
           <LoginButton />
         </div>
       </div>

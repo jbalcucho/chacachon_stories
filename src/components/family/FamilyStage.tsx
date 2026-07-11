@@ -39,7 +39,7 @@ export default function FamilyStage({
   ) {
     return (
       <div
-        className={`family-stage__zone${overZone === zone ? " family-stage__zone--over" : ""}`}
+        className={`family-room${overZone === zone ? " family-room--over" : ""}`}
         onDragOver={(e) => {
           if (!canDragChildren || !dragId) return;
           e.preventDefault();
@@ -59,19 +59,19 @@ export default function FamilyStage({
           setDragId(null);
         }}
       >
-        <div className="family-stage__zone-head">
-          <h3 className="family-stage__zone-title">{title}</h3>
+        <div className="family-room__head">
+          <h3 className="family-room__title">{title}</h3>
           <button
             type="button"
-            className="family-stage__add"
+            className="family-room__add"
             onClick={() => onAdd(zone)}
           >
             + Añadir
           </button>
         </div>
-        <div className="family-stage__chips">
+        <div className="family-room__chips">
           {members.length === 0 ? (
-            <p className="family-stage__empty">{empty}</p>
+            <p className="family-room__empty">{empty}</p>
           ) : (
             members.map((member) => (
               <div key={member.id} data-member-id={member.id}>
@@ -95,38 +95,28 @@ export default function FamilyStage({
   }
 
   return (
-    <section className="family-stage" aria-label="Tu casa">
-      <div className="family-stage__roof" aria-hidden="true" />
-      <div className="family-stage__house">
-        <p className="family-stage__label">
-          {state.home.hogar.trim() || "tu casa"}
-          {state.home.ciudad.trim()
-            ? ` · ${state.home.ciudad.trim()}`
-            : ""}
-        </p>
-        {renderZone(
-          "ninos",
-          "Niños",
-          state.ninos as FamilyChildDraft[],
-          "Toca + Añadir para el protagonista",
-          true,
-        )}
-        {renderZone(
-          "adultos",
-          "Adultos",
-          state.adultos as FamilyAdultDraft[],
-          "Mamá, papá u otro cuidador",
-          false,
-        )}
-        {renderZone(
-          "mascotas",
-          "Mascotas",
-          state.mascotas as FamilyPetDraft[],
-          "Opcional — Bingo, Mora…",
-          false,
-        )}
-      </div>
-      <div className="family-stage__floor" aria-hidden="true" />
-    </section>
+    <div className="family-rooms" aria-label="Habitantes de la casa">
+      {renderZone(
+        "ninos",
+        "Niños",
+        state.ninos as FamilyChildDraft[],
+        "Toca + Añadir para el protagonista",
+        true,
+      )}
+      {renderZone(
+        "adultos",
+        "Adultos",
+        state.adultos as FamilyAdultDraft[],
+        "Mamá, papá u otro cuidador",
+        false,
+      )}
+      {renderZone(
+        "mascotas",
+        "Mascotas",
+        state.mascotas as FamilyPetDraft[],
+        "Opcional",
+        false,
+      )}
+    </div>
   );
 }

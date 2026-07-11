@@ -21,6 +21,13 @@ type Props = {
   shareable?: boolean;
   /** Login con retorno al cuento actual (modo demo). */
   loginCallbackUrl?: string;
+  /** CTA de conversión al llegar a la última página (prueba sin cuenta). */
+  endConversion?: {
+    title: string;
+    body: string;
+    href: string;
+    ctaLabel: string;
+  };
 };
 
 type TurnDirection = "next" | "prev";
@@ -66,6 +73,7 @@ export default function StoryReader({
   backLabel = "Biblioteca",
   shareable = false,
   loginCallbackUrl,
+  endConversion,
 }: Props) {
   const [fontSize, setFontSize] = useState(initialFontSize);
   const [paper, setPaper] = useState<PaperStyle>("cuento");
@@ -87,6 +95,7 @@ export default function StoryReader({
   const pageCount = pages.length;
   const progressPct =
     pageCount > 0 ? ((pageIndex + 1) / pageCount) * 100 : 0;
+  const isLastPage = pageCount > 0 && pageIndex >= pageCount - 1;
   const currentPage = pages[pageIndex] ?? pages[0];
   const pendingPage =
     turning === "next"
@@ -308,7 +317,7 @@ export default function StoryReader({
               <span className="story-reader__badge">Tu familia</span>
             ) : (
               <span className="story-reader__badge story-reader__badge--demo">
-                Demo
+                Muestra
               </span>
             )}
           </div>
@@ -474,6 +483,19 @@ export default function StoryReader({
             Siguiente ›
           </button>
         </footer>
+
+        {endConversion && isLastPage && !turning ? (
+          <div className="book-reader__end-conversion" role="region" aria-label="Guardar cuento">
+            <p className="book-reader__end-conversion-title">{endConversion.title}</p>
+            <p className="book-reader__end-conversion-body">{endConversion.body}</p>
+            <Link
+              href={endConversion.href}
+              className="book-reader__end-conversion-cta"
+            >
+              {endConversion.ctaLabel}
+            </Link>
+          </div>
+        ) : null}
       </div>
     </div>
   );

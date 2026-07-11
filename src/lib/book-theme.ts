@@ -19,6 +19,33 @@ export const storyTheme: Record<string, BookTheme> = {
     accent: "text-amber-950",
     glow: "251, 191, 36",
   },
+  "demo-noche-en-casa": {
+    id: "demo-noche",
+    emoji: "🌙",
+    spine: "from-[#6366f1] to-[#312e81]",
+    cover:
+      "from-[#a5b4fc] via-[#818cf8] to-[#4f46e5] ring-[#c7d2fe]/55",
+    accent: "text-indigo-50",
+    glow: "129, 140, 248",
+  },
+  "demo-el-trancon": {
+    id: "demo-trancon",
+    emoji: "🚌",
+    spine: "from-[#f97316] to-[#9a3412]",
+    cover:
+      "from-[#fdba74] via-[#fb923c] to-[#ea580c] ring-[#fed7aa]/50",
+    accent: "text-orange-50",
+    glow: "251, 146, 60",
+  },
+  "demo-bingo-detective": {
+    id: "demo-bingo",
+    emoji: "🐶",
+    spine: "from-[#14b8a6] to-[#115e59]",
+    cover:
+      "from-[#5eead4] via-[#2dd4bf] to-[#0f766e] ring-[#99f6e4]/50",
+    accent: "text-teal-50",
+    glow: "45, 212, 191",
+  },
 };
 
 export const variantTheme: Record<string, BookTheme> = {

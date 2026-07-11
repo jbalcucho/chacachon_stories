@@ -29,12 +29,15 @@ export default function DemoModeBanner({
   }
 
   return (
-    <p className="crear-banner crear-banner--info" role="status">
-      Estás leyendo con la familia demo Chacachón (Nico, Bingo y compañía).{" "}
-      <Link href={loginHref} className="font-bold text-honey-glow underline">
-        Entra con Google
+    <p className="crear-banner crear-banner--info crear-banner--guest" role="status">
+      <Link href={loginHref} className="crear-banner__soft-link">
+        Regístrate o inicia sesión
       </Link>{" "}
-      para usar los nombres de tu casa.
+      para crear histor
+      <span className="title-ia" title="Historias con inteligencia artificial">
+        IA
+      </span>
+      s personalizadas.
     </p>
   );
 }

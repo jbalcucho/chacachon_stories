@@ -68,16 +68,16 @@ export default function SkyScenery() {
       >
         <defs>
           <linearGradient id="hill-back" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#2d4a72" stopOpacity="0.55" />
-            <stop offset="100%" stopColor="#1e3358" stopOpacity="0.75" />
+            <stop offset="0%" stopColor="#2a4468" stopOpacity="0.55" />
+            <stop offset="100%" stopColor="#1a2f4c" stopOpacity="0.78" />
           </linearGradient>
           <linearGradient id="hill-mid" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#3d6b58" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#2a5244" stopOpacity="0.82" />
+            <stop offset="0%" stopColor="#3a6554" stopOpacity="0.52" />
+            <stop offset="100%" stopColor="#274a3d" stopOpacity="0.84" />
           </linearGradient>
           <linearGradient id="hill-front" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#4a8f6e" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#1f5c47" stopOpacity="0.9" />
+            <stop offset="0%" stopColor="#458568" stopOpacity="0.48" />
+            <stop offset="100%" stopColor="#1c5340" stopOpacity="0.92" />
           </linearGradient>
         </defs>
 
@@ -97,18 +97,18 @@ export default function SkyScenery() {
         <g className="sky-cloud sky-cloud--a" opacity="0.68">
           <ellipse cx="220" cy="180" rx="95" ry="38" fill="rgba(255,248,242,0.28)" />
           <ellipse cx="290" cy="168" rx="72" ry="30" fill="rgba(255,248,242,0.22)" />
-          <ellipse cx="160" cy="192" rx="58" ry="24" fill="rgba(228,220,245,0.2)" />
+          <ellipse cx="160" cy="192" rx="58" ry="24" fill="rgba(240,230,216,0.22)" />
         </g>
 
         <g className="sky-cloud sky-cloud--b" opacity="0.62">
           <ellipse cx="1080" cy="140" rx="110" ry="42" fill="rgba(255,248,242,0.26)" />
           <ellipse cx="980" cy="155" rx="70" ry="28" fill="rgba(255,233,184,0.18)" />
-          <ellipse cx="1160" cy="158" rx="65" ry="26" fill="rgba(228,220,245,0.19)" />
+          <ellipse cx="1160" cy="158" rx="65" ry="26" fill="rgba(240,230,216,0.2)" />
         </g>
 
         <g className="sky-cloud sky-cloud--c" opacity="0.55">
           <ellipse cx="620" cy="110" rx="88" ry="34" fill="rgba(255,248,242,0.22)" />
-          <ellipse cx="700" cy="100" rx="55" ry="22" fill="rgba(196,181,253,0.16)" />
+          <ellipse cx="700" cy="100" rx="55" ry="22" fill="rgba(255,233,184,0.16)" />
         </g>
 
         <g className="sky-cloud sky-cloud--d" opacity="0.5">

@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
 import BookSpine from "@/components/BookSpine";
 import CreateStorySlot from "@/components/CreateStorySlot";
@@ -16,6 +23,7 @@ import {
   nextCarouselIndex,
   prevCarouselIndex,
 } from "@/lib/book-carousel";
+import { navigateWithFade } from "@/lib/route-fade";
 
 const BOOKSHELF_SLUG_KEY = "chacachon.bookshelf-active-slug";
 
@@ -47,10 +55,11 @@ function saveActiveSlug(slug: string) {
 function resolveInitialIndex(
   stories: StoryCard[],
   urlSlug: string | null,
+  preferFirst = false,
 ): number {
   const fromUrl = indexForSlug(stories, urlSlug);
   if (fromUrl !== null) return fromUrl;
-
+  if (preferFirst) return 0;
   return initialActiveIndex(stories.length);
 }
 
@@ -59,13 +68,25 @@ type SlideDirection = "left" | "right";
 type Props = {
   stories: StoryCard[];
   label?: string;
+  /** Línea secundaria bajo el label (ej. demos de invitado). */
+  subtitle?: ReactNode;
   initialSlug?: string | null;
+  /** Slot y link “Crear cuento” (solo con sesión). */
+  allowCreate?: boolean;
+  /** Prefiere el primer libro si no hay slug en URL (demos). */
+  preferFirst?: boolean;
+  /** Hints y CTA terciario para home sin login. */
+  guestMode?: boolean;
 };
 
 export default function StoryBookshelf({
   stories: storiesProp,
   label = "Mi biblioteca",
+  subtitle,
   initialSlug = null,
+  allowCreate = true,
+  preferFirst = false,
+  guestMode = false,
 }: Props) {
   const stories = useMemo(
     () => storiesProp.filter(isReadableLibraryStory),
@@ -75,7 +96,7 @@ export default function StoryBookshelf({
   const catalogSlug =
     initialSlug === CREATE_STORY_SLUG ? null : (initialSlug ?? null);
   const [activeIndex, setActiveIndex] = useState(() =>
-    resolveInitialIndex(stories, catalogSlug),
+    resolveInitialIndex(stories, catalogSlug, preferFirst),
   );
   const [slideDirection, setSlideDirection] = useState<SlideDirection>("right");
   const [isBookLeaving, setIsBookLeaving] = useState(false);
@@ -126,10 +147,12 @@ export default function StoryBookshelf({
 
   useEffect(() => {
     if (catalogSlug) return;
+    // Invitados: no restaurar selección previa; el gancho es el primer demo.
+    if (preferFirst) return;
     const saved = readSavedSlug();
     if (!saved || !stories.some((story) => story.slug === saved)) return;
     router.replace(`/?libro=${encodeURIComponent(saved)}`, { scroll: false });
-  }, [catalogSlug, router, stories]);
+  }, [catalogSlug, preferFirst, router, stories]);
 
   const changeActiveIndex = useCallback(
     (index: number) => {
@@ -230,7 +253,7 @@ export default function StoryBookshelf({
     if (isBookTransitioning) return;
     if (canOpenActive && activeOpenPath && activeStory) {
       persistSelection(activeIndex);
-      router.push(activeOpenPath);
+      navigateWithFade((path) => router.push(path), activeOpenPath);
     }
   }
 
@@ -249,13 +272,33 @@ export default function StoryBookshelf({
 
   return (
     <section className="bookshelf-section" aria-label={label}>
-      <div className="bookshelf-header flex-col items-center gap-1 sm:flex-row sm:items-baseline sm:gap-4">
-        <div className="flex flex-col items-center gap-1 sm:flex-row sm:items-baseline sm:gap-3">
-          <p className="bookshelf-label">{label}</p>
-          <Link href="/crear" className="bookshelf-create-link">
-            ✨ Crear cuento
-          </Link>
-        </div>
+      <div
+        className={
+          allowCreate
+            ? "bookshelf-header"
+            : "bookshelf-header bookshelf-header--centered"
+        }
+      >
+        {allowCreate ? (
+          <div className="bookshelf-header__with-sub">
+            <div className="flex flex-col items-center gap-1 sm:flex-row sm:items-baseline sm:gap-3">
+              <p className="bookshelf-label">{label}</p>
+              <Link href="/crear" className="bookshelf-create-link">
+                ✨ Crear cuento
+              </Link>
+            </div>
+            {subtitle ? (
+              <p className="bookshelf-subtitle">{subtitle}</p>
+            ) : null}
+          </div>
+        ) : (
+          <div className="bookshelf-header__guest">
+            <p className="bookshelf-label bookshelf-label--solo">{label}</p>
+            {subtitle ? (
+              <p className="bookshelf-subtitle">{subtitle}</p>
+            ) : null}
+          </div>
+        )}
       </div>
 
       <div className="library-controls">
@@ -266,7 +309,21 @@ export default function StoryBookshelf({
           disabled={!canCycle || isBookTransitioning}
           aria-label="Libro anterior"
         >
-          ‹
+          <svg
+            className="library-arrow__icon"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M14.5 5.5 8 12l6.5 6.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
 
         <div
@@ -311,8 +368,20 @@ export default function StoryBookshelf({
                 {right.map((entry) => renderStackEntry(entry, rightBookCount))}
               </div>
             </div>
-            <CreateStorySlot variant="mirror" />
-            <CreateStorySlot variant="primary" />
+            {allowCreate ? (
+              <>
+                <CreateStorySlot variant="mirror" fadeNavigate />
+                <CreateStorySlot variant="primary" fadeNavigate />
+              </>
+            ) : (
+              <CreateStorySlot
+                variant="primary"
+                href="/probar"
+                label="Crear HistorIA"
+                ariaLabel="Crear HistorIA gratis: cuento de prueba con tu nombre"
+                fadeNavigate
+              />
+            )}
             <div className="library-cubby__shelf" aria-hidden="true" />
           </div>
           <div className="library-cubby__base" aria-hidden="true" />
@@ -325,10 +394,31 @@ export default function StoryBookshelf({
           disabled={!canCycle || isBookTransitioning}
           aria-label="Libro siguiente"
         >
-          ›
+          <svg
+            className="library-arrow__icon"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M9.5 5.5 16 12l-6.5 6.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
       </div>
 
+      {guestMode && activeStory ? (
+        <div className="bookshelf-guest-hints">
+          <p className="bookshelf-guest-hints__primary">
+            Toca el libro y empieza a leer
+          </p>
+        </div>
+      ) : null}
     </section>
   );
 }
