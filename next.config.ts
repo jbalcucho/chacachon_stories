@@ -1,5 +1,12 @@
 import type { NextConfig } from "next";
-import storyRedirects from "./src/data/story-redirects.json";
+import storyRedirectsJson from "./src/data/story-redirects.json";
+
+type StoryRedirect = {
+  source: string;
+  destination: string;
+};
+
+const storyRedirects = storyRedirectsJson as StoryRedirect[];
 
 const contentSecurityPolicy = [
   "default-src 'self'",
