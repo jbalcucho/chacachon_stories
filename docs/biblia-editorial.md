@@ -19,17 +19,7 @@ Un cuento Chacachón **no** es un resumen genérico de “un niño aprendió X�
 4. **Cálido y cómico (humor de reconocimiento):** el humor nace de la **situación cotidiana** (rutina, mascota, malentendido suave), no de chistes sueltos ni de ridiculizar al niño. **Doble audiencia:** el niño sigue la gracia de lo que pasa; el adulto sonríe al verse. **Calor:** límites firmes sin humillación; cansancio parental permitido, cinismo o sarcasmo hiriente no. **Densidad:** 1–2 momentos cómicos memorables por cuento bastan. Prohibido: burla cruel, grosería, clasismo, reírse *del* niño como tonto.
 5. **Ritmo de lectura en voz alta (oído primero):** el cuento debe poder leerse en familia sin atascarse. Frases en su mayoría **cortas o medias**; párrafos de **2–4 oraciones**; diálogos con raya (`—`), turnos breves, alternando narración y voz. Dejar **aire** entre beats (no un muro de texto). El cierre baja el volumen (calma, no clímax nuevo). Evitar: oraciones kilométricas, párrafos de media página, cascadas de nombres, onomatopeyas en exceso. Formato: Markdown limpio (`#`, `>`, `##`, `—`).
 
-Referencias canónicas (leer antes de afinar prompts):
-
-
-| Cuento                                                | Qué demuestra                                              |
-| ----------------------------------------------------- | ---------------------------------------------------------- |
-| `cuentos/familia-chacachon-operacion-a-dormir.md`     | Rutina nocturna, lista de mamá, humor parental             |
-| `cuentos/familia-chacachon-nico-dia-sin-pantallas.md` | Reto moderno, escena de apartamento, moraleja sin discurso |
-| `cuentos/familia-chacachon-el-lobo-y-las-palabras.md` | Molde clásico + familia, metáfora del lobo, tier 1         |
-
-
----
+Referencias canónicas: el corpus de demos se vació (jul 2026). Usar los **cinco pilares** de esta sección y los few-shots en `src/lib/story-prompt-examples.ts` hasta publicar el próximo cuento curado.
 
 ## 2. Estructura narrativa
 
@@ -256,7 +246,7 @@ Al añadir un cuento nuevo, agregar al menos un par de fragmentos neutros; si ha
 
 1. Elegir **3 recetas fijas** de prueba (dormir, pantallas, respeto).
 2. Generar con Gemini y guardar los 3 markdowns.
-3. Comparar lado a lado con `operacion-a-dormir.md` usando el checklist §7.
+3. Comparar lado a lado con el checklist §7 (y con el próximo demo curado cuando exista).
 4. Ajustar **una regla a la vez** en `story-prompt.ts`.
 5. Repetir hasta que un lector externo (otro adulto) diga “esto sí es Chacachón”.
 

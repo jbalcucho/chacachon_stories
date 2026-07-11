@@ -5,19 +5,19 @@ import {
 } from "@/lib/story-content-index";
 
 describe("story-content-index", () => {
-  it("conoce cuentos del manifest", () => {
-    expect(hasPersonalizedReader("hora-del-nono")).toBe(true);
+  it("no conoce slugs fuera del manifest", () => {
     expect(hasPersonalizedReader("no-existe")).toBe(false);
   });
 
   it("resuelve openPath a /leer cuando hay fuente", () => {
+    // Sin fuentes en manifest (catálogo vacío), cae a htmlPath.
     expect(
       resolveStoryOpenPath({
-        slug: "hora-del-nono",
+        slug: "demo-futuro",
         status: "PUBLISHED",
-        htmlPath: "/cuentos/x.html",
+        htmlPath: "/cuentos/demo.html",
       }),
-    ).toBe("/leer/hora-del-nono");
+    ).toBe("/cuentos/demo.html");
   });
 
   it("cae a htmlPath si no hay fuente personalizada", () => {

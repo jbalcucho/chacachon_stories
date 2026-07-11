@@ -1,17 +1,4 @@
 {
-  "generatedAt": "2026-07-11T01:36:10.521Z",
-  "sources": {
-    "hora-del-nono": {
-      "slug": "hora-del-nono",
-      "kind": "markdown",
-      "filePath": "cuentos/familia-balcutron-hora-del-nono.md",
-      "familyTag": "balcutron"
-    },
-    "balcutron-operacion-a-dormir": {
-      "slug": "balcutron-operacion-a-dormir",
-      "kind": "markdown",
-      "filePath": "cuentos/familia-balcutron-operacion-a-dormir.md",
-      "familyTag": "balcutron"
-    }
-  }
+  "generatedAt": "2026-07-11T01:41:00.204Z",
+  "sources": {}
 }

@@ -2,13 +2,13 @@
   "nombre_display": "Familia Chacachón (José y Julie)",
   "schema_version": 1,
   "completitud": 98,
-  "plantilla": "perfiles/plantilla-chacachon-operacion-a-dormir.json",
+  "plantilla": null,
   "notas": "Perfil real. Papá Chacachón/Raka, mamá Julie/Pauleta, Nico, Simónchin, Bingo y Mora.",
   "perfil": {
     "meta": {
       "ciudad": "Bogotá",
       "barrio": "mismo edificio que los abuelos maternos",
-      "codigo_acento": "bogota_ninos",
+      "codigo_acento": "neutro",
       "como_le_dicen_al_hogar": "el apartamento",
       "apellido_hogar": "Chacachón"
     },
@@ -252,34 +252,7 @@
           "Tiendan la cama"
         ]
       },
-      "cuentos": [
-        {
-          "slug": "operacion-a-dormir",
-          "archivo": "cuentos/familia-chacachon-operacion-a-dormir.md",
-          "moraleja": "ir a dormir a tiempo y la rutina de la noche"
-        },
-        {
-          "slug": "cerditos-caperucita",
-          "archivo": "cuentos/familia-chacachon-cerditos-caperucita.md",
-          "variante": "apartamento-guion",
-          "moraleja": "no decir groserías ni contestar feo a los papás",
-          "roles_clasicos": {
-            "cerdito_paja": "Simónchin",
-            "cerdito_palos": "Nico",
-            "cerdito_ladrillo": "Chacachón",
-            "caperucita": "Pauleta",
-            "lobo": "Bingo",
-            "abuelita": "Betty"
-          }
-        },
-        {
-          "slug": "el-lobo-y-las-palabras",
-          "archivo": "cuentos/familia-chacachon-el-lobo-y-las-palabras.md",
-          "variante": "narrativo-clasico",
-          "escenario": "vereda, bosque de eucaliptos, casitas en la loma",
-          "moraleja": "no decir groserías ni contestar feo a los papás"
-        }
-      ]
+      "cuentos": []
     }
   }
 }

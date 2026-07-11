@@ -27,10 +27,9 @@ Modelo federado Balcu: DB, auth y deploy propios; hub solo vitrina.
 
 ### Contenido
 
-- **0 cuentos Chacachón publicados** en el estante (demos retirados; se rediseña el próximo demo).
-- **1 piloto Balcutron** (fuera del estante por `familyTag`).
-- Borradores / stubs en seed sin HTML.
-- Fuentes restantes en `cuentos/*.md` (Balcutron); manifest en `src/data/story-content-manifest.json`.
+- **Catálogo vacío** (jul 2026): sin demos publicados; se rediseña el próximo cuento desde cero.
+- Perfil de marca Chacachón sigue en `perfiles/familia-chacachon.json` (sin lista de cuentos).
+- Fuentes futuras en `cuentos/*.md`; manifest en `src/data/story-content-manifest.json`.
 
 ---
 
@@ -120,7 +119,7 @@ Documentado en `ContextoChacachon.md` y `contextonew.md`:
 
 1. Completar Fase A (esta semana). ✅ (A8 aplazado: pulir demos antes de plan de pago)
 2. Desplegar y verificar en móvil + web.
-3. Fase B completa (B1–B7). Demos Chacachón **retirados** del estante (jul 2026) para rediseñar un demo nuevo con calma. Estante vacío a propósito. Siguiente foco editorial: **contexto del próximo cuento demo**.
+3. Fase B completa (B1–B7). Catálogo de cuentos **vaciado** (jul 2026). Siguiente foco editorial: **contexto + primer demo nuevo**.
 
 ---
 

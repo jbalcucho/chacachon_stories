@@ -77,19 +77,7 @@ Archivos:
 
 ## Seed
 
-`prisma/seed.ts` inserta **9** historias:
-
-| # | Título | Status | Notas |
-|---|--------|--------|-------|
-| 1 | El lobo de las palabras feas | PUBLISHED | HTML en `public/cuentos/` |
-| 2 | Los Tres Cerditos del Edificio | PUBLISHED | HTML |
-| 3 | Operación A Dormir | PUBLISHED | Familia Chacachón |
-| 4 | El ascensor de las sorpresas | DRAFT | Sin HTML |
-| 5 | Pauleta y el tren del bosque | DRAFT | Sin HTML |
-| 6 | Misión en Paloquemao | DRAFT | Sin HTML |
-| 7 | El día sin pantallas de Nico | PUBLISHED | HTML |
-| 8 | Chacachón en la luna | DRAFT | Sin HTML |
-| 9 | Operación A Dormir (Balcutron) | PUBLISHED | `familyTag: balcutron` — HTML público, no aparece en el estante home (filtro `chacachon`) |
+`prisma/seed.ts` **borra** el catálogo (`deleteMany`). No inserta cuentos hasta que haya un demo nuevo listo.
 
 **Regla editorial:** solo cuentos `PUBLISHED` deben tener HTML en `public/cuentos/`. Ver [cuentos/README.md](../cuentos/README.md).
 

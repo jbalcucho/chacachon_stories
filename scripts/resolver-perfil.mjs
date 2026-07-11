@@ -169,7 +169,7 @@ function main() {
   const args = process.argv.slice(2);
   const perfilPath = args[0]
     ? join(ROOT, args[0])
-    : join(ROOT, "perfiles/balcutron.json");
+    : join(ROOT, "perfiles/familia-chacachon.json");
   const conFragmentos = !args.includes("--solo-variables");
 
   const bundle = loadJson(perfilPath);
@@ -187,8 +187,12 @@ function main() {
 
   if (!conFragmentos) return;
 
-  const plantillaRel =
-    bundle.plantilla ?? "perfiles/plantilla-operacion-a-dormir.json";
+  if (!bundle.plantilla) {
+    console.log("\n(Sin plantilla de fragmentos en este perfil.)");
+    return;
+  }
+
+  const plantillaRel = bundle.plantilla;
   const plantillaPath = join(ROOT, plantillaRel);
   const plantilla = loadJson(plantillaPath);
 
