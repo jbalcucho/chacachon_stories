@@ -47,14 +47,16 @@ Permite probar el producto **sin cuenta**: leer muestras en el estante, crear un
 
 ## Flujo «Crear gratis» (trial)
 
-Diferenciador vs generadores genéricos: **momento de casa** o **clásico conocido**, con personalización **opcional**.
+Diferenciador vs generadores genéricos: **historia de casa** o **clásico conocido**, con personalización **opcional**, y **1 generación IA** sin cuenta.
 
-1. `/probar` paso 1 — nombre + camino (`Historia de casa` | `Cuento clásico`) + elección (4 retos de crianza o 4 clásicos: Cerditos, Caperucita, Renacuajo paseador, Lobo y los siete cabritos).
-2. `/probar` paso 2 (omitible) — acompañante (mamá/papá/hermano/Bingo) + enseñanza sugerida/editable.
-3. Mock en `sessionStorage` (`chacachon.trialStory.v2`) vía `src/lib/trial-story.ts` (sin LLM / sin cuota).
-4. `/leer/prueba` — lectura + banner con marco/enseñanza + CTA «Guardar gratis con tu familia».
+1. `/probar` paso 1 — nombre + camino (`Historia de casa` | `Cuento clásico`) + elección (4 retos o 4 clásicos).
+2. `/probar` paso 2 (omitible) — acompañante + enseñanza.
+3. `POST /api/cuentos/probar` — genera con Gemini/Claude (mismo pipeline que `/crear`); cuota **cookie + IP/día** (`TRIAL_AI_DAILY_PER_IP`, default 2). No guarda el cuento en biblioteca.
+4. `/leer/prueba` — lectura en sessionStorage + CTA «Guardar gratis con tu familia».
 
-No hay «Otro» libre en el trial (calidad/moderación); eso vive en `/crear` post-login.
+Si no hay API key o falla el proveedor, el cliente puede caer a mock local. Si la cuota se agotó (429), se pide ingresar (sin mock automático).
+
+Variables: `GEMINI_API_KEY` / `ANTHROPIC_API_KEY`, opcional `TRIAL_AI_DAILY_PER_IP`.
 
 ---
 

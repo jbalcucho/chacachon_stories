@@ -52,6 +52,9 @@ export function describeRecipe(selection: RecipeSelectionSlice): string[] {
     lines.push(
       `Inspirado en el clásico (estructura, no copiar literal): ${selection.molde[0].label}.`,
     );
+    if (selection.molde[0].hint) {
+      lines.push(`Andamiaje del clásico a respetar: ${selection.molde[0].hint}.`);
+    }
   }
 
   return lines;

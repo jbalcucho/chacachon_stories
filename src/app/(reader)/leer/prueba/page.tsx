@@ -62,7 +62,10 @@ export default function LeerPruebaPage() {
     <div className="relative h-dvh">
       <div className="trial-reader-banner" role="status">
         <p>
-          Prueba · <strong>{payload.name}</strong>
+          Prueba
+          {payload.source && payload.source !== "mock" ? " con IA" : ""}
+          {" · "}
+          <strong>{payload.name}</strong>
           {payload.frameLabel ? ` · ${payload.frameLabel}` : ""}
           {payload.companionLabel ? ` · con ${payload.companionLabel}` : ""}
           {" · "}

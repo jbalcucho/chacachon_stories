@@ -139,7 +139,88 @@ export type TrialStoryPayload = TrialStoryInput & {
   frameLabel: string;
   lessonLabel: string;
   companionLabel: string | null;
+  source?: "gemini" | "claude" | "mock";
 };
+
+const CLASSIC_BEATS: Record<string, string> = {
+  cerditos:
+    "Tres intentos de construir; lo fácil cae; lo firme queda; el niño es el héroe constructor; tono suave sin violencia.",
+  caperucita:
+    "Camino a casa de la abuela; tentación de un atajo; elegir el camino seguro; sin terror ni sangre.",
+  renacuajo:
+    "Guiño a Pombo: ganas de pasear vs consejo de volver a casa; escuchar con cariño; sin verso obligado.",
+  cabritos:
+    "Mamá sale; alguien intenta engañar en la puerta; seña o voz verdadera; la puerta se queda segura; sin horror.",
+};
+
+function ing(
+  id: string,
+  kind: "persona" | "dilema" | "emocion" | "lugar" | "molde",
+  label: string,
+  hint = "",
+) {
+  return { id, kind, label, emoji: "", ...(hint ? { hint } : {}) };
+}
+
+/** Receta mínima para el prompt IA del trial. */
+export function buildTrialSelection(input: TrialStoryInput) {
+  const resolved = resolveTrialDefaults(input);
+  const heroes = [ing("trial-hero", "persona", input.name)];
+  const aprenden = [
+    ing(`trial-emo-${resolved.lesson.id}`, "emocion", resolved.lesson.label),
+  ];
+  const lugar = [ing("trial-lugar", "lugar", resolved.place)];
+  const acompanantes = resolved.companion
+    ? [
+        ing(
+          `trial-comp-${resolved.companion.id}`,
+          "persona",
+          resolved.companion.label,
+        ),
+      ]
+    : [];
+
+  if (input.path === "classic") {
+    const classic = getTrialClassic(input.classicId);
+    return {
+      heroes,
+      reto: [
+        ing(
+          `trial-reto-${classic.id}`,
+          "dilema",
+          `Remix suave de «${classic.label}»`,
+        ),
+      ],
+      aprenden,
+      lugar,
+      mascota: [],
+      acompanantes,
+      rolReto: [],
+      objeto: [],
+      molde: [
+        ing(
+          `trial-molde-${classic.id}`,
+          "molde",
+          classic.label,
+          CLASSIC_BEATS[classic.id] ?? classic.hint,
+        ),
+      ],
+    };
+  }
+
+  const moment = getTrialMoment(input.momentId);
+  return {
+    heroes,
+    reto: [ing(`trial-reto-${moment.id}`, "dilema", moment.label)],
+    aprenden,
+    lugar,
+    mascota: [],
+    acompanantes,
+    rolReto: [],
+    objeto: [],
+    molde: [],
+  };
+}
 
 export function normalizeTrialName(raw: string): string | null {
   const name = raw.trim().replace(/\s+/g, " ");

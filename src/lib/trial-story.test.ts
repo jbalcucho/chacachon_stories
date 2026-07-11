@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildTrialPayload,
+  buildTrialSelection,
   buildTrialStoryMarkdown,
   normalizeTrialName,
   trialMarkdownToContent,
@@ -70,5 +71,18 @@ describe("trial-story", () => {
     expect(payload.frameLabel).toMatch(/cabritos/i);
     expect(payload.markdown).toMatch(/cabritos|puerta|seña/i);
     expect(payload.markdown).toContain("Lina");
+  });
+
+  it("builds a recipe selection for classic AI prompts", () => {
+    const selection = buildTrialSelection({
+      name: "Sofía",
+      path: "classic",
+      classicId: "cabritos",
+      companionId: "mama",
+    });
+    expect(selection.heroes[0]?.label).toBe("Sofía");
+    expect(selection.molde[0]?.label).toMatch(/cabritos/i);
+    expect(selection.molde[0]?.hint).toMatch(/puerta|seña/i);
+    expect(selection.acompanantes[0]?.label).toBe("Mamá");
   });
 });

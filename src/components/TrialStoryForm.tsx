@@ -15,6 +15,7 @@ import {
   resolveTrialDefaults,
   saveTrialStory,
   type TrialPath,
+  type TrialStoryPayload,
 } from "@/lib/trial-story";
 
 type Step = "basics" | "optional";
@@ -30,6 +31,7 @@ export default function TrialStoryForm() {
   const [companionId, setCompanionId] = useState<string | null>(null);
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const suggestedLessonId = useMemo(() => {
     const defaults = resolveTrialDefaults({
@@ -59,36 +61,85 @@ export default function TrialStoryForm() {
     setStep("optional");
   }
 
-  function finish(skipExtras: boolean) {
+  async function finish(skipExtras: boolean) {
     const normalized = validateName();
     if (!normalized) {
       setStep("basics");
       return;
     }
 
-    const payload = buildTrialPayload({
+    const input = {
       name: normalized,
       path,
       momentId: path === "moment" ? momentId : null,
       classicId: path === "classic" ? classicId : null,
       companionId: skipExtras ? null : companionId,
       lessonId: skipExtras ? null : activeLessonId,
-    });
-    saveTrialStory(payload);
-    router.push("/leer/prueba");
+    };
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/cuentos/probar", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | (TrialStoryPayload & { message?: string })
+        | null;
+
+      if (res.ok && data?.markdown) {
+        saveTrialStory({
+          name: data.name,
+          path: data.path,
+          momentId: data.momentId ?? null,
+          classicId: data.classicId ?? null,
+          companionId: data.companionId ?? null,
+          lessonId: data.lessonId ?? null,
+          markdown: data.markdown,
+          createdAt: data.createdAt,
+          frameLabel: data.frameLabel,
+          lessonLabel: data.lessonLabel,
+          companionLabel: data.companionLabel ?? null,
+          source: data.source ?? "mock",
+        });
+        router.push("/leer/prueba");
+        return;
+      }
+
+      if (res.status === 429) {
+        setError(
+          data?.message ??
+            "Ya usaste tu prueba con IA. Ingresa gratis para crear más.",
+        );
+        return;
+      }
+
+      const local = buildTrialPayload(input);
+      saveTrialStory({ ...local, source: "mock" });
+      router.push("/leer/prueba");
+    } catch {
+      const local = buildTrialPayload(input);
+      saveTrialStory({ ...local, source: "mock" });
+      router.push("/leer/prueba");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="trial-page mx-auto max-w-lg px-4 py-8 pb-16 sm:px-6">
       <header className="text-center">
-        <p className="profile-picker__eyebrow">Gratis · sin cuenta</p>
+        <p className="profile-picker__eyebrow">Gratis · 1 cuento con IA</p>
         <h1 className="title-display mt-2 text-3xl sm:text-4xl">
           Un cuento de tu casa
         </h1>
         <p className="intro-copy mx-auto mt-3 max-w-md text-sm sm:text-base">
-          Momento real o clásico conocido — con el nombre de tu niño. La familia
-          y la enseñanza son opcionales. Si te gusta, ingresa gratis para
-          guardarlas.
+          Historia de casa o clásico conocido — con el nombre de tu niño. Un
+          cuento generado con IA, sin cuenta. Si te gusta, ingresa gratis para
+          guardar más.
         </p>
       </header>
 
@@ -102,11 +153,23 @@ export default function TrialStoryForm() {
       ) : null}
 
       <div className="trial-steps" aria-hidden="true">
-        <span className={step === "basics" ? "trial-steps__dot trial-steps__dot--on" : "trial-steps__dot"}>
+        <span
+          className={
+            step === "basics"
+              ? "trial-steps__dot trial-steps__dot--on"
+              : "trial-steps__dot"
+          }
+        >
           1
         </span>
         <span className="trial-steps__line" />
-        <span className={step === "optional" ? "trial-steps__dot trial-steps__dot--on" : "trial-steps__dot"}>
+        <span
+          className={
+            step === "optional"
+              ? "trial-steps__dot trial-steps__dot--on"
+              : "trial-steps__dot"
+          }
+        >
           2
         </span>
       </div>
@@ -123,6 +186,7 @@ export default function TrialStoryForm() {
               autoComplete="nickname"
               autoFocus
               required
+              disabled={loading}
             />
           </label>
 
@@ -133,6 +197,7 @@ export default function TrialStoryForm() {
                 type="button"
                 className={`trial-form__path${path === "moment" ? " trial-form__path--active" : ""}`}
                 onClick={() => setPath("moment")}
+                disabled={loading}
               >
                 <span className="trial-form__path-title">Historia de casa</span>
                 <span className="trial-form__path-hint">
@@ -143,6 +208,7 @@ export default function TrialStoryForm() {
                 type="button"
                 className={`trial-form__path${path === "classic" ? " trial-form__path--active" : ""}`}
                 onClick={() => setPath("classic")}
+                disabled={loading}
               >
                 <span className="trial-form__path-title">Cuento clásico</span>
                 <span className="trial-form__path-hint">
@@ -154,7 +220,7 @@ export default function TrialStoryForm() {
 
           {path === "moment" ? (
             <fieldset className="trial-form__challenges">
-              <legend>Elige el momento</legend>
+              <legend>Selecciona un reto</legend>
               <div className="trial-form__challenge-list">
                 {TRIAL_MOMENTS.map((m) => (
                   <label
@@ -170,6 +236,7 @@ export default function TrialStoryForm() {
                         setMomentId(m.id);
                         setLessonId(null);
                       }}
+                      disabled={loading}
                     />
                     {m.label}
                   </label>
@@ -194,6 +261,7 @@ export default function TrialStoryForm() {
                         setClassicId(c.id);
                         setLessonId(null);
                       }}
+                      disabled={loading}
                     />
                     <span className="trial-form__classic-title">{c.label}</span>
                     <span className="trial-form__classic-hint">{c.hint}</span>
@@ -209,15 +277,20 @@ export default function TrialStoryForm() {
             </p>
           ) : null}
 
-          <button type="submit" className="family-btn family-btn--primary w-full">
+          <button
+            type="submit"
+            className="family-btn family-btn--primary w-full"
+            disabled={loading}
+          >
             Continuar
           </button>
           <button
             type="button"
             className="trial-form__skip"
             onClick={() => finish(true)}
+            disabled={loading}
           >
-            Crear ya (sin extras)
+            {loading ? "Creando con IA…" : "Crear ya (sin extras)"}
           </button>
         </form>
       ) : (
@@ -238,6 +311,7 @@ export default function TrialStoryForm() {
                   name="companion"
                   checked={companionId === null}
                   onChange={() => setCompanionId(null)}
+                  disabled={loading}
                 />
                 Solo
               </label>
@@ -252,6 +326,7 @@ export default function TrialStoryForm() {
                     value={c.id}
                     checked={companionId === c.id}
                     onChange={() => setCompanionId(c.id)}
+                    disabled={loading}
                   />
                   {c.label}
                 </label>
@@ -273,6 +348,7 @@ export default function TrialStoryForm() {
                     value={l.id}
                     checked={activeLessonId === l.id}
                     onChange={() => setLessonId(l.id)}
+                    disabled={loading}
                   />
                   {l.label}
                 </label>
@@ -290,13 +366,15 @@ export default function TrialStoryForm() {
             type="button"
             className="family-btn family-btn--primary w-full"
             onClick={() => finish(false)}
+            disabled={loading}
           >
-            Crear cuento de prueba
+            {loading ? "Creando con IA…" : "Crear cuento con IA"}
           </button>
           <button
             type="button"
             className="trial-form__skip"
             onClick={() => finish(true)}
+            disabled={loading}
           >
             Saltar extras y crear
           </button>
@@ -304,6 +382,7 @@ export default function TrialStoryForm() {
             type="button"
             className="trial-form__back"
             onClick={() => setStep("basics")}
+            disabled={loading}
           >
             ← Volver
           </button>
