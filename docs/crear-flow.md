@@ -17,7 +17,7 @@ Documenta lo construido hasta aquí en el hub `/crear`, el asistente de receta y
 | Generación IA | ✅ Gemini (POC gratis) + fallback mock | `POST /api/cuentos/generar` · `/leer/generado/[id]` · [docs/ia-generacion.md](./ia-generacion.md) |
 | Vista previa antes de IA | ✅ Sin gastar cuota | `RecipeGenerationPreview.tsx` · [docs/crear-flow.md](./crear-flow.md) |
 | Modo guest sin login | ✅ Muestras + trial `/probar` + receta demo | [docs/demo-mode.md](./demo-mode.md) |
-| Trial «Crear gratis» | ✅ Mock local (sin LLM/cuota) | `/probar` · `/leer/prueba` · `trial-story.ts` |
+| Trial «Crear gratis» | ✅ Momento o clásico + extras opcionales (sin LLM) | `/probar` · `/leer/prueba` · `trial-story.ts` |
 | Compartir cuento (OG) | ✅ WhatsApp / Web Share | [docs/compartir-cuentos.md](./compartir-cuentos.md) |
 
 ---

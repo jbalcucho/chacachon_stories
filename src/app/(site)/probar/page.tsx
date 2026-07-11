@@ -5,7 +5,7 @@ import TrialStoryForm from "@/components/TrialStoryForm";
 export const metadata: Metadata = {
   title: "Probar un cuento",
   description:
-    "Crea un cuento de prueba con un nombre, sin cuenta. Entra con Google para guardarlo.",
+    "Crea un cuento de prueba: momento de casa o clásico, con el nombre de tu niño. Sin cuenta.",
   robots: { index: false },
 };
 

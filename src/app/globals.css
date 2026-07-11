@@ -6685,6 +6685,40 @@ button.recipe-wizard__step-btn:hover {
 }
 
 /* —— Trial story (sin login) —— */
+.trial-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 1.25rem;
+}
+
+.trial-steps__dot {
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: rgba(240, 230, 216, 0.55);
+  border: 1px solid rgba(255, 233, 184, 0.22);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.trial-steps__dot--on {
+  color: var(--color-night);
+  background: var(--color-honey);
+  border-color: rgba(255, 233, 184, 0.8);
+}
+
+.trial-steps__line {
+  width: 2.4rem;
+  height: 2px;
+  background: rgba(255, 233, 184, 0.22);
+}
+
 .trial-form {
   display: flex;
   flex-direction: column;
@@ -6694,6 +6728,13 @@ button.recipe-wizard__step-btn:hover {
   border: 1px solid rgba(255, 233, 184, 0.28);
   background: rgba(53, 72, 120, 0.38);
   backdrop-filter: blur(12px);
+}
+
+.trial-form__optional-lead {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--color-cream-muted);
 }
 
 .trial-form__field {
@@ -6733,10 +6774,88 @@ button.recipe-wizard__step-btn:hover {
   margin-bottom: 0.55rem;
 }
 
+.trial-form__path-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+.trial-form__path {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  text-align: left;
+  padding: 0.75rem 0.7rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(255, 233, 184, 0.22);
+  background: rgba(255, 248, 242, 0.06);
+  color: var(--color-cream);
+  cursor: pointer;
+}
+
+.trial-form__path--active {
+  border-color: rgba(255, 202, 92, 0.7);
+  background: rgba(255, 202, 92, 0.16);
+  box-shadow: 0 0 0 1px rgba(255, 202, 92, 0.2);
+}
+
+.trial-form__path-title {
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.trial-form__path-hint {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: rgba(240, 230, 216, 0.72);
+  line-height: 1.3;
+}
+
 .trial-form__challenge-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.trial-form__classic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.trial-form__classic {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 233, 184, 0.22);
+  background: rgba(255, 248, 242, 0.06);
+  cursor: pointer;
+}
+
+.trial-form__classic input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.trial-form__classic--active {
+  border-color: rgba(255, 202, 92, 0.65);
+  background: rgba(255, 202, 92, 0.16);
+}
+
+.trial-form__classic-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--color-cream);
+}
+
+.trial-form__classic-hint {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(240, 230, 216, 0.7);
 }
 
 .trial-form__chip {
@@ -6772,6 +6891,23 @@ button.recipe-wizard__step-btn:hover {
   color: var(--color-coral);
 }
 
+.trial-form__skip,
+.trial-form__back {
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: rgba(240, 230, 216, 0.78);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.trial-form__back {
+  margin-top: -0.25rem;
+}
+
 .trial-reader-banner {
   position: absolute;
   z-index: 30;
@@ -6779,16 +6915,24 @@ button.recipe-wizard__step-btn:hover {
   left: 0;
   right: 0;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem 1rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
   padding: 0.55rem 0.85rem;
   background: rgba(42, 61, 110, 0.92);
   border-bottom: 1px solid rgba(255, 233, 184, 0.22);
   color: var(--color-cream);
   font-size: 0.78rem;
   line-height: 1.35;
+}
+
+.trial-reader-banner p {
+  margin: 0;
+}
+
+.trial-reader-banner__lesson {
+  color: var(--color-honey-glow);
+  font-weight: 700;
 }
 
 .trial-reader-banner a {
@@ -6831,7 +6975,7 @@ button.recipe-wizard__step-btn:hover {
 }
 
 .trial-reader-banner + * {
-  padding-top: 2.75rem;
+  padding-top: 4.5rem;
 }
 
 .book-reader__end-conversion {
