@@ -134,9 +134,9 @@ export default function TrialStoryForm() {
                 className={`trial-form__path${path === "moment" ? " trial-form__path--active" : ""}`}
                 onClick={() => setPath("moment")}
               >
-                <span className="trial-form__path-title">Momento de casa</span>
+                <span className="trial-form__path-title">Historia de casa</span>
                 <span className="trial-form__path-hint">
-                  Noche, pantallas, mesa…
+                  Pantallas, dormir, compartir, verduras…
                 </span>
               </button>
               <button

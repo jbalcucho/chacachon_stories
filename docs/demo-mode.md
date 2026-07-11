@@ -49,7 +49,7 @@ Permite probar el producto **sin cuenta**: leer muestras en el estante, crear un
 
 Diferenciador vs generadores genéricos: **momento de casa** o **clásico conocido**, con personalización **opcional**.
 
-1. `/probar` paso 1 — nombre + camino (`Momento de casa` | `Cuento clásico`) + elección (4 momentos de crianza o 4 clásicos: Cerditos, Caperucita, Renacuajo paseador, Lobo y los siete cabritos).
+1. `/probar` paso 1 — nombre + camino (`Historia de casa` | `Cuento clásico`) + elección (4 retos de crianza o 4 clásicos: Cerditos, Caperucita, Renacuajo paseador, Lobo y los siete cabritos).
 2. `/probar` paso 2 (omitible) — acompañante (mamá/papá/hermano/Bingo) + enseñanza sugerida/editable.
 3. Mock en `sessionStorage` (`chacachon.trialStory.v2`) vía `src/lib/trial-story.ts` (sin LLM / sin cuota).
 4. `/leer/prueba` — lectura + banner con marco/enseñanza + CTA «Guardar gratis con tu familia».
