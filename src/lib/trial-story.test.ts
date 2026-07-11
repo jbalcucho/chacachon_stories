@@ -43,10 +43,20 @@ describe("trial-story", () => {
     const payload = buildTrialPayload({
       name: "Nico",
       path: "moment",
-      momentId: "trancon",
+      momentId: "compartir",
     });
     expect(payload.companionLabel).toBeNull();
-    expect(payload.lessonLabel).toMatch(/paciencia/i);
-    expect(payload.markdown).toMatch(/trancón|carro/i);
+    expect(payload.lessonLabel).toMatch(/generosidad/i);
+    expect(payload.markdown).toMatch(/compartir|juguete/i);
+  });
+
+  it("builds the renacuajo classic remix", () => {
+    const payload = buildTrialPayload({
+      name: "Simón",
+      path: "classic",
+      classicId: "renacuajo",
+    });
+    expect(payload.frameLabel).toMatch(/renacuajo/i);
+    expect(payload.markdown).toMatch(/renacuajo|Pombo|pasear/i);
   });
 });

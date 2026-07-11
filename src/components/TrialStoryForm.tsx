@@ -136,7 +136,7 @@ export default function TrialStoryForm() {
               >
                 <span className="trial-form__path-title">Momento de casa</span>
                 <span className="trial-form__path-hint">
-                  Noche, trancón, pantallas…
+                  Noche, pantallas, mesa…
                 </span>
               </button>
               <button
@@ -146,7 +146,7 @@ export default function TrialStoryForm() {
               >
                 <span className="trial-form__path-title">Cuento clásico</span>
                 <span className="trial-form__path-hint">
-                  Cerditos, Caperucita… con tu niño
+                  Cerditos, Caperucita, Renacuajo…
                 </span>
               </button>
             </div>

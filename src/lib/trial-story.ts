@@ -43,22 +43,28 @@ export type TrialLesson = {
 
 export const TRIAL_MOMENTS: TrialMoment[] = [
   {
+    id: "pantallas",
+    label: "Menos pantallas",
+    lessonId: "responsabilidad",
+    place: "la sala",
+  },
+  {
     id: "dormir",
-    label: "Hora de dormir",
+    label: "Es hora de dormir",
     lessonId: "calma",
     place: "el apartamento",
   },
   {
-    id: "trancon",
-    label: "El trancón",
-    lessonId: "paciencia",
-    place: "el carro",
+    id: "compartir",
+    label: "Debemos compartir",
+    lessonId: "generosidad",
+    place: "el cuarto de juegos",
   },
   {
-    id: "pantallas",
-    label: "Soltar la tablet",
-    lessonId: "responsabilidad",
-    place: "la sala",
+    id: "verduras",
+    label: "Comer verduras",
+    lessonId: "habitos",
+    place: "la mesa",
   },
 ];
 
@@ -78,11 +84,11 @@ export const TRIAL_CLASSICS: TrialClassic[] = [
     place: "el camino al edificio",
   },
   {
-    id: "jengibre",
-    label: "El hombre de jengibre",
-    hint: "Correr, reír y volver",
-    lessonId: "limites",
-    place: "la cocina",
+    id: "renacuajo",
+    label: "El renacuajo paseador",
+    hint: "Clásico de Pombo, con tu casa",
+    lessonId: "escuchar",
+    place: "el charco del parque",
   },
 ];
 
@@ -95,11 +101,12 @@ export const TRIAL_COMPANIONS: TrialCompanion[] = [
 
 export const TRIAL_LESSONS: TrialLesson[] = [
   { id: "calma", label: "Calma" },
-  { id: "paciencia", label: "Paciencia" },
   { id: "responsabilidad", label: "Responsabilidad" },
+  { id: "generosidad", label: "Generosidad" },
+  { id: "habitos", label: "Buenos hábitos" },
   { id: "constancia", label: "Constancia" },
   { id: "prudencia", label: "Prudencia" },
-  { id: "limites", label: "Límites con cariño" },
+  { id: "escuchar", label: "Escuchar con cariño" },
   { id: "valentia", label: "Valentía" },
 ];
 
@@ -192,19 +199,28 @@ function buildMomentStory(
   companion: TrialCompanion | null,
 ): string {
   const title = `${name} y ${moment.label.toLowerCase()}`;
-  const open =
-    moment.id === "dormir"
-      ? `En ${moment.place}, ${name} todavía tenía los ojos bien abiertos. La noche pedía calma, no otra aventura de pantallas.`
-      : moment.id === "trancon"
-        ? `En ${moment.place}, el trancón no se movía. ${name} miraba por la ventana y el tiempo se hacía largo.`
-        : `En ${moment.place}, ${name} apretaba la tablet como un tesoro. Había que soltarla… y no era fácil.`;
 
-  const middle =
-    moment.id === "dormir"
-      ? `${name} respiró como un dragón suave, contó tres estrellas y dejó que la almohada ganara la batalla.`
-      : moment.id === "trancon"
-        ? `${name} inventó un juego con las luces de los carros: rojo, amarillo, verde… y de pronto el camino ya no pesaba tanto.`
-        : `${name} puso la tablet a dormir primero. Después jugó un rato sin botones, solo con las manos y la risa.`;
+  let open: string;
+  let middle: string;
+  switch (moment.id) {
+    case "dormir":
+      open = `En ${moment.place}, ${name} todavía tenía los ojos bien abiertos. La noche pedía calma, no otra ronda de juegos.`;
+      middle = `${name} respiró como un dragón suave, contó tres estrellas y dejó que la almohada ganara la batalla.`;
+      break;
+    case "compartir":
+      open = `En ${moment.place}, ${name} tenía el juguete favorito bien pegado al pecho. Compartir sonaba… difícil.`;
+      middle = `${name} soltó un poquito el juguete, lo pasó con las dos manos y descubrió que el juego crecía cuando iba de a dos.`;
+      break;
+    case "verduras":
+      open = `En ${moment.place}, el plato traía verde brillante. ${name} miró el brócoli como si fuera un dragón pequeño.`;
+      middle = `${name} probó un bocado de valiente, después otro. El dragón verde no era tan feroz… ¡hasta pidió más!`;
+      break;
+    case "pantallas":
+    default:
+      open = `En ${moment.place}, ${name} apretaba la tablet como un tesoro. Había llegado la hora de menos pantallas… y no era fácil.`;
+      middle = `${name} puso la tablet a dormir primero. Después jugó un rato sin botones, solo con las manos y la risa.`;
+      break;
+  }
 
   return [
     `# ${title}`,
@@ -302,28 +318,28 @@ function buildClassicStory(
   }
 
   return [
-    `# ${name} y el hombre de jengibre`,
+    `# ${name} y el renacuajo paseador`,
     "",
-    `> Como el clásico de la cocina, con ${name} al mando.`,
+    `> Un guiño al clásico de Rafael Pombo, con ${name} de protagonista.`,
     "",
     "## El comienzo",
     "",
     withCompanion(
-      `En ${classic.place} olía a galleta. De pronto, un hombrecito de jengibre salió corriendo: ¡no me coman!`,
+      `Cerca de ${classic.place}, un renacuajo muy elegante se acomodó el cuello y dijo: «Hoy salgo a pasear». ${name} lo escuchó atento.`,
       companion,
     ),
     "",
     "## El reto",
     "",
-    `${name} quiso alcanzarlo… pero también entendió que no todo se persigue hasta el cansancio.`,
+    `La mamá rana pidió cuidado: no tan lejos, no tan solo. Pero el renacuajo quería verse en todas las calles del parque.`,
     "",
     "## El momento clave",
     "",
-    `${name} puso un límite con risa: «Hasta aquí corremos; después, a la mesa». El jengibre volvió olfateando migas de paz.`,
+    `${name} recordó el consejo a tiempo: mejor volver cuando la voz de casa llama. El paseo corto también puede ser grande.`,
     "",
     "## El final",
     "",
-    `Así ${name} aprendió ${lesson.label.toLowerCase()}. En ${classic.place} quedó el aroma… y ganas de otro cuento de Chacachón.`,
+    `Así ${name} practicó ${lesson.label.toLowerCase()}. En ${classic.place} quedó la lección… y ganas de otro cuento de Chacachón.`,
     "",
     "---",
     "",
