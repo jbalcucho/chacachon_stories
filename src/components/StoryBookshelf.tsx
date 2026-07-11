@@ -332,7 +332,16 @@ export default function StoryBookshelf({
           onTouchEnd={(e) => handleTouchEnd(e.changedTouches[0].clientX)}
         >
           <div className="library-cubby__lintel" aria-hidden="true" />
-          <div className="library-cubby__compartment">
+          <div
+            className={
+              allowCreate
+                ? "library-cubby__compartment library-cubby__compartment--create-both"
+                : "library-cubby__compartment library-cubby__compartment--create-end"
+            }
+          >
+            {allowCreate ? (
+              <CreateStorySlot variant="mirror" fadeNavigate />
+            ) : null}
             <div className="library-cubby__stacks" role="list">
               <div
                 className="book-spine-stack book-spine-stack--left"
@@ -369,10 +378,7 @@ export default function StoryBookshelf({
               </div>
             </div>
             {allowCreate ? (
-              <>
-                <CreateStorySlot variant="mirror" fadeNavigate />
-                <CreateStorySlot variant="primary" fadeNavigate />
-              </>
+              <CreateStorySlot variant="primary" fadeNavigate />
             ) : (
               <CreateStorySlot
                 variant="primary"

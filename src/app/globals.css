@@ -1184,12 +1184,15 @@ html.route-fade-exit body::after {
   --slot-height: 14rem;
   --spine-height: 13.1rem;
   --featured-height: calc(var(--spine-height) * 1.08);
-  /* Ancho create (~2.55–2.75) + offset + hueco visual */
-  --create-slot-reserve: 3.15rem;
   --shelf-lip: 12px;
+  --create-gap: 0.4rem;
   position: relative;
+  display: grid;
+  align-items: end;
+  column-gap: var(--create-gap);
+  row-gap: 0;
   margin: 0 6px;
-  padding: 0.65rem 1rem 0;
+  padding: 0.65rem 0.75rem 0;
   border-left: 6px solid #5c3f28;
   border-right: 6px solid #5c3f28;
   background: linear-gradient(180deg, #4a3526 0%, #3a281c 40%, #2e2016 100%);
@@ -1201,6 +1204,22 @@ html.route-fade-exit body::after {
   overflow-y: visible;
 }
 
+/* Guest: stacks | crear */
+.library-cubby__compartment--create-end {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "stacks create-r"
+    "shelf shelf";
+}
+
+/* Logueado: espejo | stacks | crear */
+.library-cubby__compartment--create-both {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "create-l stacks create-r"
+    "shelf shelf";
+}
+
 @media (max-width: 639px) {
   .library-cubby {
     overflow: visible;
@@ -1210,9 +1229,9 @@ html.route-fade-exit body::after {
     --slot-height: 12.25rem;
     --spine-height: 11.35rem;
     --featured-height: calc(var(--spine-height) * 1.08);
-    --create-slot-reserve: 3.4rem;
+    --create-gap: 0.45rem;
     margin: 0 4px;
-    padding: 0.5rem 0.55rem 0;
+    padding: 0.5rem 0.45rem 0;
     border-left-width: 5px;
     border-right-width: 5px;
     overflow: visible;
@@ -1222,20 +1241,12 @@ html.route-fade-exit body::after {
     gap: 0.15rem 0.25rem;
   }
 
-  .library-create-slot--primary {
-    right: 0.28rem;
+  .library-create-slot__spine {
+    width: 2.35rem;
   }
 
-  .library-create-slot--mirror {
-    left: 0.28rem;
-  }
-
-  .book-spine-stack--right {
-    padding-right: 0.2rem;
-  }
-
-  .book-spine-stack--left {
-    padding-left: 0.2rem;
+  .library-create-slot--tall-label .library-create-slot__spine {
+    width: 2.5rem;
   }
 
   .library-cubby__center {
@@ -1342,23 +1353,25 @@ html.route-fade-exit body::after {
     --slot-height: 16.25rem;
     --spine-height: 15rem;
     --featured-height: calc(var(--spine-height) * 1.08);
-    --create-slot-reserve: 3.5rem;
+    --create-gap: 0.55rem;
     --shelf-lip: 14px;
     margin: 0 10px;
-    padding: 0.75rem 1.35rem 0;
+    padding: 0.75rem 0.85rem 0;
     border-left-width: 8px;
     border-right-width: 8px;
   }
 }
 
 .library-cubby__stacks {
+  grid-area: stacks;
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: end;
   gap: 0.35rem 0.5rem;
   height: var(--slot-height);
-  padding-inline: var(--create-slot-reserve);
+  min-width: 0;
+  padding-inline: 0;
   padding-bottom: 0;
   z-index: 2;
 }
@@ -1559,8 +1572,9 @@ html.route-fade-exit body::after {
 }
 
 .library-cubby__shelf {
+  grid-area: shelf;
   height: 12px;
-  margin: 0 -1.15rem;
+  margin: 0 -0.85rem;
   background: linear-gradient(
     180deg,
     #c49a6c 0%,
@@ -1575,7 +1589,7 @@ html.route-fade-exit body::after {
 @media (min-width: 640px) {
   .library-cubby__shelf {
     height: 14px;
-    margin: 0 -1.5rem;
+    margin: 0 -1rem;
   }
 }
 
@@ -1693,13 +1707,16 @@ html.route-fade-exit body::after {
   transform: none;
 }
 
-/* Lomo fijo «Cuento nuevo» — anclado a los bordes, fuera del carrusel */
+/* Lomo fijo «Cuento nuevo» — columna propia del estante (no overlay) */
 .library-create-slot {
-  position: absolute;
-  bottom: var(--shelf-lip);
+  position: relative;
+  bottom: auto;
+  left: auto;
+  right: auto;
   display: flex;
   align-items: flex-end;
   height: var(--spine-height);
+  margin-bottom: var(--shelf-lip);
   flex-shrink: 0;
   text-decoration: none;
   z-index: 12;
@@ -1711,12 +1728,12 @@ html.route-fade-exit body::after {
 }
 
 .library-create-slot--primary {
-  right: 0.35rem;
+  grid-area: create-r;
   filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.45));
 }
 
 .library-create-slot--mirror {
-  left: 0.35rem;
+  grid-area: create-l;
   z-index: 11;
   opacity: 0.68;
   filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.18));
