@@ -652,7 +652,7 @@ body::before {
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: rgba(255, 233, 184, 0.9);
+  color: rgba(255, 233, 184, 0.78);
 }
 
 .home-diffs__item[aria-hidden="true"] {
@@ -759,7 +759,7 @@ html.route-fade-exit body::after {
   }
 
   main.home-page .home-hero {
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.15rem;
   }
 
   main.home-page .home-hero .brand-illustration--hero {
@@ -782,6 +782,17 @@ html.route-fade-exit body::after {
     font-size: 0.72rem;
   }
 
+  main.home-page .bookshelf-section {
+    min-height: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 0.95rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgba(255, 233, 184, 0.16);
+  }
+
   main.home-page .brand-illustration--hero {
     width: min(4.6rem, 7.5vw);
     margin-bottom: 0.1rem;
@@ -793,14 +804,6 @@ html.route-fade-exit body::after {
 
   main.home-page .home-hero .title-display {
     font-size: clamp(1.85rem, 3vw, 2.65rem);
-  }
-
-  main.home-page .bookshelf-section {
-    min-height: 0;
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
   }
 
   main.home-page .library-cubby__compartment {
@@ -818,12 +821,13 @@ html.route-fade-exit body::after {
   }
 
   main.home-page .bookshelf-label {
-    font-size: 1.08rem;
+    font-size: 1.14rem;
   }
 
   main.home-page .bookshelf-subtitle {
-    font-size: 0.98rem;
+    font-size: 1rem;
     color: var(--color-cream);
+    opacity: 0.95;
   }
 }
 
@@ -875,7 +879,9 @@ html.route-fade-exit body::after {
 /* —— Biblioteca: estante y libros —— */
 
 .bookshelf-section {
-  margin-top: 0.25rem;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 233, 184, 0.14);
   overflow: visible;
 }
 
@@ -898,10 +904,11 @@ html.route-fade-exit body::after {
 
 .bookshelf-label {
   font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   color: var(--color-honey-glow);
+  text-shadow: 0 1px 10px rgba(255, 202, 92, 0.22);
 }
 
 .bookshelf-label--solo {

@@ -22,7 +22,7 @@ export default async function HomePage({
   return (
     <PageEnterFade>
       <main className="home-main home-page mx-auto max-w-5xl px-4 py-3 sm:px-6 sm:py-4">
-        <header className="home-hero mb-2 text-center sm:mb-3">
+        <header className="home-hero mb-1 text-center sm:mb-1">
           <BrandIllustration variant="hero" priority />
           <h1 className="title-display text-3xl sm:text-5xl">
             Las histor
