@@ -90,6 +90,13 @@ export const TRIAL_CLASSICS: TrialClassic[] = [
     lessonId: "escuchar",
     place: "el charco del parque",
   },
+  {
+    id: "cabritos",
+    label: "El lobo y los siete cabritos",
+    hint: "Grimm suave: cuidar la puerta de casa",
+    lessonId: "prudencia",
+    place: "el apartamento",
+  },
 ];
 
 export const TRIAL_COMPANIONS: TrialCompanion[] = [
@@ -317,29 +324,61 @@ function buildClassicStory(
     ].join("\n");
   }
 
+  if (classic.id === "renacuajo") {
+    return [
+      `# ${name} y el renacuajo paseador`,
+      "",
+      `> Un guiño al clásico de Rafael Pombo, con ${name} de protagonista.`,
+      "",
+      "## El comienzo",
+      "",
+      withCompanion(
+        `Cerca de ${classic.place}, un renacuajo muy elegante se acomodó el cuello y dijo: «Hoy salgo a pasear». ${name} lo escuchó atento.`,
+        companion,
+      ),
+      "",
+      "## El reto",
+      "",
+      `La mamá rana pidió cuidado: no tan lejos, no tan solo. Pero el renacuajo quería verse en todas las calles del parque.`,
+      "",
+      "## El momento clave",
+      "",
+      `${name} recordó el consejo a tiempo: mejor volver cuando la voz de casa llama. El paseo corto también puede ser grande.`,
+      "",
+      "## El final",
+      "",
+      `Así ${name} practicó ${lesson.label.toLowerCase()}. En ${classic.place} quedó la lección… y ganas de otro cuento de Chacachón.`,
+      "",
+      "---",
+      "",
+      "Y colorín colorado, este cuento de Chacachón se ha terminado.",
+    ].join("\n");
+  }
+
+  // cabritos (Grimm, versión suave)
   return [
-    `# ${name} y el renacuajo paseador`,
+    `# ${name} y los siete cabritos`,
     "",
-    `> Un guiño al clásico de Rafael Pombo, con ${name} de protagonista.`,
+    `> Un guiño a Grimm, con ${name} cuidando la puerta de casa.`,
     "",
     "## El comienzo",
     "",
     withCompanion(
-      `Cerca de ${classic.place}, un renacuajo muy elegante se acomodó el cuello y dijo: «Hoy salgo a pasear». ${name} lo escuchó atento.`,
+      `En ${classic.place}, mamá cabra salió un ratito. «No abran si la voz no es la mía», dijo. ${name} quedó atento junto a los cabritos.`,
       companion,
     ),
     "",
     "## El reto",
     "",
-    `La mamá rana pidió cuidado: no tan lejos, no tan solo. Pero el renacuajo quería verse en todas las calles del parque.`,
+    `Alguien tocó con voz dulce… demasiado dulce. Quería entrar. ${name} sintió un no-sé-qué: ¿era mamá de verdad?`,
     "",
     "## El momento clave",
     "",
-    `${name} recordó el consejo a tiempo: mejor volver cuando la voz de casa llama. El paseo corto también puede ser grande.`,
+    `${name} pidió la seña de casa (la canción, el golpecito, la palabra secreta). El engaño se quedó afuera. La puerta siguió segura.`,
     "",
     "## El final",
     "",
-    `Así ${name} practicó ${lesson.label.toLowerCase()}. En ${classic.place} quedó la lección… y ganas de otro cuento de Chacachón.`,
+    `Cuando mamá volvió, hubo abrazo y merienda. ${name} practicó ${lesson.label.toLowerCase()}. En ${classic.place}, la casa quedó en paz… hasta el próximo cuento de Chacachón.`,
     "",
     "---",
     "",

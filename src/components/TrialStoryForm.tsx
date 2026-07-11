@@ -146,7 +146,7 @@ export default function TrialStoryForm() {
               >
                 <span className="trial-form__path-title">Cuento clásico</span>
                 <span className="trial-form__path-hint">
-                  Cerditos, Caperucita, Renacuajo…
+                  Cerditos, Caperucita, Cabritos…
                 </span>
               </button>
             </div>

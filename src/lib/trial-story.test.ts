@@ -59,4 +59,16 @@ describe("trial-story", () => {
     expect(payload.frameLabel).toMatch(/renacuajo/i);
     expect(payload.markdown).toMatch(/renacuajo|Pombo|pasear/i);
   });
+
+  it("builds the soft Grimm cabritos remix", () => {
+    const payload = buildTrialPayload({
+      name: "Lina",
+      path: "classic",
+      classicId: "cabritos",
+      companionId: "mama",
+    });
+    expect(payload.frameLabel).toMatch(/cabritos/i);
+    expect(payload.markdown).toMatch(/cabritos|puerta|seña/i);
+    expect(payload.markdown).toContain("Lina");
+  });
 });
