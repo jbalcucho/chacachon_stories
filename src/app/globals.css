@@ -1201,15 +1201,20 @@ html.route-fade-exit body::after {
 }
 
 @media (max-width: 639px) {
+  .library-cubby {
+    overflow: visible;
+  }
+
   .library-cubby__compartment {
     --slot-height: 12.25rem;
     --spine-height: 11.35rem;
     --featured-height: calc(var(--spine-height) * 1.08);
-    --create-slot-reserve: 2.1rem;
+    --create-slot-reserve: 2.35rem;
     margin: 0 4px;
     padding: 0.5rem 0.55rem 0;
     border-left-width: 5px;
     border-right-width: 5px;
+    overflow: visible;
   }
 
   .library-cubby__stacks {
@@ -1260,18 +1265,30 @@ html.route-fade-exit body::after {
 
   .book-spine-stack {
     gap: 0.22rem;
-    padding: 0.15rem 0.2rem 0;
+    padding: 0.15rem 0.28rem 0;
     min-width: 0;
-    overflow: hidden;
+    /* Visible: rotateY + sello Muestra no deben quedar entrecortados */
+    overflow: visible;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
   }
 
   .book-spine-stack__spine {
-    width: 1.75rem;
+    width: 1.7rem;
     transform: rotateY(-3deg);
   }
 
   .book-spine-stack--right .book-spine-stack__spine {
     transform: rotateY(3deg);
+  }
+
+  .book-spine-stack__demo-seal {
+    font-size: 0.28rem;
+    height: 0.92rem;
+    min-width: 1rem;
+    padding: 0 0.14rem;
+    bottom: 10%;
   }
 
   .book-spine-stack__item:hover,
