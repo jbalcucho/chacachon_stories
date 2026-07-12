@@ -62,36 +62,61 @@ export function parseStoryHeader(rawBody: string): ParsedStoryMarkdown {
 
 const FAIRY_OPENING = /\b((?:Hab[ií]a|Era) una vez)\b/i;
 
+function isStructuralChunk(trimmed: string): boolean {
+  return (
+    !trimmed ||
+    trimmed === "---" ||
+    trimmed.startsWith("## ") ||
+    matchListItem(trimmed.split(/\r?\n/)[0] ?? "") !== null
+  );
+}
+
 /**
- * Si el modelo pega basura antes de «Había una vez» («La luz de la pantalla Había una vez…»),
- * recorta el primer párrafo narrativo para que empiece en la fórmula de cuento.
+ * Si el modelo pega basura antes de «Había una vez»
+ * («La luz de la pantalla Había una vez…» o un párrafo suelto previo),
+ * deja el primer párrafo narrativo empezando en la fórmula de cuento.
  */
 export function sanitizeFairyTaleOpening(markdown: string): string {
   const parsed = parseStoryHeader(markdown);
   if (!parsed.body) return markdown;
 
-  const chunks = parsed.body.split(/\n\n+/);
-  let sawFirstParagraph = false;
-  let changed = false;
-  const nextChunks = chunks.map((chunk) => {
-    const trimmed = chunk.trim();
-    if (
-      !trimmed ||
-      trimmed === "---" ||
-      trimmed.startsWith("## ") ||
-      matchListItem(trimmed.split(/\r?\n/)[0] ?? "")
-    ) {
-      return chunk;
-    }
-    if (sawFirstParagraph) return chunk;
-    sawFirstParagraph = true;
-    const match = FAIRY_OPENING.exec(trimmed);
-    if (!match || match.index === undefined || match.index === 0) {
-      return chunk;
-    }
-    changed = true;
-    return trimmed.slice(match.index);
+  const chunks = parsed.body.split(/\n\n+/).map((c) => c.trim()).filter(Boolean);
+  const openingIdx = chunks.findIndex((chunk) => {
+    if (isStructuralChunk(chunk)) return false;
+    return FAIRY_OPENING.test(chunk);
   });
+
+  if (openingIdx < 0) return markdown;
+
+  let changed = false;
+  const nextChunks: string[] = [];
+
+  for (let i = 0; i < chunks.length; i += 1) {
+    const chunk = chunks[i];
+
+    if (i < openingIdx) {
+      // Quita párrafos cortos atmosféricos justo antes de «Había una vez».
+      if (!isStructuralChunk(chunk) && chunk.length <= 80 && !FAIRY_OPENING.test(chunk)) {
+        changed = true;
+        continue;
+      }
+      nextChunks.push(chunk);
+      continue;
+    }
+
+    if (i === openingIdx) {
+      const match = FAIRY_OPENING.exec(chunk);
+      if (match && match.index !== undefined && match.index > 0) {
+        changed = true;
+        nextChunks.push(chunk.slice(match.index));
+      } else {
+        nextChunks.push(chunk);
+      }
+      continue;
+    }
+
+    nextChunks.push(chunk);
+  }
 
   if (!changed) return markdown;
 

@@ -99,6 +99,21 @@ describe("parseBodyBlocks", () => {
     expect(fixed).not.toMatch(/La luz de la pantalla Había/);
     expect(parseStoryHeader(fixed).title).toBe("El tesoro de la sala");
   });
+
+  it("quita un párrafo atmosférico suelto antes de Había una vez", () => {
+    const raw = [
+      "# El tesoro",
+      "",
+      "## El comienzo",
+      "",
+      "La luz de la pantalla.",
+      "",
+      "Había una vez un niño llamado Nico.",
+    ].join("\n");
+    const fixed = sanitizeFairyTaleOpening(raw);
+    expect(fixed).not.toContain("La luz de la pantalla.");
+    expect(fixed).toContain("Había una vez un niño llamado Nico.");
+  });
 });
 
 describe("splitBlocksForPagination", () => {

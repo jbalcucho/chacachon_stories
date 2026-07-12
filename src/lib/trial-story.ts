@@ -7,6 +7,7 @@ import { moderateUserText } from "@/lib/content-moderation";
 import {
   parseBodyBlocks,
   parseStoryHeader,
+  sanitizeFairyTaleOpening,
   splitBlocksForPagination,
 } from "@/lib/story-markdown";
 import type { PersonalizedStoryContent } from "@/lib/story-reader";
@@ -827,7 +828,8 @@ export function buildTrialPayload(input: TrialStoryInput): TrialStoryPayload {
 export function trialMarkdownToContent(
   markdown: string,
 ): PersonalizedStoryContent {
-  const parsed = parseStoryHeader(markdown);
+  const cleaned = sanitizeFairyTaleOpening(markdown);
+  const parsed = parseStoryHeader(cleaned);
   return {
     title: parsed.title,
     subtitle: null,
