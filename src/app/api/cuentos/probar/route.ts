@@ -16,8 +16,8 @@ import {
   getTrialClassic,
   getTrialMoment,
   normalizeTrialName,
-  normalizeCompanionNames,
   resolveCompanionIds,
+  resolveCompanionNameById,
   resolveTrialDefaults,
   type TrialPath,
 } from "@/lib/trial-story";
@@ -32,6 +32,7 @@ type Body = {
   classicId?: string | null;
   companionId?: string | null;
   companionIds?: string[] | null;
+  companionNameById?: Record<string, string> | null;
   companionNames?: string | null;
   lessonId?: string | null;
 };
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
     companionIds: body.companionIds,
     companionId: body.companionId,
   });
-  const companionNames = normalizeCompanionNames(body.companionNames);
+  const companionNameById = body.companionNameById ?? null;
 
   const input = {
     name,
@@ -76,7 +77,8 @@ export async function POST(request: Request) {
     momentId: path === "moment" ? body.momentId ?? null : null,
     classicId: path === "classic" ? body.classicId ?? null : null,
     companionIds,
-    companionNames,
+    companionNameById,
+    companionNames: body.companionNames ?? null,
     lessonId: body.lessonId ?? null,
   };
 
@@ -113,7 +115,8 @@ export async function POST(request: Request) {
       classicId: input.classicId,
       companionId: companionIds[0] ?? null,
       companionIds,
-      companionNames,
+      companionNameById: resolveCompanionNameById(input),
+      companionNames: null,
       lessonId: resolved.lesson.id,
       markdown: draft.bodyMarkdown,
       createdAt: new Date().toISOString(),

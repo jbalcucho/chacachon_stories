@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildTrialPayload,
   buildTrialSelection,
+  buildTrialStoryBlurb,
   buildTrialStoryMarkdown,
   normalizeTrialName,
   trialMarkdownToContent,
@@ -30,28 +31,43 @@ describe("trial-story", () => {
       path: "classic",
       classicId: "cerditos",
       companionIds: ["mama"],
-      companionNames: "Carolina",
+      companionNameById: { mama: "Carolina" },
       lessonId: "valentia",
     });
     expect(payload.frameLabel).toMatch(/cerditos/i);
-    expect(payload.companionLabel).toMatch(/Mamá Carolina/i);
+    expect(payload.companionLabel).toMatch(/mamá Carolina/i);
+    expect(payload.companionNameById).toEqual({ mama: "Carolina" });
     expect(payload.lessonLabel).toBe("Valentía");
     expect(payload.markdown).toContain("Sofía");
     expect(payload.markdown).toMatch(/cerditos|casita/i);
-    expect(payload.markdown).toContain("Mamá Carolina");
+    expect(payload.markdown).toMatch(/mamá Carolina/i);
   });
 
-  it("allows multiple companions", () => {
+  it("allows multiple companions with a name each", () => {
     const selection = buildTrialSelection({
       name: "Nico",
       path: "moment",
       momentId: "compartir",
       companionIds: ["mama", "amigo"],
-      companionNames: "Ana, Tito",
+      companionNameById: { mama: "Ana", amigo: "Tito" },
     });
     expect(selection.acompanantes).toHaveLength(2);
     expect(selection.acompanantes[0]?.label).toMatch(/Mamá Ana/i);
     expect(selection.acompanantes[1]?.label).toMatch(/Amigo\/a Tito/i);
+  });
+
+  it("builds a narrative blurb for the trial summary", () => {
+    const blurb = buildTrialStoryBlurb({
+      name: "Nico",
+      path: "moment",
+      momentId: "pantallas",
+      companionIds: ["mama", "papa"],
+      companionNameById: { mama: "Carolina", papa: "Luis" },
+      lessonId: "responsabilidad",
+    });
+    expect(blurb).toBe(
+      "Se va a crear una historia donde Nico junto a su mamá Carolina y a su papá Luis enfrenta el reto «Menos pantallas». En el camino practican responsabilidad.",
+    );
   });
 
   it("builds a recipe selection for classic AI prompts", () => {

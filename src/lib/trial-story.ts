@@ -133,7 +133,12 @@ export type TrialStoryInput = {
   classicId?: string | null;
   /** Uno o varios roles (mamá, papá…). */
   companionIds?: string[] | null;
-  /** Nombre(s) libres opcionales: «Carolina» o «Ana y Tito». */
+  /** Nombre opcional por rol: { mama: "Carolina", amigo: "Tito" }. */
+  companionNameById?: Record<string, string> | null;
+  /**
+   * @deprecated Usar companionNameById. Se acepta por compatibilidad.
+   * Si viene un solo acompañante, se interpreta como su nombre.
+   */
   companionNames?: string | null;
   /** @deprecated usar companionIds */
   companionId?: string | null;
@@ -177,9 +182,9 @@ export function buildTrialSelection(input: TrialStoryInput) {
     ing(`trial-emo-${resolved.lesson.id}`, "emocion", resolved.lesson.label),
   ];
   const lugar = [ing("trial-lugar", "lugar", resolved.place)];
-  const nameParts = splitCompanionNames(input.companionNames);
-  const acompanantes = resolved.companions.map((c, index) => {
-    const personal = nameParts[index];
+  const nameById = resolveCompanionNameById(input);
+  const acompanantes = resolved.companions.map((c) => {
+    const personal = normalizeCompanionNames(nameById[c.id]);
     const label = personal ? `${c.label} ${personal}` : c.label;
     return ing(`trial-comp-${c.id}`, "persona", label);
   });
@@ -241,13 +246,28 @@ export function normalizeCompanionNames(raw: string | null | undefined): string 
   return name;
 }
 
-function splitCompanionNames(raw: string | null | undefined): string[] {
-  const normalized = normalizeCompanionNames(raw);
-  if (!normalized) return [];
-  return normalized
-    .split(/,| y /i)
-    .map((part) => part.trim())
-    .filter(Boolean);
+export function resolveCompanionNameById(
+  input: TrialStoryInput,
+): Record<string, string> {
+  const fromMap: Record<string, string> = {};
+  for (const [id, value] of Object.entries(input.companionNameById ?? {})) {
+    const normalized = normalizeCompanionNames(value);
+    if (normalized) fromMap[id] = normalized;
+  }
+  const ids = resolveCompanionIds(input);
+  // Compat: un solo string libre solo aplica si hay un acompañante.
+  if (ids.length === 1 && input.companionNames && !fromMap[ids[0]]) {
+    const normalized = normalizeCompanionNames(input.companionNames);
+    if (normalized) fromMap[ids[0]] = normalized;
+  }
+  return fromMap;
+}
+
+export function joinSpanishList(items: string[]): string {
+  if (items.length === 0) return "";
+  if (items.length === 1) return items[0];
+  if (items.length === 2) return `${items[0]} y ${items[1]}`;
+  return `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}`;
 }
 
 export function getTrialMoment(id: string | null | undefined): TrialMoment {
@@ -277,29 +297,61 @@ export function resolveCompanionIds(input: TrialStoryInput): string[] {
 
 export function formatCompanionLabel(
   companions: TrialCompanion[],
-  namesRaw: string | null | undefined,
+  nameById: Record<string, string> | null | undefined,
 ): string | null {
   if (companions.length === 0) return null;
-  const names = normalizeCompanionNames(namesRaw);
-  const nameParts = splitCompanionNames(namesRaw);
+  const parts = companions.map((c) => {
+    const personal = normalizeCompanionNames(nameById?.[c.id]);
+    return personal ? `${c.label.toLowerCase()} ${personal}` : c.label.toLowerCase();
+  });
+  return joinSpanishList(parts);
+}
 
-  if (companions.length === 1) {
-    const role = companions[0].label;
-    if (names) return `${role} ${names}`;
-    return role;
-  }
+/** Rol en frase posesiva natural: «su mamá Carolina». */
+const COMPANION_ROLE_NATURAL: Record<string, string> = {
+  mama: "mamá",
+  papa: "papá",
+  hermano: "hermano",
+  abuelo: "abuelo",
+  amigo: "amigo",
+};
 
-  if (nameParts.length >= companions.length) {
-    return companions
-      .map((c, i) => `${c.label} ${nameParts[i]}`)
-      .join(" y ");
-  }
+function companionPossessivePart(
+  companion: TrialCompanion,
+  nameById: Record<string, string> | null | undefined,
+): string {
+  const role =
+    COMPANION_ROLE_NATURAL[companion.id] ?? companion.label.toLowerCase();
+  const personal = normalizeCompanionNames(nameById?.[companion.id]);
+  return personal ? `su ${role} ${personal}` : `su ${role}`;
+}
 
-  if (names) {
-    return `${companions.map((c) => c.label).join(" y ")} (${names})`;
-  }
+/** «junto a su mamá Carolina y a su papá Luis» */
+export function formatCompanionAlongside(
+  companions: TrialCompanion[],
+  nameById: Record<string, string> | null | undefined,
+): string | null {
+  if (companions.length === 0) return null;
+  const parts = companions.map((c) => companionPossessivePart(c, nameById));
+  if (parts.length === 1) return `junto a ${parts[0]}`;
+  if (parts.length === 2) return `junto a ${parts[0]} y a ${parts[1]}`;
+  return `junto a ${parts.slice(0, -1).join(", a ")} y a ${parts[parts.length - 1]}`;
+}
 
-  return companions.map((c) => c.label).join(" y ");
+/** Resumen narrativo editable en la UI del trial. */
+export function buildTrialStoryBlurb(input: TrialStoryInput): string {
+  const hero = input.name.trim() || "el protagonista";
+  const resolved = resolveTrialDefaults(input);
+  const alongside = formatCompanionAlongside(
+    resolved.companions,
+    resolveCompanionNameById(input),
+  );
+  const withWho = alongside ? ` ${alongside}` : "";
+  const action =
+    input.path === "classic"
+      ? `entra en un cuento inspirado en «${resolved.frameLabel}»`
+      : `enfrenta el reto «${resolved.frameLabel}»`;
+  return `Se va a crear una historia donde ${hero}${withWho} ${action}. En el camino practican ${resolved.lesson.label.toLowerCase()}.`;
 }
 
 export function getTrialLesson(id: string | null | undefined): TrialLesson {
@@ -316,7 +368,10 @@ export function resolveTrialDefaults(input: TrialStoryInput): {
   const companions = resolveCompanionIds(input)
     .map((id) => getTrialCompanion(id))
     .filter((c): c is TrialCompanion => Boolean(c));
-  const companionLabel = formatCompanionLabel(companions, input.companionNames);
+  const companionLabel = formatCompanionLabel(
+    companions,
+    resolveCompanionNameById(input),
+  );
 
   if (input.path === "classic") {
     const classic = getTrialClassic(input.classicId);
@@ -573,6 +628,7 @@ export function buildTrialStoryMarkdown(
 export function buildTrialPayload(input: TrialStoryInput): TrialStoryPayload {
   const resolved = resolveTrialDefaults(input);
   const companionIds = resolveCompanionIds(input);
+  const companionNameById = resolveCompanionNameById(input);
   return {
     name: input.name,
     path: input.path,
@@ -580,7 +636,8 @@ export function buildTrialPayload(input: TrialStoryInput): TrialStoryPayload {
     classicId:
       input.path === "classic" ? getTrialClassic(input.classicId).id : null,
     companionIds,
-    companionNames: normalizeCompanionNames(input.companionNames),
+    companionNameById,
+    companionNames: null,
     companionId: companionIds[0] ?? null,
     lessonId: resolved.lesson.id,
     markdown: buildTrialStoryMarkdown(input),

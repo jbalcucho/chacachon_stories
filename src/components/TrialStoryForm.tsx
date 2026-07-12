@@ -12,7 +12,7 @@ import {
   TRIAL_MOMENTS,
   TRIAL_NAME_MAX,
   buildTrialPayload,
-  formatCompanionLabel,
+  buildTrialStoryBlurb,
   getTrialClassic,
   getTrialMoment,
   normalizeTrialName,
@@ -33,7 +33,9 @@ export default function TrialStoryForm() {
   const [momentId, setMomentId] = useState(TRIAL_MOMENTS[0].id);
   const [classicId, setClassicId] = useState(TRIAL_CLASSICS[0].id);
   const [companionIds, setCompanionIds] = useState<string[]>([]);
-  const [companionNames, setCompanionNames] = useState("");
+  const [companionNameById, setCompanionNameById] = useState<
+    Record<string, string>
+  >({});
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -50,34 +52,54 @@ export default function TrialStoryForm() {
 
   const activeLessonId = lessonId ?? suggestedLessonId;
 
-  const summary = useMemo(() => {
-    const frame =
-      path === "classic"
-        ? getTrialClassic(classicId).label
-        : getTrialMoment(momentId).label;
-    const pathLabel =
-      path === "classic" ? "Cuento clásico" : "Historia de casa";
-    const companions = TRIAL_COMPANIONS.filter((c) =>
-      companionIds.includes(c.id),
-    );
-    const companionLabel =
-      formatCompanionLabel(companions, companionNames) ?? "Solo";
-    const lessonLabel =
-      TRIAL_LESSONS.find((l) => l.id === activeLessonId)?.label ?? "";
-    return { frame, pathLabel, companionLabel, lessonLabel };
-  }, [
-    path,
-    classicId,
-    momentId,
-    companionIds,
-    companionNames,
-    activeLessonId,
-  ]);
+  const selectedCompanions = useMemo(
+    () => TRIAL_COMPANIONS.filter((c) => companionIds.includes(c.id)),
+    [companionIds],
+  );
+
+  const storyBlurb = useMemo(
+    () =>
+      buildTrialStoryBlurb({
+        name: name.trim() || "el protagonista",
+        path,
+        momentId,
+        classicId,
+        companionIds,
+        companionNameById,
+        lessonId: activeLessonId,
+      }),
+    [
+      name,
+      path,
+      momentId,
+      classicId,
+      companionIds,
+      companionNameById,
+      activeLessonId,
+    ],
+  );
 
   function toggleCompanion(id: string) {
-    setCompanionIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+    setCompanionIds((prev) => {
+      if (prev.includes(id)) {
+        setCompanionNameById((names) => {
+          const next = { ...names };
+          delete next[id];
+          return next;
+        });
+        return prev.filter((x) => x !== id);
+      }
+      return [...prev, id];
+    });
+  }
+
+  function setCompanionName(id: string, value: string) {
+    setCompanionNameById((prev) => ({ ...prev, [id]: value }));
+  }
+
+  function clearCompanions() {
+    setCompanionIds([]);
+    setCompanionNameById({});
   }
 
   function validateName(): string | null {
@@ -109,7 +131,7 @@ export default function TrialStoryForm() {
       momentId: path === "moment" ? momentId : null,
       classicId: path === "classic" ? classicId : null,
       companionIds: skipExtras ? [] : companionIds,
-      companionNames: skipExtras ? null : companionNames || null,
+      companionNameById: skipExtras ? null : companionNameById,
       lessonId: skipExtras ? null : activeLessonId,
     };
 
@@ -134,7 +156,8 @@ export default function TrialStoryForm() {
           classicId: data.classicId ?? null,
           companionId: data.companionId ?? data.companionIds?.[0] ?? null,
           companionIds: data.companionIds ?? [],
-          companionNames: data.companionNames ?? null,
+          companionNameById: data.companionNameById ?? null,
+          companionNames: null,
           lessonId: data.lessonId ?? null,
           markdown: data.markdown,
           createdAt: data.createdAt,
@@ -327,8 +350,7 @@ export default function TrialStoryForm() {
             className="trial-form__skip"
             onClick={() => {
               if (!validateName()) return;
-              setCompanionIds([]);
-              setCompanionNames("");
+              clearCompanions();
               setStep("optional");
             }}
             disabled={loading}
@@ -352,7 +374,7 @@ export default function TrialStoryForm() {
                 <input
                   type="checkbox"
                   checked={companionIds.length === 0}
-                  onChange={() => setCompanionIds([])}
+                  onChange={() => clearCompanions()}
                   disabled={loading}
                 />
                 Solo
@@ -374,17 +396,24 @@ export default function TrialStoryForm() {
             </div>
           </fieldset>
 
-          {companionIds.length > 0 ? (
-            <label className="trial-form__field trial-form__field--centered">
-              Nombre(s) de quien acompaña (opcional)
-              <input
-                value={companionNames}
-                onChange={(e) => setCompanionNames(e.target.value)}
-                placeholder="Ej. Carolina, o Ana y Tito"
-                maxLength={TRIAL_COMPANION_NAME_MAX}
-                disabled={loading}
-              />
-            </label>
+          {selectedCompanions.length > 0 ? (
+            <div className="trial-form__companion-names">
+              <p className="trial-form__companion-names-lead">
+                Nombre de cada acompañante (opcional)
+              </p>
+              {selectedCompanions.map((c) => (
+                <label key={c.id} className="trial-form__field">
+                  {c.label}
+                  <input
+                    value={companionNameById[c.id] ?? ""}
+                    onChange={(e) => setCompanionName(c.id, e.target.value)}
+                    placeholder={`Ej. nombre de ${c.label.toLowerCase()}`}
+                    maxLength={TRIAL_COMPANION_NAME_MAX}
+                    disabled={loading}
+                  />
+                </label>
+              ))}
+            </div>
           ) : null}
 
           <fieldset className="trial-form__challenges">
@@ -417,9 +446,10 @@ export default function TrialStoryForm() {
 
           <section className="trial-form__summary" aria-label="Resumen del cuento">
             <h2 className="trial-form__summary-title">Así quedará tu cuento</h2>
+            <p className="trial-form__summary-blurb">{storyBlurb}</p>
             <p className="trial-form__summary-hint">
-              Puedes editar los campos. Los chips de arriba también cambian el
-              resumen.
+              Cambia los chips de arriba o el nombre — el resumen se actualiza
+              solo.
             </p>
 
             <label className="trial-form__summary-row">
@@ -435,7 +465,12 @@ export default function TrialStoryForm() {
             <div className="trial-form__summary-row trial-form__summary-row--static">
               <span>Tipo</span>
               <p>
-                {summary.pathLabel}: <strong>{summary.frame}</strong>
+                {path === "classic" ? "Cuento clásico" : "Historia de casa"}:{" "}
+                <strong>
+                  {path === "classic"
+                    ? getTrialClassic(classicId).label
+                    : getTrialMoment(momentId).label}
+                </strong>
                 <button
                   type="button"
                   className="trial-form__summary-edit"
@@ -446,26 +481,6 @@ export default function TrialStoryForm() {
                 </button>
               </p>
             </div>
-
-            <div className="trial-form__summary-row trial-form__summary-row--static">
-              <span>Acompañan</span>
-              <p>
-                <strong>{summary.companionLabel}</strong>
-              </p>
-            </div>
-
-            {companionIds.length > 0 ? (
-              <label className="trial-form__summary-row">
-                <span>Nombre(s) de quien acompaña</span>
-                <input
-                  value={companionNames}
-                  onChange={(e) => setCompanionNames(e.target.value)}
-                  placeholder="Ej. Carolina, o Ana y Tito"
-                  maxLength={TRIAL_COMPANION_NAME_MAX}
-                  disabled={loading}
-                />
-              </label>
-            ) : null}
 
             <label className="trial-form__summary-row">
               <span>Qué aprenden</span>
