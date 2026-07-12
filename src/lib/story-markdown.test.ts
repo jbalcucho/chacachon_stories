@@ -70,6 +70,16 @@ describe("parseBodyBlocks", () => {
     expect(blocks[1]?.type).toBe("paragraph");
   });
 
+  it("quita negrita que envuelve todo el párrafo", () => {
+    const blocks = parseBodyBlocks(
+      "**Nico puso la tablet a dormir primero y respiró hondo.**",
+    );
+    expect(blocks[0]).toEqual({
+      type: "paragraph",
+      text: "Nico puso la tablet a dormir primero y respiró hondo.",
+    });
+  });
+
   it("quita basura pegada antes de Había una vez", () => {
     const raw = [
       "# El tesoro de la sala",
