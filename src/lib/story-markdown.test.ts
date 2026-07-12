@@ -129,6 +129,31 @@ describe("parseBodyBlocks", () => {
     expect(fixed).not.toMatch(/El mundo de la sala Habia/i);
     expect(fixed).not.toContain("## El mundo de la sala");
   });
+
+  it("recorta «la sala en silencio» aunque vaya en el mismo bloque ##", () => {
+    const raw = [
+      "# La misión",
+      "",
+      "## La sala en silencio",
+      "Había una vez un niño llamado Nico.",
+    ].join("\n");
+    const fixed = sanitizeFairyTaleOpening(raw);
+    expect(fixed.startsWith("# La misión")).toBe(true);
+    expect(fixed).toContain("Había una vez un niño llamado Nico.");
+    expect(fixed).not.toMatch(/sala en silencio/i);
+  });
+
+  it("parseBodyBlocks no deja «La sala en silencio» si está pegado a Había una vez", () => {
+    const blocks = parseBodyBlocks(
+      "## La sala en silencio\nHabía una vez un niño llamado Nico.",
+    );
+    expect(blocks).toEqual([
+      {
+        type: "paragraph",
+        text: "Había una vez un niño llamado Nico.",
+      },
+    ]);
+  });
 });
 
 describe("splitBlocksForPagination", () => {

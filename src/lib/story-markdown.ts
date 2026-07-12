@@ -60,83 +60,43 @@ export function parseStoryHeader(rawBody: string): ParsedStoryMarkdown {
   };
 }
 
-const FAIRY_OPENING = /\b((?:Hab[ií]a|Era)\s+un[ao]?\s+vez)\b/i;
-
-function isStructuralChunk(trimmed: string): boolean {
-  return (
-    !trimmed ||
-    trimmed === "---" ||
-    trimmed.startsWith("## ") ||
-    matchListItem(trimmed.split(/\r?\n/)[0] ?? "") !== null
-  );
-}
+const FAIRY_OPENING =
+  /\b((?:Hab[ií]a|Era|Érase|Erase)\s+un[ao]?\s+vez)\b/i;
 
 /** Normaliza typos («Habia un vez») a la fórmula canónica. */
 export function canonicalizeFairyOpening(matched: string): string {
-  return /^era\b/i.test(matched.trim()) ? "Era una vez" : "Había una vez";
+  const t = matched.trim();
+  if (/^(?:éra?se|erase)\b/i.test(t)) return "Érase una vez";
+  if (/^era\b/i.test(t)) return "Era una vez";
+  return "Había una vez";
 }
 
 export function paragraphStartsWithFairyOpening(text: string): boolean {
-  return /^(?:Hab[ií]a|Era)\s+un[ao]?\s+vez\b/i.test(text.trim());
+  return /^(?:Hab[ií]a|Era|Érase|Erase)\s+un[ao]?\s+vez\b/i.test(text.trim());
 }
 
 /**
- * Si el modelo pega basura antes de «Había una vez»
- * («El mundo de la sala Habia un vez…» o un párrafo/título de escena suelto),
- * deja el primer párrafo narrativo empezando en la fórmula de cuento.
+ * Recorta todo lo que la IA ponga antes de la fórmula de cuento
+ * («La sala en silencio Había una vez…», «## La sala…» pegado al párrafo, etc.).
+ * Busca la primera aparición de Había/Era/Érase una vez en el cuerpo.
  */
 export function sanitizeFairyTaleOpening(markdown: string): string {
   const parsed = parseStoryHeader(markdown);
   if (!parsed.body) return markdown;
 
-  const chunks = parsed.body.split(/\n\n+/).map((c) => c.trim()).filter(Boolean);
-  const openingIdx = chunks.findIndex((chunk) => {
-    if (chunk.startsWith("## ") || chunk === "---") return false;
-    if (matchListItem(chunk.split(/\r?\n/)[0] ?? "")) return false;
-    return FAIRY_OPENING.test(chunk);
-  });
+  const match = FAIRY_OPENING.exec(parsed.body);
+  if (!match || match.index === undefined) return markdown;
 
-  if (openingIdx < 0) return markdown;
+  const rest = parsed.body.slice(match.index + match[0].length);
+  const opening = canonicalizeFairyOpening(match[0]);
+  const body = `${opening}${rest}`.replace(/^\s+/, "").trim();
 
-  let changed = false;
-  const nextChunks: string[] = [];
+  const alreadyClean =
+    match.index === 0 &&
+    parsed.body.startsWith(opening) &&
+    body === parsed.body;
+  if (alreadyClean) return markdown;
 
-  for (let i = 0; i < chunks.length; i += 1) {
-    const chunk = chunks[i];
-
-    if (i < openingIdx) {
-      // Quita ## atmosféricos y párrafos cortos antes de la fórmula.
-      if (chunk.startsWith("## ")) {
-        changed = true;
-        continue;
-      }
-      if (!isStructuralChunk(chunk) && chunk.length <= 100 && !FAIRY_OPENING.test(chunk)) {
-        changed = true;
-        continue;
-      }
-      nextChunks.push(chunk);
-      continue;
-    }
-
-    if (i === openingIdx) {
-      const match = FAIRY_OPENING.exec(chunk);
-      if (!match || match.index === undefined) {
-        nextChunks.push(chunk);
-        continue;
-      }
-      const rest = chunk.slice(match.index + match[0].length);
-      const fixed = `${canonicalizeFairyOpening(match[0])}${rest}`;
-      if (fixed !== chunk || match.index > 0) changed = true;
-      nextChunks.push(fixed);
-      continue;
-    }
-
-    nextChunks.push(chunk);
-  }
-
-  if (!changed) return markdown;
-
-  const body = nextChunks.join("\n\n").trim();
   const parts = [`# ${parsed.title}`];
   if (parsed.subtitle) {
     for (const piece of parsed.subtitle.split(" · ")) {
@@ -195,7 +155,21 @@ export function parseBodyBlocks(body: string): StoryBlock[] {
     }
 
     if (trimmed.startsWith("## ")) {
-      const headingText = unwrapOuterBold(trimmed.slice(3).trim());
+      const rawHeading = trimmed.slice(3);
+      // ## sin línea en blanco antes del cuento: partir en título + párrafo.
+      const fairyInHeading = FAIRY_OPENING.exec(rawHeading);
+      if (fairyInHeading && fairyInHeading.index !== undefined) {
+        // Descartar basura atmosférica («La sala en silencio») pegada al ##.
+        const after =
+          canonicalizeFairyOpening(fairyInHeading[0]) +
+          rawHeading.slice(fairyInHeading.index + fairyInHeading[0].length);
+        blocks.push({
+          type: "paragraph",
+          text: unwrapOuterBold(after.replace(/\n/g, " ").trim()),
+        });
+        continue;
+      }
+      const headingText = unwrapOuterBold(rawHeading.trim());
       if (isSceneHeadingLabel(headingText)) {
         blocks.push({ type: "heading", text: headingText });
       } else {
