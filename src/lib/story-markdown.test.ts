@@ -97,6 +97,7 @@ describe("parseBodyBlocks", () => {
       "Había una vez un niño llamado Nico que buscaba la tablet.",
     );
     expect(fixed).not.toMatch(/La luz de la pantalla Había/);
+    expect(fixed).not.toContain("## El comienzo");
     expect(parseStoryHeader(fixed).title).toBe("El tesoro de la sala");
   });
 
@@ -113,6 +114,20 @@ describe("parseBodyBlocks", () => {
     const fixed = sanitizeFairyTaleOpening(raw);
     expect(fixed).not.toContain("La luz de la pantalla.");
     expect(fixed).toContain("Había una vez un niño llamado Nico.");
+  });
+
+  it("corrige typo Habia un vez y basura pegada tipo El mundo de la sala", () => {
+    const raw = [
+      "# La misión del explorador de sombras",
+      "",
+      "## El mundo de la sala",
+      "",
+      "El mundo de la sala Habia un vez un niño llamado Nico.",
+    ].join("\n");
+    const fixed = sanitizeFairyTaleOpening(raw);
+    expect(fixed).toContain("Había una vez un niño llamado Nico.");
+    expect(fixed).not.toMatch(/El mundo de la sala Habia/i);
+    expect(fixed).not.toContain("## El mundo de la sala");
   });
 });
 

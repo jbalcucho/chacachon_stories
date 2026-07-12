@@ -60,7 +60,7 @@ export function parseStoryHeader(rawBody: string): ParsedStoryMarkdown {
   };
 }
 
-const FAIRY_OPENING = /\b((?:Hab[ií]a|Era) una vez)\b/i;
+const FAIRY_OPENING = /\b((?:Hab[ií]a|Era)\s+un[ao]?\s+vez)\b/i;
 
 function isStructuralChunk(trimmed: string): boolean {
   return (
@@ -71,9 +71,18 @@ function isStructuralChunk(trimmed: string): boolean {
   );
 }
 
+/** Normaliza typos («Habia un vez») a la fórmula canónica. */
+export function canonicalizeFairyOpening(matched: string): string {
+  return /^era\b/i.test(matched.trim()) ? "Era una vez" : "Había una vez";
+}
+
+export function paragraphStartsWithFairyOpening(text: string): boolean {
+  return /^(?:Hab[ií]a|Era)\s+un[ao]?\s+vez\b/i.test(text.trim());
+}
+
 /**
  * Si el modelo pega basura antes de «Había una vez»
- * («La luz de la pantalla Había una vez…» o un párrafo suelto previo),
+ * («El mundo de la sala Habia un vez…» o un párrafo/título de escena suelto),
  * deja el primer párrafo narrativo empezando en la fórmula de cuento.
  */
 export function sanitizeFairyTaleOpening(markdown: string): string {
@@ -82,7 +91,8 @@ export function sanitizeFairyTaleOpening(markdown: string): string {
 
   const chunks = parsed.body.split(/\n\n+/).map((c) => c.trim()).filter(Boolean);
   const openingIdx = chunks.findIndex((chunk) => {
-    if (isStructuralChunk(chunk)) return false;
+    if (chunk.startsWith("## ") || chunk === "---") return false;
+    if (matchListItem(chunk.split(/\r?\n/)[0] ?? "")) return false;
     return FAIRY_OPENING.test(chunk);
   });
 
@@ -95,8 +105,12 @@ export function sanitizeFairyTaleOpening(markdown: string): string {
     const chunk = chunks[i];
 
     if (i < openingIdx) {
-      // Quita párrafos cortos atmosféricos justo antes de «Había una vez».
-      if (!isStructuralChunk(chunk) && chunk.length <= 80 && !FAIRY_OPENING.test(chunk)) {
+      // Quita ## atmosféricos y párrafos cortos antes de la fórmula.
+      if (chunk.startsWith("## ")) {
+        changed = true;
+        continue;
+      }
+      if (!isStructuralChunk(chunk) && chunk.length <= 100 && !FAIRY_OPENING.test(chunk)) {
         changed = true;
         continue;
       }
@@ -106,12 +120,14 @@ export function sanitizeFairyTaleOpening(markdown: string): string {
 
     if (i === openingIdx) {
       const match = FAIRY_OPENING.exec(chunk);
-      if (match && match.index !== undefined && match.index > 0) {
-        changed = true;
-        nextChunks.push(chunk.slice(match.index));
-      } else {
+      if (!match || match.index === undefined) {
         nextChunks.push(chunk);
+        continue;
       }
+      const rest = chunk.slice(match.index + match[0].length);
+      const fixed = `${canonicalizeFairyOpening(match[0])}${rest}`;
+      if (fixed !== chunk || match.index > 0) changed = true;
+      nextChunks.push(fixed);
       continue;
     }
 

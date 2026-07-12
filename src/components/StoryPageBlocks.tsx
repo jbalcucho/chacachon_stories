@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import type { StoryBlock } from "@/lib/story-markdown";
+import {
+  paragraphStartsWithFairyOpening,
+  type StoryBlock,
+} from "@/lib/story-markdown";
 
 type Props = {
   blocks: StoryBlock[];
@@ -35,6 +38,13 @@ function renderInline(text: string): ReactNode[] {
   return nodes;
 }
 
+function firstParagraphText(blocks: StoryBlock[]): string | null {
+  for (const block of blocks) {
+    if (block.type === "paragraph") return block.text;
+  }
+  return null;
+}
+
 export default function StoryPageBlocks({
   blocks,
   title,
@@ -43,6 +53,11 @@ export default function StoryPageBlocks({
   includeSubtitle = false,
   dropCap = false,
 }: Props) {
+  // Solo capitular si el cuento empieza de verdad con la fórmula (evita «E» coral de «El mundo…»).
+  const firstPara = firstParagraphText(blocks);
+  const useDropCap =
+    dropCap && firstPara !== null && paragraphStartsWithFairyOpening(firstPara);
+
   return (
     <div className="book-page__inner">
       {includeTitle && title ? (
@@ -53,35 +68,35 @@ export default function StoryPageBlocks({
       ) : null}
       <div className="book-page__sheet">
         <div
-          className={`book-page__body${dropCap ? " book-page__body--drop" : ""}`}
+          className={`book-page__body${useDropCap ? " book-page__body--drop" : ""}`}
         >
           {blocks.map((block, index) => {
-          if (block.type === "divider") {
-            return <hr key={index} className="book-page__divider" />;
-          }
-          if (block.type === "heading") {
-            return (
-              <h2 key={index} className="book-page__heading">
-                {renderInline(block.text)}
-              </h2>
-            );
-          }
-          if (block.type === "list") {
-            const items = block.items.map((item, itemIndex) => (
-              <li key={itemIndex}>{renderInline(item)}</li>
-            ));
-            return block.ordered ? (
-              <ol key={index} className="book-page__list">
-                {items}
-              </ol>
-            ) : (
-              <ul key={index} className="book-page__list">
-                {items}
-              </ul>
-            );
-          }
-          return <p key={index}>{renderInline(block.text)}</p>;
-        })}
+            if (block.type === "divider") {
+              return <hr key={index} className="book-page__divider" />;
+            }
+            if (block.type === "heading") {
+              return (
+                <h2 key={index} className="book-page__heading">
+                  {renderInline(block.text)}
+                </h2>
+              );
+            }
+            if (block.type === "list") {
+              const items = block.items.map((item, itemIndex) => (
+                <li key={itemIndex}>{renderInline(item)}</li>
+              ));
+              return block.ordered ? (
+                <ol key={index} className="book-page__list">
+                  {items}
+                </ol>
+              ) : (
+                <ul key={index} className="book-page__list">
+                  {items}
+                </ul>
+              );
+            }
+            return <p key={index}>{renderInline(block.text)}</p>;
+          })}
         </div>
       </div>
     </div>
