@@ -157,10 +157,15 @@ Formato de salida OBLIGATORIO en Markdown, sin texto extra antes ni después:
 # Título del cuento
 > Subtítulo corto y evocador (no repite la moraleja)
 
-## Nombre de la escena
-Párrafos...
+## Nombre corto de la escena
+Párrafos en texto normal...
 
-Extensión: 350–600 palabras. No incluyas listas ni notas del autor.`;
+Reglas de formato:
+- Los \`## \` son SOLO etiquetas cortas de escena (2–5 palabras: «El comienzo», «El reto»). Nunca uses \`## \` para párrafos narrativos ni oraciones largas.
+- No envuelvas párrafos enteros en negrita (\`**…**\`). La negrita solo para énfasis puntual de 1–3 palabras.
+- No uses listas ni notas del autor.
+
+Extensión: 350–600 palabras.`;
 
 /** System prompt según acento (default: neutro colombiano). */
 export function buildStorySystemPrompt(

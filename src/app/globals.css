@@ -3735,10 +3735,12 @@ html.route-fade-exit body::after {
 .book-page__heading {
   margin: 0;
   font-family: var(--font-fredoka), var(--font-nunito), system-ui, sans-serif;
-  font-size: 0.98em;
+  font-size: 0.82em;
   font-weight: 700;
-  color: var(--paper-title);
+  color: var(--paper-subtitle);
+  letter-spacing: 0.03em;
   line-height: var(--line-step);
+  text-transform: none;
 }
 
 .book-page__divider {

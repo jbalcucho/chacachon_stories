@@ -14,6 +14,9 @@ export type ParsedStoryMarkdown = {
 
 const UNORDERED_ITEM = /^\s*[-*]\s+(.*)$/;
 const ORDERED_ITEM = /^\s*\d+\.\s+(.*)$/;
+/** Escena corta: «El comienzo». Frases largas con ## no son títulos. */
+const SCENE_HEADING_MAX_CHARS = 48;
+const SCENE_HEADING_MAX_WORDS = 6;
 
 /**
  * Encabezado del cuento: título (`# `), subtítulo (`> …`) y cuerpo.
@@ -65,6 +68,27 @@ function matchListItem(line: string): { text: string; ordered: boolean } | null 
   return null;
 }
 
+/** Solo etiquetas cortas de escena; evita pintar párrafos narrativos como título. */
+export function isSceneHeadingLabel(text: string): boolean {
+  const t = text.trim();
+  if (!t || t.length > SCENE_HEADING_MAX_CHARS) return false;
+  if (/[.!?…:;]/.test(t)) return false;
+  if (t.split(/\s+/).filter(Boolean).length > SCENE_HEADING_MAX_WORDS) {
+    return false;
+  }
+  return true;
+}
+
+/** Quita `**…**` que envuelve todo el párrafo (abuso frecuente del modelo). */
+export function unwrapOuterBold(text: string): string {
+  const trimmed = text.trim();
+  const match = /^\*\*([^*][\s\S]*?)\*\*$/.exec(trimmed);
+  if (!match) return text;
+  const inner = match[1].trim();
+  if (!inner || inner.includes("**")) return text;
+  return inner;
+}
+
 /**
  * Divide el cuerpo en bloques: párrafos, encabezados (`## `), separadores
  * (`---`) y listas (`- ` / `* ` / `1. `). Conserva los marcadores en línea
@@ -84,7 +108,15 @@ export function parseBodyBlocks(body: string): StoryBlock[] {
     }
 
     if (trimmed.startsWith("## ")) {
-      blocks.push({ type: "heading", text: trimmed.slice(3).trim() });
+      const headingText = unwrapOuterBold(trimmed.slice(3).trim());
+      if (isSceneHeadingLabel(headingText)) {
+        blocks.push({ type: "heading", text: headingText });
+      } else {
+        blocks.push({
+          type: "paragraph",
+          text: unwrapOuterBold(headingText.replace(/\n/g, " ")),
+        });
+      }
       continue;
     }
 
@@ -104,7 +136,7 @@ export function parseBodyBlocks(body: string): StoryBlock[] {
 
     blocks.push({
       type: "paragraph",
-      text: trimmed.replace(/\n/g, " "),
+      text: unwrapOuterBold(trimmed.replace(/\n/g, " ")),
     });
   }
 

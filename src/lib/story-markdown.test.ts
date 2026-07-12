@@ -57,6 +57,27 @@ describe("parseBodyBlocks", () => {
       "paragraph",
     ]);
   });
+
+  it("degrada ## narrativos largos a párrafo (no título rojo)", () => {
+    const blocks = parseBodyBlocks(
+      "## En la sala, Nico apretaba la tablet como un tesoro y no quería soltarla.\n\nDespués jugó sin pantallas.",
+    );
+    expect(blocks[0]).toEqual({
+      type: "paragraph",
+      text: "En la sala, Nico apretaba la tablet como un tesoro y no quería soltarla.",
+    });
+    expect(blocks[1]?.type).toBe("paragraph");
+  });
+
+  it("quita negrita que envuelve todo el párrafo", () => {
+    const blocks = parseBodyBlocks(
+      "**Nico puso la tablet a dormir primero y respiró hondo.**",
+    );
+    expect(blocks[0]).toEqual({
+      type: "paragraph",
+      text: "Nico puso la tablet a dormir primero y respiró hondo.",
+    });
+  });
 });
 
 describe("splitBlocksForPagination", () => {
