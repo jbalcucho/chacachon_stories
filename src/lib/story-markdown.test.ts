@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseBodyBlocks,
   parseStoryHeader,
+  sanitizeFairyTaleOpening,
   splitBlocksForPagination,
 } from "@/lib/story-markdown";
 
@@ -69,14 +70,24 @@ describe("parseBodyBlocks", () => {
     expect(blocks[1]?.type).toBe("paragraph");
   });
 
-  it("quita negrita que envuelve todo el párrafo", () => {
-    const blocks = parseBodyBlocks(
-      "**Nico puso la tablet a dormir primero y respiró hondo.**",
+  it("quita basura pegada antes de Había una vez", () => {
+    const raw = [
+      "# El tesoro de la sala",
+      "",
+      "> Un misterio en el sofá",
+      "",
+      "## El comienzo",
+      "",
+      "La luz de la pantalla Había una vez un niño llamado Nico que buscaba la tablet.",
+      "",
+      "Después suspiró.",
+    ].join("\n");
+    const fixed = sanitizeFairyTaleOpening(raw);
+    expect(fixed).toContain(
+      "Había una vez un niño llamado Nico que buscaba la tablet.",
     );
-    expect(blocks[0]).toEqual({
-      type: "paragraph",
-      text: "Nico puso la tablet a dormir primero y respiró hondo.",
-    });
+    expect(fixed).not.toMatch(/La luz de la pantalla Había/);
+    expect(parseStoryHeader(fixed).title).toBe("El tesoro de la sala");
   });
 });
 

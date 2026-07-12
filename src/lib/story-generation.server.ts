@@ -2,7 +2,7 @@ import "server-only";
 import type { FamilyProfileDocument } from "@/lib/family-profile-schema";
 import type { LlmUsage } from "@/lib/generation-telemetry";
 import type { RecipeSelectionSlice } from "@/lib/recipe-summary";
-import { parseStoryHeader } from "@/lib/story-markdown";
+import { parseStoryHeader, sanitizeFairyTaleOpening } from "@/lib/story-markdown";
 import { buildMockStoryMarkdown } from "@/lib/story-mock";
 import { buildStoryPrompt } from "@/lib/story-prompt";
 
@@ -200,9 +200,10 @@ export async function generateStory(
   if (geminiKey) {
     try {
       const { markdown, model, usage } = await callGemini(ctx, geminiKey);
+      const bodyMarkdown = sanitizeFairyTaleOpening(markdown.trim());
       return {
-        title: titleFromMarkdown(markdown, fallbackTitle),
-        bodyMarkdown: markdown,
+        title: titleFromMarkdown(bodyMarkdown, fallbackTitle),
+        bodyMarkdown,
         source: "gemini",
         model,
         usage,
@@ -215,9 +216,10 @@ export async function generateStory(
   if (anthropicKey) {
     try {
       const { markdown, usage } = await callClaude(ctx, anthropicKey);
+      const bodyMarkdown = sanitizeFairyTaleOpening(markdown.trim());
       return {
-        title: titleFromMarkdown(markdown, fallbackTitle),
-        bodyMarkdown: markdown,
+        title: titleFromMarkdown(bodyMarkdown, fallbackTitle),
+        bodyMarkdown,
         source: "claude",
         model: anthropicModel(),
         usage,
@@ -227,7 +229,9 @@ export async function generateStory(
     }
   }
 
-  const markdown = buildMockStoryMarkdown(ctx.selection);
+  const markdown = sanitizeFairyTaleOpening(
+    buildMockStoryMarkdown(ctx.selection).trim(),
+  );
   return {
     title: titleFromMarkdown(markdown, fallbackTitle),
     bodyMarkdown: markdown,

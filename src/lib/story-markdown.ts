@@ -60,6 +60,52 @@ export function parseStoryHeader(rawBody: string): ParsedStoryMarkdown {
   };
 }
 
+const FAIRY_OPENING = /\b((?:Hab[ií]a|Era) una vez)\b/i;
+
+/**
+ * Si el modelo pega basura antes de «Había una vez» («La luz de la pantalla Había una vez…»),
+ * recorta el primer párrafo narrativo para que empiece en la fórmula de cuento.
+ */
+export function sanitizeFairyTaleOpening(markdown: string): string {
+  const parsed = parseStoryHeader(markdown);
+  if (!parsed.body) return markdown;
+
+  const chunks = parsed.body.split(/\n\n+/);
+  let sawFirstParagraph = false;
+  let changed = false;
+  const nextChunks = chunks.map((chunk) => {
+    const trimmed = chunk.trim();
+    if (
+      !trimmed ||
+      trimmed === "---" ||
+      trimmed.startsWith("## ") ||
+      matchListItem(trimmed.split(/\r?\n/)[0] ?? "")
+    ) {
+      return chunk;
+    }
+    if (sawFirstParagraph) return chunk;
+    sawFirstParagraph = true;
+    const match = FAIRY_OPENING.exec(trimmed);
+    if (!match || match.index === undefined || match.index === 0) {
+      return chunk;
+    }
+    changed = true;
+    return trimmed.slice(match.index);
+  });
+
+  if (!changed) return markdown;
+
+  const body = nextChunks.join("\n\n").trim();
+  const parts = [`# ${parsed.title}`];
+  if (parsed.subtitle) {
+    for (const piece of parsed.subtitle.split(" · ")) {
+      parts.push(`> ${piece}`);
+    }
+  }
+  parts.push("", body);
+  return parts.join("\n");
+}
+
 function matchListItem(line: string): { text: string; ordered: boolean } | null {
   const ordered = ORDERED_ITEM.exec(line);
   if (ordered) return { text: ordered[1].trim(), ordered: true };
