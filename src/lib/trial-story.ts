@@ -613,11 +613,11 @@ function buildMomentStory(
     "",
     "## El final",
     "",
-    `Esa noche, ${name} aprendió un poco de ${lesson.label.toLowerCase()}. En ${moment.place}, todo volvió a estar en paz… hasta la próxima historia de Chacachón.`,
+    `Esa noche, ${name} aprendió un poco de ${lesson.label.toLowerCase()}. En ${moment.place}, todo volvió a estar en paz… hasta la próxima historia.`,
     "",
     "---",
     "",
-    "Y colorín colorado, este cuento de Chacachón se ha terminado.",
+    "Y colorín colorado, este cuento se ha terminado.",
   ].join("\n");
 }
 
@@ -652,11 +652,11 @@ function buildClassicStory(
       "",
       "## El final",
       "",
-      `Así ${name} aprendió ${lesson.label.toLowerCase()}. Y en ${classic.place}, la casita buena aguantó… hasta el próximo cuento de Chacachón.`,
+      `Así ${name} aprendió ${lesson.label.toLowerCase()}. Y en ${classic.place}, la casita buena aguantó… hasta el próximo cuento.`,
       "",
       "---",
       "",
-      "Y colorín colorado, este cuento de Chacachón se ha terminado.",
+      "Y colorín colorado, este cuento se ha terminado.",
     ].join("\n");
   }
 
@@ -684,11 +684,11 @@ function buildClassicStory(
       "",
       "## El final",
       "",
-      `Ese día ${name} practicó ${lesson.label.toLowerCase()}. En casa de la abuela hubo abrazo… y otro cuento de Chacachón esperando.`,
+      `Ese día ${name} practicó ${lesson.label.toLowerCase()}. En casa de la abuela hubo abrazo… y otro cuento esperando.`,
       "",
       "---",
       "",
-      "Y colorín colorado, este cuento de Chacachón se ha terminado.",
+      "Y colorín colorado, este cuento se ha terminado.",
     ].join("\n");
   }
 
@@ -716,11 +716,11 @@ function buildClassicStory(
       "",
       "## El final",
       "",
-      `Así ${name} practicó ${lesson.label.toLowerCase()}. En ${classic.place} quedó la lección… y ganas de otro cuento de Chacachón.`,
+      `Así ${name} practicó ${lesson.label.toLowerCase()}. En ${classic.place} quedó la lección… y ganas de otro cuento.`,
       "",
       "---",
       "",
-      "Y colorín colorado, este cuento de Chacachón se ha terminado.",
+      "Y colorín colorado, este cuento se ha terminado.",
     ].join("\n");
   }
 
@@ -748,11 +748,11 @@ function buildClassicStory(
     "",
     "## El final",
     "",
-    `Cuando mamá volvió, hubo abrazo y merienda. ${name} practicó ${lesson.label.toLowerCase()}. En ${classic.place}, la casa quedó en paz… hasta el próximo cuento de Chacachón.`,
+    `Cuando mamá volvió, hubo abrazo y merienda. ${name} practicó ${lesson.label.toLowerCase()}. En ${classic.place}, la casa quedó en paz… hasta el próximo cuento.`,
     "",
     "---",
     "",
-    "Y colorín colorado, este cuento de Chacachón se ha terminado.",
+    "Y colorín colorado, este cuento se ha terminado.",
   ].join("\n");
 }
 

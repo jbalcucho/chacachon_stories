@@ -18,8 +18,10 @@ Un cuento Chacachón **no** es un resumen genérico de “un niño aprendió X�
 3. **Pedagógico sin sermón (aprendizaje en la piel):** el **reto** es el conflicto que el niño reconoce (deseo, miedo suave, frustración); la **lección** de la receta es solo la semilla del cierre y se **muestra** en lo que hacen o sienten, no se declara. Preferir cambio de conducta o de vínculo (apaga, pide la mano, se queda) antes que explicación adulta. Permitir **una** frase de insight del niño si suena a él, no a maestro. Prohibido: “la moraleja es…”, “aprendimos que…”, monólogos correctivos largos, subtítulos o escenas morales.
 4. **Cálido y cómico (humor de reconocimiento):** el humor nace de la **situación cotidiana** (rutina, mascota, malentendido suave), no de chistes sueltos ni de ridiculizar al niño. **Doble audiencia:** el niño sigue la gracia de lo que pasa; el adulto sonríe al verse. **Calor:** límites firmes sin humillación; cansancio parental permitido, cinismo o sarcasmo hiriente no. **Densidad:** 1–2 momentos cómicos memorables por cuento bastan. Prohibido: burla cruel, grosería, clasismo, reírse *del* niño como tonto.
 5. **Ritmo de lectura en voz alta (oído primero):** el cuento debe poder leerse en familia sin atascarse. Frases en su mayoría **cortas o medias**; párrafos de **2–4 oraciones**; diálogos con raya (`—`), turnos breves, alternando narración y voz. Dejar **aire** entre beats (no un muro de texto). El cierre baja el volumen (calma, no clímax nuevo). Evitar: oraciones kilométricas, párrafos de media página, cascadas de nombres, onomatopeyas en exceso. Formato: Markdown limpio (`#`, `>`, `##`, `—`).
+6. **Toque mágico de cuento:** la apertura casi siempre usa **«Había una vez…»** o **«Era una vez…»** y enseguida ancla el mundo del niño. Cotidianidad sí; informe doméstico seco, no. Cohesión: cada oración avanza; sin redundancia ni párrafos pegados sin causa–efecto.
+7. **Sin marca dentro del texto:** el lector no conoce «Chacachón». No presentar familia/marca Chacachón en el cuento; solo nombres de la receta/perfil.
 
-Referencias canónicas: el corpus de demos se vació (jul 2026). Usar los **cinco pilares** de esta sección y los few-shots en `src/lib/story-prompt-examples.ts` hasta publicar el próximo cuento curado.
+Referencias canónicas: el corpus de demos se vació (jul 2026). Usar los **pilares** de esta sección y los few-shots en `src/lib/story-prompt-examples.ts` hasta publicar el próximo cuento curado.
 
 ## 2. Estructura narrativa
 
@@ -159,9 +161,17 @@ Prioridad de datos del JSONB (`PerfilFamiliar.md`):
 
 > Nico era un niño que a veces no quería dormir. Un día aprendió que dormir es importante.
 
+**❌ Tampoco** (marca desconocida / lista de familia)
+
+> En Bogotá vivía la familia Chacachón: José, Julie, Nico…
+
+**❌ Tampoco** (sensorial suelto + acción repetida)
+
+> El sol iluminaba las motas de polvo. Nico estaba buscando en el sofá. Debajo de los cojines solo encontró una moneda…
+
 **✅ Así sí**
 
-> Ese domingo el apartamento olía a café y a pan tostado. Afuera Chapinero todavía bostezaba: un bus lejos, llovizna fina en la ventana. Nico ya tenía la mano en la tablet antes de abrir bien los ojos.
+> Había una vez un niño llamado Nico que vivía en un apartamento donde olía a café y a pan tostado. Afuera todavía bostezaba la ciudad: un bus lejos, llovizna fina en la ventana. Nico ya tenía la mano en la tablet antes de abrir bien los ojos.
 
 ### Diálogo y reto
 
@@ -191,6 +201,9 @@ Prioridad de datos del JSONB (`PerfilFamiliar.md`):
 Antes de dar por bueno un cuento generado (o revisar demos con `npm run validate:quality`):
 
 
+- [ ] ¿Empieza con «Había una vez» / «Era una vez» (o equivalente mágico claro)?
+- [ ] ¿Hay cohesión causa–efecto, sin párrafos redundantes o sueltos?
+- [ ] ¿Evita nombrar «Chacachón» / familia marca dentro del texto?
 - [ ] ¿Se siente el mundo del niño (familia + lugar del perfil), sin postcard ni plantilla genérica?
 - [ ] ¿Un niño de hasta ~12 años entiende qué pasó sin explicación adulta?
 - [ ] ¿El adulto puede sonreír *y* el niño entiende la gracia (humor de reconocimiento, no burla del niño)?

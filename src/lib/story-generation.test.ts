@@ -61,12 +61,13 @@ describe("describeRecipe", () => {
 describe("buildStoryPrompt", () => {
   it("incluye system prompt editorial y detalles en el mensaje de usuario", () => {
     const { system, user } = buildStoryPrompt({ selection: sampleSelection });
-    expect(system).toContain("Chacachón");
+    expect(system).toContain("Había una vez");
+    expect(system).toMatch(/PROHIBIDO.*Chacachón|Nadie conoce/i);
     expect(system).toContain("sermón");
     expect(system).toContain("neutro colombiano");
     expect(user).toContain("Nico");
-    expect(user).toContain("andamiaje mundo");
-    expect(user).toContain("deseo/conflicto");
+    expect(user).toContain("Había una vez");
+    expect(user).toContain("cohesión");
     expect(user).toContain("Neutro colombiano");
     expect(user).toContain("fragmentos de referencia");
   });

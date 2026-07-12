@@ -33,7 +33,7 @@ export function buildMockStoryMarkdown(
 
   const verbo = (s: string, p: string) => (heroesPlural ? p : s);
   const title = buildRecipeTitle(selection) ?? `La aventura de ${heroes}`;
-  const subtitle = `Un cuento de Chacachón sobre ${lower(reto)}`;
+  const subtitle = `Un cuento sobre ${lower(reto)}`;
 
   const leccionFrase =
     lecciones.length > 0
@@ -63,7 +63,7 @@ export function buildMockStoryMarkdown(
     "",
     "---",
     "",
-    "Y colorín colorado, este cuento de Chacachón se ha terminado.",
+    "Y colorín colorado, este cuento se ha terminado.",
   ];
 
   return parts.join("\n");
