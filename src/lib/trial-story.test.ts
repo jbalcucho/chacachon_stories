@@ -91,6 +91,9 @@ describe("trial-story", () => {
     expect(selection.mascota[0]?.label).toBe("Bingo");
     expect(selection.mascota[0]?.hint).toBe("perro");
     expect(selection.heroes[0]?.hint).toMatch(/3–5|3-5|Edad 3/i);
+    expect(selection.heroes[0]?.hint).toMatch(/mundo inventado|aldea|bosque|nave|dulces sueños|sala/i);
+    expect(selection.reto[0]?.hint).toMatch(/compart|mundo|aventura|cooper|recurso/i);
+    expect(selection.reto[0]?.hint).toMatch(/juguete|cooper|misión|humor|respeto/i);
   });
 
   it("builds a recipe selection for classic AI prompts", () => {

@@ -9,7 +9,7 @@ import type { PersonalizedStoryContent } from "@/lib/story-reader";
 import {
   parseBodyBlocks,
   parseStoryHeader,
-  sanitizeFairyTaleOpening,
+  sanitizeFairyTaleBookends,
   splitBlocksForPagination,
 } from "@/lib/story-markdown";
 import { getSessionUserId } from "@/lib/session";
@@ -34,7 +34,7 @@ export async function generateMetadata({
 }
 
 function toContent(markdown: string): PersonalizedStoryContent {
-  const cleaned = sanitizeFairyTaleOpening(markdown);
+  const cleaned = sanitizeFairyTaleBookends(markdown);
   const parsed = parseStoryHeader(cleaned);
   return {
     title: parsed.title,

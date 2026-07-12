@@ -62,14 +62,16 @@ describe("buildStoryPrompt", () => {
   it("incluye system prompt editorial y detalles en el mensaje de usuario", () => {
     const { system, user } = buildStoryPrompt({ selection: sampleSelection });
     expect(system).toContain("Había una vez");
-    expect(system).toMatch(/PROHIBIDO.*Chacachón|Nadie conoce/i);
-    expect(system).toContain("sermón");
+    expect(system).toMatch(/colorín colorado/i);
+    expect(system).toMatch(/LÉXICO COLOMBIANO|por un pelo|cuenco/i);
+    expect(system).toMatch(/naves interestelares|galaxias|Bosque de la Nuez|vereda/i);
+    expect(system).toMatch(/sermón|moraleja|MANUAL DE RUTINA/i);
     expect(system).toContain("neutro colombiano");
     expect(user).toContain("Nico");
     expect(user).toContain("Había una vez");
-    expect(user).toContain("cohesión");
+    expect(user).toMatch(/cohesión|causa–efecto|humor|SEMILLA|mundo inventado|Apertura/i);
     expect(user).toContain("Neutro colombiano");
-    expect(user).toContain("fragmentos de referencia");
+    expect(user).toMatch(/estilo|Apertura|referencia|imaginativ/i);
   });
 
   it("usa neutro por defecto aunque no se pase accentCode", () => {
@@ -119,6 +121,48 @@ describe("buildStoryPrompt", () => {
     expect(user).toContain("Pauleta");
     expect(user).toContain("Bingo");
     expect(user).toContain("Bogotá");
+  });
+
+  it("añade reglas extra 3–5 cuando el héroe trae ese tono", () => {
+    const selection = {
+      ...sampleSelection,
+      heroes: [
+        {
+          id: "h1",
+          kind: "persona" as const,
+          label: "Nico",
+          emoji: "",
+          hint: "Edad 3–5: lectura en voz alta. Frases muy cortas.",
+        },
+      ],
+    };
+    const { user, system } = buildStoryPrompt({ selection });
+    expect(user).toContain("REGLAS EXTRA — EDAD 3–5");
+    expect(user).toMatch(/sala\/TV|dulces sueños|mundo inventado/i);
+    expect(user).toMatch(/humor|asombro|valentía|magia/i);
+    expect(user).toMatch(/360–520|360-520|340–520|400–700/);
+    expect(user).toContain("SEMILLA DE VARIEDAD");
+    expect(user).toMatch(/PROHIBIDO.*sala|dulces sueños|mundo inventado/i);
+    expect(system).toMatch(/MANUAL DE RUTINA|sala \/ sofá|dulces sueños|Grimm|Pombo|Principito/i);
+    expect(system).toMatch(/NO ES UN MANUAL|mundo inventado|Miau Miau|jefe de clan/i);
+  });
+
+  it("añade reglas 6–8 cuando el héroe trae ese tono", () => {
+    const selection = {
+      ...sampleSelection,
+      heroes: [
+        {
+          id: "h1",
+          kind: "persona" as const,
+          label: "Nico",
+          emoji: "",
+          hint: "Edad 6–8: lectura compartida.",
+        },
+      ],
+    };
+    const { user } = buildStoryPrompt({ selection });
+    expect(user).toContain("REGLAS EXTRA — EDAD 6–8");
+    expect(user).toMatch(/12–15|misión|Trueno Verde|oral colombiano|dibujable/i);
   });
 });
 

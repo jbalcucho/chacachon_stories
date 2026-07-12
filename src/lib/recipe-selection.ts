@@ -16,7 +16,7 @@ export const recipeIngredientSchema = z.object({
   ]),
   label: z.string().trim().min(1).max(80),
   emoji: z.string().trim().max(16).optional().default(""),
-  hint: z.string().trim().max(200).optional(),
+  hint: z.string().trim().max(400).optional(),
 });
 
 /** Selección completa de la receta (una casilla por zona del wizard). */

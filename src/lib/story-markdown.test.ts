@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  ensureFairyTaleClosing,
   parseBodyBlocks,
   parseStoryHeader,
+  sanitizeFairyTaleBookends,
   sanitizeFairyTaleOpening,
   splitBlocksForPagination,
 } from "@/lib/story-markdown";
@@ -68,6 +70,33 @@ describe("parseBodyBlocks", () => {
       text: "En la sala, Nico apretaba la tablet como un tesoro y no quería soltarla.",
     });
     expect(blocks[1]?.type).toBe("paragraph");
+  });
+
+  it("separa ## pegado al párrafo en escenas 2–3 (sin línea en blanco)", () => {
+    const blocks = parseBodyBlocks(
+      [
+        "## El comienzo",
+        "",
+        "Había una vez un niño.",
+        "",
+        "## El reto",
+        "Nico no quería apagar la tablet.",
+        "",
+        "## El giro",
+        "Mamá le ofreció un abrazo y un cuento.",
+      ].join("\n"),
+    );
+    expect(blocks).toEqual([
+      { type: "heading", text: "El comienzo" },
+      { type: "paragraph", text: "Había una vez un niño." },
+      { type: "heading", text: "El reto" },
+      { type: "paragraph", text: "Nico no quería apagar la tablet." },
+      { type: "heading", text: "El giro" },
+      {
+        type: "paragraph",
+        text: "Mamá le ofreció un abrazo y un cuento.",
+      },
+    ]);
   });
 
   it("quita negrita que envuelve todo el párrafo", () => {
@@ -153,6 +182,46 @@ describe("parseBodyBlocks", () => {
         text: "Había una vez un niño llamado Nico.",
       },
     ]);
+  });
+
+  it("añade colorín colorado si el cierre oral falta", () => {
+    const raw = [
+      "# El farol",
+      "",
+      "Había una vez un clan en Nube-Nube.",
+      "",
+      "El farol volvió a brillar.",
+    ].join("\n");
+    const fixed = ensureFairyTaleClosing(raw);
+    expect(fixed).toMatch(/colorín colorado/i);
+    expect(fixed.trim().endsWith("terminado.")).toBe(true);
+  });
+
+  it("no duplica el colorín si ya está", () => {
+    const raw = [
+      "# El farol",
+      "",
+      "Había una vez un clan.",
+      "",
+      "Y colorín colorado, este cuento se ha terminado.",
+    ].join("\n");
+    const fixed = ensureFairyTaleClosing(raw);
+    expect(fixed.match(/colorín colorado/gi)?.length).toBe(1);
+  });
+
+  it("sanitizeFairyTaleBookends limpia apertura y garantiza cierre", () => {
+    const raw = [
+      "# El farol",
+      "",
+      "La sala en silencio Había una vez un piloto llamado Lucas.",
+      "",
+      "Corría hacia el cometa.",
+    ].join("\n");
+    const fixed = sanitizeFairyTaleBookends(raw);
+    expect(fixed).toMatch(/^# El farol/m);
+    expect(fixed).toContain("Había una vez un piloto llamado Lucas.");
+    expect(fixed).not.toMatch(/La sala en silencio Había/);
+    expect(fixed).toMatch(/colorín colorado/i);
   });
 });
 

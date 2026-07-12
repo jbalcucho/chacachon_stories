@@ -28,6 +28,8 @@ type Props = {
     href: string;
     ctaLabel: string;
   };
+  /** Chip de estado en la toolbar (ej. «Prueba»). Si no hay, usa Tu familia / Muestra. */
+  statusBadge?: string | null;
 };
 
 type TurnDirection = "next" | "prev";
@@ -74,6 +76,7 @@ export default function StoryReader({
   shareable = false,
   loginCallbackUrl,
   endConversion,
+  statusBadge,
 }: Props) {
   const [fontSize, setFontSize] = useState(initialFontSize);
   const [paper, setPaper] = useState<PaperStyle>("cuento");
@@ -313,7 +316,11 @@ export default function StoryReader({
         <div className="story-reader__toolbar-row story-reader__toolbar-row--meta">
           <span className="story-reader__toolbar-title">{storyTitle}</span>
           <div className="story-reader__meta-badges">
-            {profileSource === "user" ? (
+            {statusBadge ? (
+              <span className="story-reader__badge story-reader__badge--trial">
+                {statusBadge}
+              </span>
+            ) : profileSource === "user" ? (
               <span className="story-reader__badge">Tu familia</span>
             ) : (
               <span className="story-reader__badge story-reader__badge--demo">
@@ -447,55 +454,77 @@ export default function StoryReader({
           />
         </div>
 
-        <footer className="book-reader__footer">
-          <button
-            type="button"
-            onClick={goPrev}
-            disabled={pageIndex === 0 || Boolean(turning)}
-            className="book-reader__nav-btn"
-          >
-            ‹ Anterior
-          </button>
-          <div className="book-reader__progress-block">
-            <div
-              className="book-reader__progress-track"
-              role="progressbar"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(progressPct)}
-              aria-label={`Progreso de lectura: página ${pageIndex + 1} de ${pageCount}`}
-            >
+        <div className="book-reader__bottom">
+          {endConversion ? (
+            <div className="book-reader__end-slot">
               <div
-                className="book-reader__progress-fill"
-                style={{ width: `${progressPct}%` }}
-              />
+                className={[
+                  "book-reader__end-conversion",
+                  isLastPage && !turning
+                    ? "book-reader__end-conversion--visible"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                role="region"
+                aria-label="Guardar cuento"
+                aria-hidden={!(isLastPage && !turning)}
+                inert={!(isLastPage && !turning) ? true : undefined}
+              >
+                <p className="book-reader__end-conversion-title">
+                  {endConversion.title}
+                </p>
+                <p className="book-reader__end-conversion-body">
+                  {endConversion.body}
+                </p>
+                <Link
+                  href={endConversion.href}
+                  className="book-reader__end-conversion-cta"
+                  tabIndex={isLastPage && !turning ? undefined : -1}
+                >
+                  {endConversion.ctaLabel}
+                </Link>
+              </div>
             </div>
-            <p className="book-reader__progress" aria-live="polite">
-              Página {pageIndex + 1} de {pageCount}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={goNext}
-            disabled={pageIndex >= pageCount - 1 || Boolean(turning)}
-            className="book-reader__nav-btn"
-          >
-            Siguiente ›
-          </button>
-        </footer>
+          ) : null}
 
-        {endConversion && isLastPage && !turning ? (
-          <div className="book-reader__end-conversion" role="region" aria-label="Guardar cuento">
-            <p className="book-reader__end-conversion-title">{endConversion.title}</p>
-            <p className="book-reader__end-conversion-body">{endConversion.body}</p>
-            <Link
-              href={endConversion.href}
-              className="book-reader__end-conversion-cta"
+          <footer className="book-reader__footer">
+            <button
+              type="button"
+              onClick={goPrev}
+              disabled={pageIndex === 0 || Boolean(turning)}
+              className="book-reader__nav-btn"
             >
-              {endConversion.ctaLabel}
-            </Link>
-          </div>
-        ) : null}
+              ‹ Anterior
+            </button>
+            <div className="book-reader__progress-block">
+              <div
+                className="book-reader__progress-track"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(progressPct)}
+                aria-label={`Progreso de lectura: página ${pageIndex + 1} de ${pageCount}`}
+              >
+                <div
+                  className="book-reader__progress-fill"
+                  style={{ width: `${progressPct}%` }}
+                />
+              </div>
+              <p className="book-reader__progress" aria-live="polite">
+                Página {pageIndex + 1} de {pageCount}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={pageIndex >= pageCount - 1 || Boolean(turning)}
+              className="book-reader__nav-btn"
+            >
+              Siguiente ›
+            </button>
+          </footer>
+        </div>
       </div>
     </div>
   );

@@ -23,6 +23,7 @@ import {
   resolveTrialDefaults,
   type TrialPath,
 } from "@/lib/trial-story";
+import { saveTrialStoryDebugSnapshot } from "@/lib/trial-story-debug-save.server";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -116,6 +117,20 @@ export async function POST(request: Request) {
     recordTrialAiUse(ip);
     await recordTrialAiInDb(ip);
 
+    const createdAt = new Date().toISOString();
+    await saveTrialStoryDebugSnapshot({
+      name,
+      ageBandId: resolved.ageBand.id,
+      ageBandLabel: resolved.ageBand.label,
+      path,
+      momentId: input.momentId,
+      classicId: input.classicId,
+      markdown: draft.bodyMarkdown,
+      source: draft.source,
+      createdAt,
+      note: "api/cuentos/probar",
+    });
+
     const response = NextResponse.json({
       name,
       path,
@@ -131,7 +146,7 @@ export async function POST(request: Request) {
       petName: resolved.petName,
       lessonId: resolved.lesson.id,
       markdown: draft.bodyMarkdown,
-      createdAt: new Date().toISOString(),
+      createdAt,
       frameLabel: resolved.frameLabel,
       lessonLabel: resolved.lesson.label,
       companionLabel: resolved.companionLabel,

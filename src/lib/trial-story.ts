@@ -7,7 +7,7 @@ import { moderateUserText } from "@/lib/content-moderation";
 import {
   parseBodyBlocks,
   parseStoryHeader,
-  sanitizeFairyTaleOpening,
+  sanitizeFairyTaleBookends,
   splitBlocksForPagination,
 } from "@/lib/story-markdown";
 import type { PersonalizedStoryContent } from "@/lib/story-reader";
@@ -150,21 +150,21 @@ export const TRIAL_AGE_BANDS: TrialAgeBand[] = [
     label: "3–5 años",
     blurbAge: "de 3 a 5 años",
     guidance:
-      "Edad 3–5: lectura en voz alta. Frases muy cortas, ritmo concreto y sensorial, repetición suave, humor visual de casa. Sin dilemas morales abstractos ni vocabulario difícil.",
+      "Edad 3–5: mundo con nombre propio desde el inicio; héroe puede ser jefe/piloto; frases cortas; sin poesía abstracta; sin sala/TV; sin dulces sueños; cierre sin ‘entendió que’.",
   },
   {
     id: "6-8",
     label: "6–8 años",
     blurbAge: "de 6 a 8 años",
     guidance:
-      "Edad 6–8: lectura compartida. Frases cortas o medias, acción clara, emoción visible en el cuerpo, un misterio cotidiano suave. Tensión leve; el niño entiende sin explicaciones adultas.",
+      "Edad 6–8: nombre con gancho; misión en una frase dibujable; frases ≤12–15 palabras; oral colombiano; una magia por objeto; colorín colorado; sin Trueno Verde/plata/impregnado.",
   },
   {
     id: "9-12",
     label: "9–12 años",
     blurbAge: "de 9 a 12 años",
     guidance:
-      "Edad 9–12: puede leer solo o con adulto. Oraciones un poco más ricas, motiva el porqué de las decisiones, empatía y dilema moral suave sin sermón. Humor de reconocimiento familiar.",
+      "Edad 9–12: viaje concreto con porqué; sin poesía vacía ni misiones confusas; sin plantilla sala→pantalla→cama.",
   },
 ];
 
@@ -222,6 +222,18 @@ const CLASSIC_BEATS: Record<string, string> = {
     "Guiño a Pombo: ganas de pasear vs consejo de volver a casa; escuchar con cariño; sin verso obligado.",
   cabritos:
     "Mamá sale; alguien intenta engañar en la puerta; seña o voz verdadera; la puerta se queda segura; sin horror.",
+};
+
+/** Hints de trama para momentos del trial (van al prompt IA). */
+const MOMENT_BEATS: Record<string, string> = {
+  pantallas:
+    "Tema-semilla: soltar una mirada que hipnotiza. Mundo nombrado (espejo-trampa, caja de luces del clan…), NO sala con TV/tablet. Héroe con rol de aventura. Cierre en hecho, sin ‘entendió que’. Sin cama/dulces sueños.",
+  dormir:
+    "Tema-semilla: descansar. Mundo nombrado (faroles, noche, viaje del clan…). PROHIBIDO acostar al niño o ‘dulces sueños’. La pausa se siente en la trama; cierre sin explicar la lección.",
+  compartir:
+    "Tema-semilla: compartir un recurso del mundo inventado. Cooperación en la aventura. Sin sala moderna obligatoria.",
+  verduras:
+    "Tema-semilla: verdura en el plato (puede llamarse distinto en el mundo). UNA magia simple. Misión clara. Frases cortas orales colombianas. Sin mitología apilada ni nombres flojos tipo Trueno Verde.",
 };
 
 function ing(
@@ -296,7 +308,14 @@ export function buildTrialSelection(input: TrialStoryInput) {
   const moment = getTrialMoment(input.momentId);
   return {
     heroes,
-    reto: [ing(`trial-reto-${moment.id}`, "dilema", moment.label)],
+    reto: [
+      ing(
+        `trial-reto-${moment.id}`,
+        "dilema",
+        moment.label,
+        MOMENT_BEATS[moment.id] ?? "",
+      ),
+    ],
     aprenden,
     lugar,
     mascota,
@@ -828,7 +847,7 @@ export function buildTrialPayload(input: TrialStoryInput): TrialStoryPayload {
 export function trialMarkdownToContent(
   markdown: string,
 ): PersonalizedStoryContent {
-  const cleaned = sanitizeFairyTaleOpening(markdown);
+  const cleaned = sanitizeFairyTaleBookends(markdown);
   const parsed = parseStoryHeader(cleaned);
   return {
     title: parsed.title,

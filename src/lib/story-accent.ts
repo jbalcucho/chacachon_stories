@@ -65,9 +65,9 @@ export function accentVoiceInstructions(code: StoryAccentCode): string {
     case "neutro":
       return `Voz y registro (neutro colombiano — DEFAULT):
 - Español latinoamericano claro, cálido y natural; comprensible en todo el país.
-- Cotidianidad colombiana sin saturar modismos: casa, colegio, familia, ciudad.
-- Máximo 0–1 modismo local por párrafo; prioriza palabras universales.
-- Detalles sensoriales concretos (olores, sonidos del hogar, clima).`;
+- Cotidianidad colombiana: plato (no cuenco), por un pelo (no por los pelos), se va de cara, arepa…
+- Máximo 0–1 modismo local por párrafo; prioriza palabras de casa.
+- Mundos del cuento: bosque, aldea, vereda, reino, isla… El espacio/nave es excepción, no costumbre.`;
     case "bogota_rolo":
       return `Voz y registro (bogotano rolo, tier 1):
 - Español bogotano cotidiano; humor de ciudad sin caricatura.

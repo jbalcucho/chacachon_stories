@@ -104,7 +104,11 @@ export function pageFits(inner: HTMLElement): boolean {
   return inner.scrollHeight <= available + 1;
 }
 
-function buildTryBlocks(
+/**
+ * Con pending, `blockIndex` apunta al bloque ya partido: el resto de la página
+ * debe tomar bloques *después* de ese índice (no el párrafo completo otra vez).
+ */
+export function buildTryBlocks(
   blocks: StoryBlock[],
   blockIndex: number,
   tryCount: number,
@@ -115,11 +119,21 @@ function buildTryBlocks(
       { type: "paragraph", text: pendingParagraph },
     ];
     if (tryCount > 1) {
-      pageBlocks.push(...blocks.slice(blockIndex, blockIndex + tryCount - 1));
+      pageBlocks.push(
+        ...blocks.slice(blockIndex + 1, blockIndex + tryCount),
+      );
     }
     return pageBlocks;
   }
   return blocks.slice(blockIndex, blockIndex + tryCount);
+}
+
+/** Tras consumir el sufijo pending, saltar el bloque fuente (+ siguientes enteros). */
+export function advanceBlockIndexAfterPending(
+  blockIndex: number,
+  fitCount: number,
+): number {
+  return blockIndex + fitCount;
 }
 
 function maxParagraphPrefixThatFits(
@@ -260,6 +274,19 @@ function growPageWithFollowingBlocks(
   };
 }
 
+/** Evita un ## huérfano al pie de página (se lee como párrafo suelto). */
+export function peelTrailingOrphanHeading(
+  pageBlocks: StoryBlock[],
+  nextIndex: number,
+): { pageBlocks: StoryBlock[]; nextIndex: number } {
+  if (pageBlocks.length < 2) return { pageBlocks, nextIndex };
+  if (pageBlocks.at(-1)?.type !== "heading") return { pageBlocks, nextIndex };
+  return {
+    pageBlocks: pageBlocks.slice(0, -1),
+    nextIndex: Math.max(0, nextIndex - 1),
+  };
+}
+
 /** Pagina midiendo el DOM real (misma estructura que StoryPageBlocks). */
 export function paginateBookContent(
   inner: HTMLElement,
@@ -297,8 +324,9 @@ export function paginateBookContent(
       break;
     }
 
+    // Con pending, tryCount=1 es solo el sufijo; tryCount=2+ añade bloques siguientes.
     const maxTry = pendingParagraph
-      ? 1 + (blocks.length - blockIndex)
+      ? 1 + Math.max(0, blocks.length - blockIndex - 1)
       : blocks.length - blockIndex;
 
     let fitCount = 0;
@@ -343,10 +371,21 @@ export function paginateBookContent(
           isFirstPage = false;
           continue;
         }
-        blockIndex = grown.nextIndex;
+        const peeled = peelTrailingOrphanHeading(pageBlocks, grown.nextIndex);
+        pageBlocks = peeled.pageBlocks;
+        blockIndex = peeled.nextIndex;
+        if (pageBlocks.length === 0) {
+          continue;
+        }
       } else {
         pendingParagraph = null;
-        blockIndex += Math.max(fitCount - 1, 0);
+        blockIndex = advanceBlockIndexAfterPending(blockIndex, fitCount);
+        const peeled = peelTrailingOrphanHeading(pageBlocks, blockIndex);
+        pageBlocks = peeled.pageBlocks;
+        blockIndex = peeled.nextIndex;
+        if (pageBlocks.length === 0) {
+          continue;
+        }
       }
 
       pages.push({

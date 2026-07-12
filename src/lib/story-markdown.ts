@@ -107,6 +107,43 @@ export function sanitizeFairyTaleOpening(markdown: string): string {
   return parts.join("\n");
 }
 
+const FAIRY_CLOSING =
+  /color[ií]n\s+colorado|este cuento se ha (?:terminado|acabado)|y se acab[oó] el cuento|vivieron felices/i;
+
+export const DEFAULT_FAIRY_CLOSING =
+  "Y colorín colorado, este cuento se ha terminado.";
+
+/** True si el cuerpo ya trae una fórmula oral de cierre cerca del final. */
+export function hasFairyTaleClosing(body: string): boolean {
+  const tail = body.trim().slice(-280);
+  return FAIRY_CLOSING.test(tail);
+}
+
+/**
+ * Garantiza el cierre oral (simétrico a Había una vez).
+ * Si el modelo olvida el colorín colorado, lo añade al final del cuerpo.
+ */
+export function ensureFairyTaleClosing(markdown: string): string {
+  const parsed = parseStoryHeader(markdown);
+  if (!parsed.body?.trim()) return markdown;
+  if (hasFairyTaleClosing(parsed.body)) return markdown;
+
+  const body = `${parsed.body.trim()}\n\n${DEFAULT_FAIRY_CLOSING}`;
+  const parts = [`# ${parsed.title}`];
+  if (parsed.subtitle) {
+    for (const piece of parsed.subtitle.split(" · ")) {
+      parts.push(`> ${piece}`);
+    }
+  }
+  parts.push("", body);
+  return parts.join("\n");
+}
+
+/** Apertura limpia + cierre oral garantizado. */
+export function sanitizeFairyTaleBookends(markdown: string): string {
+  return ensureFairyTaleClosing(sanitizeFairyTaleOpening(markdown));
+}
+
 function matchListItem(line: string): { text: string; ordered: boolean } | null {
   const ordered = ORDERED_ITEM.exec(line);
   if (ordered) return { text: ordered[1].trim(), ordered: true };
@@ -169,13 +206,29 @@ export function parseBodyBlocks(body: string): StoryBlock[] {
         });
         continue;
       }
-      const headingText = unwrapOuterBold(rawHeading.trim());
-      if (isSceneHeadingLabel(headingText)) {
-        blocks.push({ type: "heading", text: headingText });
+
+      // La IA suele pegar `## El reto\nNico…` sin línea en blanco (escenas 2–3).
+      // Separar la primera línea (etiqueta) del resto (narración).
+      const headingLines = rawHeading.split(/\r?\n/);
+      const firstLine = unwrapOuterBold((headingLines[0] ?? "").trim());
+      const restText = unwrapOuterBold(
+        headingLines
+          .slice(1)
+          .join("\n")
+          .replace(/\n/g, " ")
+          .trim(),
+      );
+
+      if (isSceneHeadingLabel(firstLine)) {
+        blocks.push({ type: "heading", text: firstLine });
+        if (restText) {
+          blocks.push({ type: "paragraph", text: restText });
+        }
       } else {
+        const merged = [firstLine, restText].filter(Boolean).join(" ").trim();
         blocks.push({
           type: "paragraph",
-          text: unwrapOuterBold(headingText.replace(/\n/g, " ")),
+          text: unwrapOuterBold(merged.replace(/\n/g, " ")),
         });
       }
       continue;

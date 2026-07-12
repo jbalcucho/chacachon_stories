@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import StoryReader from "@/components/StoryReader";
 import {
-  clearTrialStory,
   readTrialStory,
   trialMarkdownToContent,
   type TrialStoryPayload,
@@ -18,7 +17,29 @@ export default function LeerPruebaPage() {
   );
 
   useEffect(() => {
-    setPayload(readTrialStory());
+    const story = readTrialStory();
+    setPayload(story);
+    if (!story?.markdown) return;
+
+    // En local, copia el cuento actual a `.tmp/trial-stories/` para revisión conjunta.
+    void fetch("/api/dev/trial-story", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: story.name,
+        ageBandId: story.ageBandId,
+        ageBandLabel: story.ageBandLabel,
+        path: story.path,
+        momentId: story.momentId,
+        classicId: story.classicId,
+        markdown: story.markdown,
+        source: story.source,
+        createdAt: story.createdAt,
+        note: "leer/prueba sync",
+      }),
+    }).catch(() => {
+      /* endpoint solo en dev; silenciar en prod */
+    });
   }, []);
 
   const content = useMemo(() => {
@@ -54,60 +75,27 @@ export default function LeerPruebaPage() {
     );
   }
 
-  const lessonLine = payload.lessonLabel
-    ? `En esta historia, ${payload.name} practica ${payload.lessonLabel.toLowerCase()}.`
-    : null;
-
   return (
-    <div className="relative h-dvh">
-      <div className="trial-reader-banner" role="status">
-        <p>
-          Prueba
-          {payload.source && payload.source !== "mock" ? " con IA" : ""}
-          {" · "}
-          <strong>{payload.name}</strong>
-          {payload.ageBandLabel ? ` · ${payload.ageBandLabel}` : ""}
-          {payload.frameLabel ? ` · ${payload.frameLabel}` : ""}
-          {payload.companionLabel ? ` · con ${payload.companionLabel}` : ""}
-          {payload.petLabel ? ` · ${payload.petLabel}` : ""}
-          {" · "}
-          no se guarda.
-        </p>
-        {lessonLine ? (
-          <p className="trial-reader-banner__lesson">{lessonLine}</p>
-        ) : null}
-        <div className="trial-reader-banner__actions">
-          <Link href={LOGIN_HREF} className="trial-reader-banner__cta">
-            Guardar gratis con tu familia →
-          </Link>
-          <button
-            type="button"
-            className="trial-reader-banner__clear"
-            onClick={() => {
-              clearTrialStory();
-              window.location.href = "/probar";
-            }}
-          >
-            Otra prueba
-          </button>
-        </div>
+    <div className="trial-reader">
+      <div className="trial-reader__stage">
+        <StoryReader
+          content={content}
+          profileSource="user"
+          storyTitle={content.title}
+          storySlug="prueba"
+          backHref="/probar"
+          backLabel="Otra prueba"
+          shareable={false}
+          loginCallbackUrl="/crear"
+          statusBadge="Prueba"
+          endConversion={{
+            title: "¿Quieres guardar cuentos como este?",
+            body: "Crea tu familia gratis y los cuentos quedan en casa, con los nombres de verdad.",
+            href: LOGIN_HREF,
+            ctaLabel: "Guardar gratis →",
+          }}
+        />
       </div>
-      <StoryReader
-        content={content}
-        profileSource="user"
-        storyTitle={content.title}
-        storySlug="prueba"
-        backHref="/probar"
-        backLabel="Otra prueba"
-        shareable={false}
-        loginCallbackUrl="/crear"
-        endConversion={{
-          title: "¿Te gustó?",
-          body: "Así son los cuentos de Chacachón: de tu casa, con enseñanza suave. Ingresa gratis y arma tu familia de verdad.",
-          href: LOGIN_HREF,
-          ctaLabel: "Ingresar gratis →",
-        }}
-      />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import "server-only";
 import type { FamilyProfileDocument } from "@/lib/family-profile-schema";
 import type { LlmUsage } from "@/lib/generation-telemetry";
 import type { RecipeSelectionSlice } from "@/lib/recipe-summary";
-import { parseStoryHeader, sanitizeFairyTaleOpening } from "@/lib/story-markdown";
+import { parseStoryHeader, sanitizeFairyTaleBookends } from "@/lib/story-markdown";
 import { buildMockStoryMarkdown } from "@/lib/story-mock";
 import { buildStoryPrompt } from "@/lib/story-prompt";
 
@@ -26,7 +26,7 @@ const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_DEFAULT_MODEL = "claude-3-5-sonnet-latest";
 const GEMINI_BASE_URL =
   "https://generativelanguage.googleapis.com/v1beta/models";
-const MAX_TOKENS = 1600;
+const MAX_TOKENS = 2200;
 
 function titleFromMarkdown(markdown: string, fallback: string): string {
   const parsed = parseStoryHeader(markdown);
@@ -123,7 +123,11 @@ async function callGeminiModel(
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: system }] },
       contents: [{ role: "user", parts: [{ text: user }] }],
-      generationConfig: { maxOutputTokens: MAX_TOKENS, temperature: 0.9 },
+      generationConfig: {
+        maxOutputTokens: MAX_TOKENS,
+        temperature: 1.05,
+        topP: 0.95,
+      },
     }),
   });
 
@@ -200,7 +204,7 @@ export async function generateStory(
   if (geminiKey) {
     try {
       const { markdown, model, usage } = await callGemini(ctx, geminiKey);
-      const bodyMarkdown = sanitizeFairyTaleOpening(markdown.trim());
+      const bodyMarkdown = sanitizeFairyTaleBookends(markdown.trim());
       return {
         title: titleFromMarkdown(bodyMarkdown, fallbackTitle),
         bodyMarkdown,
@@ -216,7 +220,7 @@ export async function generateStory(
   if (anthropicKey) {
     try {
       const { markdown, usage } = await callClaude(ctx, anthropicKey);
-      const bodyMarkdown = sanitizeFairyTaleOpening(markdown.trim());
+      const bodyMarkdown = sanitizeFairyTaleBookends(markdown.trim());
       return {
         title: titleFromMarkdown(bodyMarkdown, fallbackTitle),
         bodyMarkdown,
@@ -229,7 +233,7 @@ export async function generateStory(
     }
   }
 
-  const markdown = sanitizeFairyTaleOpening(
+  const markdown = sanitizeFairyTaleBookends(
     buildMockStoryMarkdown(ctx.selection).trim(),
   );
   return {

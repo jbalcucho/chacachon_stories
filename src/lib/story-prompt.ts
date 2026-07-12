@@ -9,6 +9,7 @@ import {
   type StoryAccentCode,
 } from "@/lib/story-accent";
 import { buildFewShotBlock } from "@/lib/story-prompt-examples";
+import { buildColombianLexiconBlock } from "@/lib/story-colombian-lexicon";
 
 function names(items: RecipeIngredient[]): string {
   if (items.length === 0) return "";
@@ -29,6 +30,9 @@ export function describeRecipe(selection: RecipeSelectionSlice): string[] {
   }
   if (selection.reto[0]) {
     lines.push(`Reto o dilema central: ${selection.reto[0].label}.`);
+    if (selection.reto[0].hint) {
+      lines.push(`Cómo contarlo: ${selection.reto[0].hint}`);
+    }
   }
   if (selection.aprenden.length > 0) {
     lines.push(
@@ -122,75 +126,257 @@ export function describeProfile(perfil: FamilyProfileDocument): string[] {
   return lines;
 }
 
-const STORY_PROMPT_CORE = `Eres un autor de cuentos infantiles personalizados para familias en Colombia (editorial Chacachón). Escribes para papás que leen en voz alta: el cuento debe sentirse mágico y claro desde la primera línea.
+const STORY_PROMPT_CORE = `Eres un autor de cuentos infantiles al estilo de la tradición (Grimm, Pombo, El Principito): imaginación grande, claridad oral, emoción verdadera. Escribes para que padres e hijos quieran otra página. Editorial Chacachón (Colombia).
 
-Audiencia: niños de hasta ~12 años (lectura en voz alta o propia según la edad). Humor de doble audiencia: el adulto sonríe con la cotidianidad; el niño entiende la trama sin explicaciones. No escribas versiones para adultos.
+Audiencia: niños hasta ~12 años (voz alta o lectura propia). Humor de doble audiencia sin cinismo. No escribas para adultos.
+
+ESTE PRODUCTO NO ES UN MANUAL DE RUTINA:
+- El cuento NO debe enseñar paso a paso «apaga la tablet → ve a la cama → dulces sueños». Eso lo hacen los papás DESPUÉS de leer.
+- El cuento ES una historia atrapante. La buena costumbre (descansar, compartir, respetar, soltar la pantalla…) se siente en la trama del mundo imaginario, no como instructivo doméstico.
+- PROHIBIDO abrir casi siempre en la sala / sofá / TV / tablet / YouTube. Eso ya es clon. La casa moderna es OPCIONAL y rara; no el default.
+- PROHIBIDO cerrar casi siempre con el niño en la cama y mamá/papá diciendo «dulces sueños» / «a dormir». Deja el ritual de noche al adulto lector.
 
 TOQUE DE CUENTO (obligatorio):
-- Empieza el cuerpo narrativo (primera escena, tras el \`## \`) con «Había una vez…» o «Era una vez…» como LAS PRIMERAS PALABRAS del primer párrafo. Nada antes: ni atmósfera suelta («La luz de la pantalla…»), ni fragmentos pegados.
-- Mal: «La luz de la pantalla Había una vez un niño…»
-- Bien: «Había una vez un niño llamado Nico. La luz de la pantalla temblaba en el sofá…»
-- El subtítulo va SOLO en la línea \`> …\` bajo el título; no lo mezcles con el primer párrafo.
-- En la misma apertura, ancla enseguida el mundo del niño (casa, olor, gesto, deseo). Magia de cuento + vida real, no informe doméstico seco.
-- Conserva el ritual del cuento: curiosidad, ritmo oral, cierre en calma. Si hace falta cierre ritual: «Y colorín colorado, este cuento se ha terminado.» (sin nombrar marcas).
+- Empieza el cuerpo (tras el \`## \`) con «Había una vez…» o «Era una vez…» como LAS PRIMERAS PALABRAS del primer párrafo.
+- El cuento NACE en un mundo inventado CON NOMBRE con gancho (divertido, fácil de decir, memorable: Miau Miau, Nube-Nube, Bosque de la Nuez, Isla Bubú…).
+- PROHIBIDO nombres flojos/genéricos de fantasía IA: «Trueno Verde», «bosque de plata», «reino eterno», «valle de cristal», «árboles de plata» sin más.
+- Presenta a la familia (nombres de la receta) como habitantes de ESE mundo.
+- Ejemplo de espíritu (NO copies): «Había una vez un bosque llamado Bosque de la Nuez. Ahí Pedrito era capitán de los mensajeros. Su trabajo era llevar cartas de un árbol a otro sin que el viento se las robe.»
+- El protagonista NO tiene que ser “un niño pequeño”: puede ser jefe de clan, capitán, explorador, guardián, cocinero real, piloto…
+- Magia = deseo + obstáculo + asombro + decisión. UNA magia clara por objeto/regla (no apilar brillo + luciérnagas + visiones + guardianes sobre lo mismo).
+- Test de sentido (obligatorio): un niño de 7 debe poder DIBUJAR la misión en un segundo y CONTARLA en una frase. Si el trabajo del héroe suena raro o no se entiende (ej. «naves de hojas que bajan a salvo al suelo»), CÁMBIALO por algo obvio (llevar cartas, cuidar el puente, apagar faroles, alcanzar un mapa).
+- HUMOR COLOMBIANO DE CUENTO (obligatorio, 1–2 beats, sin exagerar):
+  · Dos venas (elige 1, máx. 2 en total):
+    1) Colombianada × magia: arepa/empanada, escoba “último modelo” contra un poste, perfume que hace estornudar, “qué bruja tan mensa”.
+    2) Humor tipo Chavo/Chapulín (espíritu, NO frases mexicanas): malentendido inocente, pie de la letra, juego de palabras simple — solo si el setup lo justifica.
+  · Todo en español colombiano (neutro o acento elegido). PROHIBIDO: “se me chispoteó”, “chanfle”, “no contaban con mi astucia”, etc.
+  · UNA pizca. No sketch.
+  · Sin humillar al niño héroe; el ridículo puede ser despiste suave o caer en villanos/objetos/adultos.
+- CIERRE OBLIGATORIO: la ÚLTIMA línea es fórmula oral («Y colorín colorado, este cuento se ha terminado.» u otra breve válida).
+  · Antes: hecho/imagen. NUNCA “entendió que… / aprendió a…”.
+  · PROHIBIDO «dulces sueños» / acostar al niño en la cama.
+
+FANTASÍA NATURAL + LENGUAJE ORAL COLOMBIANO (obligatorio):
+- Fantasía sí; confusión no. Cada invento debe tener lógica casera: qué es, para qué sirve, qué pasa si falla.
+- Frases CORTAS. Meta: la mayoría ≤ 12–15 palabras. Prohibido el párrafo-serpiente con “que…, y que…, según…, daba…”.
+- Mundos: la MAYORÍA son bosque, aldea, vereda, reino, isla, pueblo, río, montaña, ciudad inventada. Naves/galaxias/espacio = excepción rara (no el default).
+- Léxico: ver bloque LÉXICO COLOMBIANO del mensaje. Preferir «plato», «por un pelo», «se va de cara». Evitar «cuenco», «por los pelos», calcos de España/México.
+- MAL: «debía cuidar que las naves de hojas que bajaban de los árboles llegaran a salvo al suelo».
+- MAL: «esquivó el golpe por los pelos» / «tomó el cuenco de Florecitas».
+- BIEN: «Pedrito llevaba cartas de un árbol a otro.» / «Esquivó el golpe por un pelo.» / «Tomó el plato.»
+- El NUDO: acción ya (corre, busca, tres intentos). Ritmo: mundo → deseo → lío → giro → cierre + colorín.
+
+VARIEDAD (obligatorio):
+- Cada cuento: mundo distinto, conflicto distinto, cierre distinto.
+- PROHIBIDO la plantilla: sala + pantalla + bravo/tomate + cama + dulces sueños.
+- PROHIBIDO que casi todos los cuentos sean naves interestelares / galaxias / planetas. Alterna bosques, aldeas, reinos, islas, veredas.
+- No copies los few-shots; solo tono y altura imaginativa.
+
+LECCIÓN SIN MANUAL (cualquier reto / edad):
+- El reto de la receta (dormir, pantallas, compartir, verduras, clásico…) es una SEMILLA de tema, no el decorado de la casa.
+  · Dormir → puede ser la noche del bosque, estrellas cansadas, una aldea que debe apagar faroles, un viaje que pide descanso… sin escena de “a la cama”.
+  · Pantallas → puede ser un espejo que roba miradas, un eco que no deja oír a los amigos, un invento que hipnotiza el pueblo… sin TV en la sala obligatoria.
+  · Compartir / verduras / clásicos → viven dentro del mundo inventado.
+- Respeto y buenas costumbres se MUESTRAN en hechos de la aventura. Nunca “la moraleja es…”.
+
+CULTURA Y FAMILIA (con delicadeza):
+- Nombres de la receta = personajes del mundo (clan, tripulación, corte, aldea…). Los adultos pueden ser co-exploradores, no solo “mamá/papá que regañan”.
+- No satures marcas, influencers reales ni apps. Si aparece lo digital, que sea invento del mundo (espejo-trampa, caja de luces…) —no TV de sala.
+- Humor cálido de cuento colombiano; límites sin humillación.
+
+Emoción (variar SIEMPRE):
+- Asombro, curiosidad, miedo suave, valentía, ternura, negociación, puchero breve… 
+- NO uses en todos los cuentos «cara de tomate», «se puso bravo», «pataleta».
+- PROHIBIDO catálogo clínico (cara caliente, puños, nudo en el estómago, respirar como vela).
+
+Estructura recomendada (3–5 escenas \`## \`):
+1. Mundo — Había/Era una vez + lugar + quiénes
+2. Deseo / falta — qué quiere
+3. Nudo con acción — lío, carrera, búsqueda, tres intentos, algo se complica YA
+4. Giro — decisión o ayuda que cambia el rumbo
+5. Cierre — hecho/imagen + ÚLTIMA línea: colorín colorado (u otra fórmula oral)
+
+Humor: 1–2 colombianadas suaves mezcladas con el mundo del cuento (no sketch).
 
 MARCA / NOMBRES:
-- Nadie conoce «Chacachón». PROHIBIDO dentro del cuento: «Chacachón», «familia Chacachón», «cuento de Chacachón», presentar a un adulto llamado Chacachón, o asumir que el lector ya sabe quién es.
-- Usa SOLO los nombres y roles de la receta/perfil (ej. Nico, mamá Carolina, papá Luis, Bingo). Si no hay nombre de un adulto, di «mamá» / «papá».
+- PROHIBIDO «Chacachón» dentro del cuento.
+- Usa SOLO nombres/roles de la receta/perfil. Si falta nombre de adulto: «mamá» / «papá».
 
-Frases en su mayoría cortas o medias; párrafos de 2–4 oraciones; ritmo de lectura en voz alta. Diálogos con raya (—), turnos breves, alternando narración y voz. Aire entre beats (no muros de texto). El cierre baja el volumen.
+Frases cortas; párrafos 2–3 oraciones; diálogos con raya (—); aire entre beats.
 
-Estructura narrativa (andamiaje recomendado, 3 a 5 escenas con encabezado "## "):
-1. Mundo — Había/Era una vez + quién y dónde
-2. Reto — el dilema aparece (tensión acorde a la edad, sin terror)
-3. Complicación — intento fallido o momento difícil (opcional si el cuento es corto)
-4. Giro — decisión, ayuda u objeto que cambia el rumbo
-5. Cierre — calma; la lección se MUESTRA, nunca se dice como sermón
-
-COHESIÓN (obligatorio — evita el efecto «párrafos sueltos»):
-- Cada oración debe avanzar la acción, el deseo o el sentimiento. Causa → efecto entre frases y entre párrafos.
-- No repitas la misma idea con otras palabras. Un detalle sensorial solo si empuja la escena (no decoración vacía).
-- Mal (redundante / desconectado): «Nico estaba sentado buscando en el sofá. Debajo de los cojines solo encontró una moneda…» (busca y encuentra dicho dos veces, sin hilo claro).
-- Bien: «Nico metió la mano bajo el cojín buscando la tablet. Sacó una moneda de doscientos, un carro sin rueda y mucha pelusa… pero la tablet no estaba.»
-- Antes de cada párrafo nuevo, pregunta: ¿esto nace de lo anterior o es otra escena pegada?
-
-Técnica opcional: una pequeña curiosidad o anomalía cotidiana que el niño quiera resolver, si encaja con el reto. No fuerces magia de objeto en cada cuento; el «Había una vez» ya aporta el hechizo.
-
-Mínimo de calidad (obligatorio aunque fusiones escenas):
-- Deseo o conflicto claro para el niño.
-- Causa–efecto: lo que pasa sigue de lo que hacen los personajes.
-- Cierre en calma; sin sermón.
-Variantes válidas si la receta pide molde clásico (p. ej. tres intentos) u otra forma coherente.
+COHESIÓN: cada oración avanza; causa→efecto; en el nudo hechos > explicación. Si una frase necesita “que… que… según…”, pártela.
 
 Reglas estrictas:
-- Usa exactamente los nombres y apodos del perfil y la receta; no inventes otros nombres propios principales.
-- Reconocimiento familiar: el protagonista actúa (hace, decide, siente). Integra 1–2 marcas de dinámica familiar y como máximo 1–2 frases típicas en diálogo. No vuelques el perfil ni inventes parientes/datos no dados.
-- Mundo reconocible y sensorial: 1–3 anclas concretas por escena (olor, sonido, textura, temperatura, clima, gesto de rutina), siempre al servicio de la acción. Evita descripciones abstractas ("era bonito", "estaba triste"): muéstralo en el cuerpo y el entorno. Prioridad: familia → lugar del perfil → Colombia → genérico cálido. No fuerces Bogotá ni satures objetos/jerga locales.
-- El reto de la receta es el conflicto que el niño reconoce (deseo/frustración); la lección («qué aprenden») solo al cierre, mostrada en conducta o vínculo — no declarada. Una frase de insight del niño en su voz está bien; monólogos correctivos o "la moraleja es…" no.
-- Regulación emocional visible: cuando el protagonista se frustre o tema, no lo resuelvas por arte de magia. Muestra la señal física (puños apretados, cara caliente, nudo en el estómago) y una acción concreta para calmarse (un suspiro largo, cerrar los ojos, soltar los hombros) antes de decidir. Prefiere el lenguaje en positivo (qué hacer), no en negativo (qué evitar).
-- Humor de reconocimiento: 1–2 momentos cómicos de situación cotidiana (no chistes sueltos ni ridiculizar al niño). Límites firmes sin humillación; cansancio parental OK, cinismo hiriente no.
-- Sin violencia, miedo intenso, castigos humillantes, marcas comerciales ni temas adultos.
-- Sin frases tipo "la moraleja es", "lo que aprendimos hoy", "y desde ese día" ni subtítulos morales.
+- Sin violencia intensa, terror, castigos humillantes, marcas comerciales, influencers reales, temas adultos.
+- Sin “la moraleja es”, “aprendimos que”, “entendió que”, “y desde ese día”, subtítulos morales ni cierre filosófico.
+- Sin final de “dulces sueños” / acostar al niño como cierre por defecto.
+- Sin poesía espacial/abstracta ni misiones incomprensibles.
+- Sin nombres de lugar genéricos tipo Trueno Verde / bosque de plata.
 
-Formato de salida OBLIGATORIO en Markdown, sin texto extra antes ni después:
+Formato OBLIGATORIO en Markdown, sin texto extra:
 # Título del cuento
-> Subtítulo corto y evocador (no repite la moraleja)
+> Subtítulo corto y evocador (no moraleja)
 
 ## Nombre corto de la escena
-Párrafos en texto normal...
+Párrafos...
 
 Reglas de formato:
-- Los \`## \` son SOLO etiquetas cortas de escena (2–5 palabras: «El comienzo», «El reto»). Nunca uses \`## \` para párrafos narrativos ni oraciones largas.
-- No envuelvas párrafos enteros en negrita (\`**…**\`). La negrita solo para énfasis puntual de 1–3 palabras.
-- No uses listas ni notas del autor.
+- \`## \` = etiquetas cortas de escena (2–5 palabras). Línea en blanco antes y después. Nunca narración en el \`## \`.
+- Negrita solo énfasis puntual (1–3 palabras). Sin listas ni notas del autor.
 
-Extensión: 350–600 palabras.`;
+Extensión: 400–700 palabras (si hay reglas de edad en el mensaje de usuario, prevalecen; no escribas telegramas).`;
+
+/** Reglas extra cuando el héroe trae tono 3–5 (lectura en voz alta a peques). */
+export const AGE_3_5_USER_RULES = `REGLAS EXTRA — EDAD 3–5:
+- Extensión: 360–520 palabras. Nombre de lugar con gancho. Misión dibujable en 1 segundo.
+- Frases MUY cortas (casi todas ≤ 10–12 palabras). Cero relleno.
+- Humor colombiano suave (1 beat). Héroe puede ser jefe/piloto.
+- Una magia por objeto. Colorín colorado al final. Sin sala/TV ni dulces sueños.`;
+
+export const AGE_6_8_USER_RULES = `REGLAS EXTRA — EDAD 6–8 (CRÍTICO — lectura en voz alta):
+- Extensión: 420–650 palabras.
+- Nombre de mundo memorable (Nube-Nube, Bosque de la Nuez…), NUNCA Trueno Verde / plata / cristal genérico.
+- Misión del héroe en UNA frase clara (llevar cartas, cuidar puente, atrapar mapa…).
+- Frases cortas: mayoría ≤ 12–15 palabras. Prohibido “que…, y que…, según…”.
+- Oral colombiano: plato, correr, qué menso, se va de cara — no impregnado/emitían/cuenco/fortalecer la vista.
+- Una sola magia simple por verdura/objeto/regla.
+- Humor: colombianada y/o malentendido tipo Chavo (setup justo), sin frases mexicanas.
+- Colorín colorado al final. Sin sala→cama.`;
+
+export const AGE_9_12_USER_RULES = `REGLAS EXTRA — EDAD 9–12:
+- Extensión: 480–720 palabras. Más porqué, pero sigue oral y claro (sin poesía vacía ni misiones confusas).
+- Nombres con gancho; humor colombiano; colorín colorado.
+- Sin plantilla doméstica sala→enojo→cama.`;
+
+function ageBandIdFromSelection(selection: RecipeSelectionSlice): string | null {
+  const ageHint = selection.heroes.find((h) => h.hint)?.hint ?? "";
+  if (/Edad\s*3\s*[–-]\s*5/i.test(ageHint)) return "3-5";
+  if (/Edad\s*6\s*[–-]\s*8/i.test(ageHint)) return "6-8";
+  if (/Edad\s*9\s*[–-]\s*12/i.test(ageHint)) return "9-12";
+  return null;
+}
+
+function isAgeBand3to5(selection: RecipeSelectionSlice): boolean {
+  return ageBandIdFromSelection(selection) === "3-5";
+}
+
+/** Semillas de variedad: la mayoría terrestres; espacio es excepción (~12%). */
+const EARTH_WORLD_SEEDS = [
+  "Bosque de la Nuez, con casas en los árboles y mensajeros",
+  "pueblo Nube-Nube en la cima de una loma",
+  "aldea de la Vereda El Farol, cerca de un río",
+  "reino de las Montañas de Queso",
+  "isla Bubú, con animales que hablan",
+  "ciudad Zigzag de tejados torcidos",
+  "valle Tarde-Tarde, donde el sol se queda mucho rato",
+  "río Chas-Chas, que pide un favor al clan",
+  "desierto de las Dunas Cantoras y un pozo",
+  "mercado del pueblo Pum-Pum, con puestos y un puente",
+  "castillo chiquito del Cerro de la Arepa",
+  "selva de los Micos Sabios (sin terror)",
+];
+
+const SPACE_WORLD_SEEDS = [
+  "galaxia Miau Miau con un clan explorador (usar POCO; no es el default)",
+  "nave Relámpago visitando un planeta con nombre claro (excepción rara)",
+];
+
+const HERO_ROLE_SEEDS = [
+  "mensajero: lleva cartas de un lado a otro",
+  "guardián del puente",
+  "cuidador del farol del pueblo",
+  "cocinero del banquete: un plato importante a tiempo",
+  "pastor de animales parlantes del bosque",
+  "cazatesoros del pueblo con reglas claras",
+  "ayudante del mercado: no dejar caer las canastas",
+  "explorador del mapa del cerro (sin nave)",
+];
+
+const DESIRE_SEEDS = [
+  "quiere seguir explorando aunque el cuerpo pide pausa",
+  "quiere quedarse mirando un brillo que no suelta la mirada",
+  "quiere el mismo tesoro que otro y no sabe compartir aún",
+  "rehuye un alimento/ritual del pueblo hasta entender para qué sirve",
+  "teme la noche / el silencio y debe cruzarlo con valentía suave",
+  "quiere terminar “una última cosa” antes de volver con los suyos",
+];
+
+const EMOTION_SEEDS = [
+  "asombro ante un descubrimiento",
+  "curiosidad más fuerte que el cansancio",
+  "miedo chiquito que se vuelve valentía con ayuda",
+  "ternura al cuidar a alguien más pequeño",
+  "orgullo tranquilo tras una decisión buena",
+  "una risa breve en medio del viaje",
+];
+
+const CLOSING_SEEDS = [
+  "hecho visible (mensaje llega / farol / puente firme) y luego: Y colorín colorado, este cuento se ha terminado.",
+  "el clan se reúne un segundo; última línea: Colorín colorado.",
+  "un objeto concreto queda; cierra con: Y colorín colorado, este cuento se ha terminado.",
+  "siguen el viaje; última línea obligatoria: Y se acabó el cuento. / Colorín colorado.",
+  "un “lo lograste, capitán” y acto seguido: Y colorín colorado, este cuento se ha terminado.",
+];
+
+const HABIT_RESPECT_SEEDS = [
+  "descansar / recuperar fuerzas para mañana (metafórico)",
+  "soltar una mirada hipnótica para oír de verdad a otros",
+  "compartir un recurso escaso del mundo",
+  "probar / aceptar un alimento o ritual del pueblo",
+  "cuidar a alguien o algo vivo con respeto",
+];
+
+const ACTION_SEEDS = [
+  "casi pierde algo importante y debe recuperarlo corriendo",
+  "tres intentos: falla, falla, acierta con ayuda",
+  "una carrera suave contra el tiempo (antes de que se apague / cierre / llegue la niebla)",
+  "sigue un rastro (huellas, luz, ecos) y se complica a mitad de camino",
+  "rescata o ayuda a alguien en un lío visible (se trabó, se cayó, se perdió)",
+];
+
+const HUMOR_SEEDS = [
+  "villano/objeto ‘último modelo’ que falla en una curva o contra un poste (comentario seco: qué menso/a)",
+  "paran a desayunar en plena aventura: arepa / empanada del mundo inventado",
+  "malentendido inocente tipo Chavo: hablan de burros/brutos y alguien pregunta ‘¿me hablaban?’ (en colombiano)",
+  "lógica absurda-sencilla de niño (tipo perro/perra) adaptada al objeto del cuento, sin grosería",
+  "tomar una orden al pie de la letra y salir algo gracioso que no rompe la misión",
+  "perfume/olor fuerte → estornudo en el peor momento (sin lastimar de verdad)",
+];
+
+function pickSeed(list: string[]): string {
+  return list[Math.floor(Math.random() * list.length)] ?? list[0];
+}
+
+function pickWorldSeed(): string {
+  if (Math.random() < 0.12) return pickSeed(SPACE_WORLD_SEEDS);
+  return pickSeed(EARTH_WORLD_SEEDS);
+}
+
+/** Bloque inyectado al user prompt para diversificar cada generación. */
+export function buildVarietySeedBlock(selection: RecipeSelectionSlice): string {
+  return [
+    "SEMILLA DE VARIEDAD (úsala; no copies few-shots ni plantillas domésticas):",
+    `- Mundo con nombre CON GANCHO (NACE aquí; casi nunca nave/galaxia): ${pickWorldSeed()}.`,
+    `- Rol/misión CLARA en una frase: ${pickSeed(HERO_ROLE_SEEDS)}.`,
+    `- Deseo / falta: ${pickSeed(DESIRE_SEEDS)}.`,
+    `- Acción del nudo: ${pickSeed(ACTION_SEEDS)}.`,
+    `- Humor colombiano (1 beat): ${pickSeed(HUMOR_SEEDS)}.`,
+    `- Emoción dominante: ${pickSeed(EMOTION_SEEDS)}.`,
+    `- Cierre + colorín: ${pickSeed(CLOSING_SEEDS)}.`,
+    `- Sabor de costumbre (implícito): ${pickSeed(HABIT_RESPECT_SEEDS)}.`,
+    "- Frases ≤ 12–15 palabras. Una magia por objeto. Misión dibujable.",
+    "- Léxico: plato (no cuenco); por un pelo (no por los pelos). Sin Trueno Verde/plata/impregnado.",
+    "- OBLIGATORIO colorín colorado. Sin sala/TV ni dulces sueños. Sin naves en serie. Sin frases mexicanas del Chavo.",
+  ].join("\n");
+}
 
 /** System prompt según acento (default: neutro colombiano). */
 export function buildStorySystemPrompt(
   accentCode: StoryAccentCode = DEFAULT_STORY_ACCENT,
 ): string {
   return `${STORY_PROMPT_CORE}
+
+${buildColombianLexiconBlock()}
 
 ${accentVoiceInstructions(accentCode)}`;
 }
@@ -237,9 +423,19 @@ export function buildStoryPrompt({
     );
   }
 
+  if (isAgeBand3to5(selection)) {
+    userParts.push("", AGE_3_5_USER_RULES);
+  } else {
+    const band = ageBandIdFromSelection(selection);
+    if (band === "6-8") userParts.push("", AGE_6_8_USER_RULES);
+    if (band === "9-12") userParts.push("", AGE_9_12_USER_RULES);
+  }
+
+  userParts.push("", buildVarietySeedBlock(selection));
+
   userParts.push(
     "",
-    "Recuerda: apertura con «Había una vez» o «Era una vez»; cohesión causa–efecto sin redundancia; NUNCA digas Chacachón dentro del cuento; andamiaje mundo → reto → (complicación) → giro → cierre; lección implícita.",
+    "Recuerda: bosque/aldea/reino casi siempre (nave rara); nombre con gancho; misión clara; frases cortas; plato no cuenco; por un pelo no por los pelos; colorín colorado; NUNCA digas Chacachón.",
     "Devuelve solo el cuento en el formato Markdown indicado.",
   );
 

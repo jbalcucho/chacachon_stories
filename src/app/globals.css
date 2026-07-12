@@ -3133,6 +3133,13 @@ html.route-fade-exit body::after {
   border-color: rgba(251, 191, 36, 0.25);
 }
 
+.story-reader__badge--trial {
+  color: #fde68a;
+  background: rgba(251, 191, 36, 0.14);
+  border-color: rgba(251, 191, 36, 0.3);
+  letter-spacing: 0.02em;
+}
+
 .story-reader__meta-badges {
   display: flex;
   align-items: center;
@@ -3677,8 +3684,6 @@ html.route-fade-exit body::after {
 }
 
 .book-page__body p + p,
-.book-page__body .book-page__heading + p,
-.book-page__body p + .book-page__heading,
 .book-page__body .book-page__divider + p,
 .book-page__body p + .book-page__divider,
 .book-page__body .book-page__list + p,
@@ -3686,9 +3691,19 @@ html.route-fade-exit body::after {
   margin-top: var(--para-gap);
 }
 
-.book-page__body .book-page__heading,
-.book-page__body h2.book-page__heading {
-  margin-top: calc(var(--para-gap) * 2);
+/* Escena → párrafo: un renglón de aire, sin romper la grilla. */
+.book-page__body .book-page__heading + p {
+  margin-top: 0;
+}
+
+.book-page__body p + .book-page__heading,
+.book-page__body .book-page__list + .book-page__heading,
+.book-page__body .book-page__divider + .book-page__heading {
+  margin-top: var(--para-gap);
+}
+
+.book-page__body > .book-page__heading:first-child {
+  margin-top: 0;
 }
 
 .book-page__body strong {
@@ -3732,15 +3747,18 @@ html.route-fade-exit body::after {
   color: var(--paper-title);
 }
 
+/* Título de escena: coral y peso, pero en el mismo ritmo de renglón. */
 .book-page__heading {
   margin: 0;
+  padding: 0;
   font-family: var(--font-fredoka), var(--font-nunito), system-ui, sans-serif;
-  font-size: 0.82em;
+  font-size: 1em;
   font-weight: 700;
-  color: var(--paper-subtitle);
-  letter-spacing: 0.03em;
+  color: var(--paper-title);
+  letter-spacing: 0.04em;
   line-height: var(--line-step);
   text-transform: none;
+  box-shadow: inset 0 -1.5px 0 color-mix(in srgb, var(--paper-title) 30%, transparent);
 }
 
 .book-page__divider {
@@ -3795,6 +3813,8 @@ html.route-fade-exit body::after {
   flex-shrink: 0;
   font-family: var(--font-nunito), system-ui, sans-serif;
   font-size: 0.85rem;
+  position: relative;
+  z-index: 4;
 }
 
 .book-reader__footer .book-reader__nav-btn:first-of-type {
@@ -7110,107 +7130,90 @@ button.recipe-wizard__step-btn:hover {
   margin-top: -0.25rem;
 }
 
-.trial-reader-banner {
-  position: absolute;
-  z-index: 30;
-  top: 0;
-  left: 0;
-  right: 0;
+.trial-reader {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 0.4rem;
-  padding: 0.55rem 0.85rem;
-  background: rgba(42, 61, 110, 0.92);
-  border-bottom: 1px solid rgba(255, 233, 184, 0.22);
-  color: var(--color-cream);
-  font-size: 0.78rem;
-  line-height: 1.35;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
 }
 
-.trial-reader-banner p {
-  margin: 0;
-}
-
-.trial-reader-banner__lesson {
-  color: var(--color-honey-glow);
-  font-weight: 700;
-}
-
-.trial-reader-banner a {
-  color: var(--color-honey-glow);
-}
-
-.trial-reader-banner__actions {
+.trial-reader__stage {
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.trial-reader__stage > .story-reader {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.book-reader__bottom {
+  position: relative;
+  z-index: 4;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+/* Hueco real desde pág. 1: el CTA vive siempre en el layout (invisible)
+   para no re-paginar el libro al llegar al final. */
+.book-reader__end-slot {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: flex;
   align-items: center;
-  gap: 0.45rem;
-}
-
-.trial-reader-banner__cta {
-  display: inline-block;
-  padding: 0.3rem 0.75rem;
-  border-radius: 999px;
-  background: rgba(251, 191, 36, 0.92);
-  color: #422006 !important;
-  font-weight: 800;
-  font-size: 0.72rem;
-  text-decoration: none !important;
-  white-space: nowrap;
-}
-
-.trial-reader-banner__cta:hover {
-  background: #fbbf24;
-}
-
-.trial-reader-banner__clear {
-  border: 1px solid rgba(255, 233, 184, 0.3);
-  background: transparent;
-  color: var(--color-honey-glow);
-  border-radius: 999px;
-  padding: 0.25rem 0.65rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.trial-reader-banner + * {
-  padding-top: 4.5rem;
+  justify-content: center;
+  padding: 0.2rem 0.55rem 0;
 }
 
 .book-reader__end-conversion {
-  margin: 0.75rem 0.85rem 1rem;
-  padding: 0.9rem 1rem;
+  width: 100%;
+  max-width: 26rem;
+  margin: 0;
+  padding: 0.55rem 0.75rem 0.6rem;
   border-radius: 0.85rem;
   text-align: center;
-  background: rgba(251, 191, 36, 0.14);
-  border: 1px solid rgba(251, 191, 36, 0.4);
+  background: rgba(42, 36, 24, 0.92);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  /* Sin transición de layout; solo aparición suave al final. */
+  transition: opacity 0.2s ease;
+}
+
+.book-reader__end-conversion--visible {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .book-reader__end-conversion-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--color-honey-glow);
 }
 
 .book-reader__end-conversion-body {
-  margin: 0.35rem 0 0.75rem;
-  font-size: 0.85rem;
+  margin: 0.25rem 0 0.55rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
   color: var(--color-cream-muted);
 }
 
 .book-reader__end-conversion-cta {
   display: inline-block;
-  padding: 0.55rem 1.1rem;
+  padding: 0.45rem 0.95rem;
   border-radius: 999px;
   background: rgba(251, 191, 36, 0.95);
   color: #422006;
   font-weight: 800;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   text-decoration: none;
 }
 

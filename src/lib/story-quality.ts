@@ -84,16 +84,20 @@ const SENSORY_PATTERNS = [
 ];
 
 const REGULATION_PATTERNS = [
-  /\bpuños?\b/i,
-  /\bcara se le ponía caliente\b/i,
-  /\bnudo\b/i,
-  /\bestómago\b/i,
-  /\brespir(ar|ó|ación)\b/i,
+  /\bpatalet(a|ó|ando)\b/i,
+  /\bberrinche\b/i,
+  /\bse puso brav[oa]\b/i,
+  /\b¡?no+!?/i,
+  /\bcara de tomate\b/i,
+  /\bpate(ó|ando)\b/i,
+  /\btir(ó|arse) al piso\b/i,
+  /\bme ayudas\b/i,
   /\bsuspiro\b/i,
-  /\bsoltó.*boca\b/i,
-  /\bhombros le bajaron\b/i,
-  /\bcerró los ojos\b/i,
+  /\brespir(ar|ó|ación)\b/i,
   /\bcontó hasta tres\b/i,
+  /\bpuños?\b/i,
+  /\bnudo\b/i,
+  /\bcerró los ojos\b/i,
 ];
 
 function stripFrontmatter(raw: string): string {
