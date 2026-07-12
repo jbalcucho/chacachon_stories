@@ -1,5 +1,9 @@
 /**
  * Cuota anónima para 1 cuento IA de prueba / día (cookie + IP).
+ *
+ * Apagar temporalmente en pruebas:
+ *   TRIAL_AI_LIMITS_DISABLED=1
+ * Volver a encender: quitar la variable o ponerla en 0/false.
  */
 
 export class TrialAiLimitError extends Error {
@@ -12,6 +16,17 @@ export class TrialAiLimitError extends Error {
 export const TRIAL_AI_COOKIE = "chacachon_trial_ai_day";
 
 const memoryByIp = new Map<string, { day: string; count: number }>();
+
+/** Kill switch para pruebas de afinado (sin cuota diaria). */
+export function isTrialAiLimitsDisabled(): boolean {
+  const raw = process.env.TRIAL_AI_LIMITS_DISABLED?.trim().toLowerCase();
+  // TEMP (jul 2026): cuota apagada por defecto mientras afinamos el trial.
+  // Para reactivar ya: TRIAL_AI_LIMITS_DISABLED=0 (o false/no).
+  // Luego volver el default a `false` y quitar este comentario.
+  if (raw === "0" || raw === "false" || raw === "no") return false;
+  if (raw === "1" || raw === "true" || raw === "yes") return true;
+  return true;
+}
 
 export function getTrialAiDailyPerIp(): number {
   const raw = process.env.TRIAL_AI_DAILY_PER_IP;
@@ -52,6 +67,8 @@ export function assertTrialAiAllowed(input: {
   ip: string;
   cookieHeader: string | null;
 }): void {
+  if (isTrialAiLimitsDisabled()) return;
+
   const day = utcDayKey();
   if (!trialAiCookieAllows(input.cookieHeader, day)) {
     throw new TrialAiLimitError(
@@ -69,6 +86,8 @@ export function assertTrialAiAllowed(input: {
 }
 
 export function recordTrialAiUse(ip: string): void {
+  if (isTrialAiLimitsDisabled()) return;
+
   const day = utcDayKey();
   const entry = memoryByIp.get(ip);
   if (!entry || entry.day !== day) {
@@ -79,6 +98,7 @@ export function recordTrialAiUse(ip: string): void {
 }
 
 export async function assertTrialAiDbAllowed(ip: string): Promise<void> {
+  if (isTrialAiLimitsDisabled()) return;
   if (!process.env.DATABASE_URL) return;
 
   const limit = getTrialAiDailyPerIp();
@@ -106,6 +126,7 @@ export async function assertTrialAiDbAllowed(ip: string): Promise<void> {
 
 /** Stub en DB para cuota durable entre instancias (si hay DATABASE_URL). */
 export async function recordTrialAiInDb(ip: string): Promise<void> {
+  if (isTrialAiLimitsDisabled()) return;
   if (!process.env.DATABASE_URL) return;
 
   const { prisma } = await import("@/lib/prisma");
@@ -124,4 +145,10 @@ export async function recordTrialAiInDb(ip: string): Promise<void> {
 export function buildTrialAiCookie(day = utcDayKey()): string {
   const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
   return `${TRIAL_AI_COOKIE}=${encodeURIComponent(day)}; Path=/; Max-Age=86400; SameSite=Lax; HttpOnly${secure}`;
+}
+
+/** Borra la cookie de cuota (útil al apagar límites en pruebas). */
+export function clearTrialAiCookie(): string {
+  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
+  return `${TRIAL_AI_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax; HttpOnly${secure}`;
 }

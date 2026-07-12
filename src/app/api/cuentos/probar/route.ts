@@ -6,7 +6,9 @@ import {
   assertTrialAiDbAllowed,
   assertTrialAiAllowed,
   buildTrialAiCookie,
+  clearTrialAiCookie,
   clientIpFromHeaders,
+  isTrialAiLimitsDisabled,
   recordTrialAiInDb,
   recordTrialAiUse,
 } from "@/lib/trial-ai-limits";
@@ -136,7 +138,10 @@ export async function POST(request: Request) {
       petLabel: resolved.petLabel,
       source: draft.source,
     });
-    response.headers.set("Set-Cookie", buildTrialAiCookie());
+    response.headers.set(
+      "Set-Cookie",
+      isTrialAiLimitsDisabled() ? clearTrialAiCookie() : buildTrialAiCookie(),
+    );
     return response;
   } catch (error) {
     console.error("[api/cuentos/probar] error:", error);

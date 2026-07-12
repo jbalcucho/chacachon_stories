@@ -51,12 +51,12 @@ Diferenciador vs generadores genéricos: **historia de casa** o **clásico conoc
 
 1. `/probar` paso 1 — nombre + edad (3–5 / 6–8 / 9–12) + camino (`Historia de casa` | `Cuento clásico`) + elección (4 retos o 4 clásicos). CTA primario: **Crear con IA** (salta extras). Secundario: **Añadir familia (opcional)**.
 2. `/probar` paso 2 (omitible, ligero) — resumen narrativo + chips de acompañantes/mascota; nombres solo al expandir «Nombrar…»; lección como *Sugerido · Cambiar*.
-3. `POST /api/cuentos/probar` — genera con Gemini/Claude (mismo pipeline que `/crear`); cuota **cookie + IP/día** (`TRIAL_AI_DAILY_PER_IP`, default 2). No guarda el cuento en biblioteca.
+3. `POST /api/cuentos/probar` — genera con Gemini/Claude (mismo pipeline que `/crear`); cuota **cookie + IP/día** (`TRIAL_AI_DAILY_PER_IP`, default 2). **TEMP:** cuota apagada por defecto mientras se afina el trial; reactivar con `TRIAL_AI_LIMITS_DISABLED=0` (y luego devolver el default en código a límites ON).
 4. `/leer/prueba` — lectura en sessionStorage + CTA «Guardar gratis con tu familia».
 
 Si no hay API key o falla el proveedor, el cliente puede caer a mock local. Si la cuota se agotó (429), se pide ingresar (sin mock automático).
 
-Variables: `GEMINI_API_KEY` / `ANTHROPIC_API_KEY`, opcional `TRIAL_AI_DAILY_PER_IP`.
+Variables: `GEMINI_API_KEY` / `ANTHROPIC_API_KEY`, opcional `TRIAL_AI_DAILY_PER_IP`, opcional `TRIAL_AI_LIMITS_DISABLED`.
 
 ---
 
