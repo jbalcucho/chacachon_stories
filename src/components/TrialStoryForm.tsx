@@ -5,13 +5,16 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
 import {
+  TRIAL_COMPANION_NAME_MAX,
   TRIAL_CLASSICS,
   TRIAL_COMPANIONS,
   TRIAL_LESSONS,
   TRIAL_MOMENTS,
   TRIAL_NAME_MAX,
-  TRIAL_COMPANION_NAME_MAX,
   buildTrialPayload,
+  formatCompanionLabel,
+  getTrialClassic,
+  getTrialMoment,
   normalizeTrialName,
   resolveTrialDefaults,
   saveTrialStory,
@@ -46,6 +49,30 @@ export default function TrialStoryForm() {
   }, [path, momentId, classicId, name]);
 
   const activeLessonId = lessonId ?? suggestedLessonId;
+
+  const summary = useMemo(() => {
+    const frame =
+      path === "classic"
+        ? getTrialClassic(classicId).label
+        : getTrialMoment(momentId).label;
+    const pathLabel =
+      path === "classic" ? "Cuento clásico" : "Historia de casa";
+    const companions = TRIAL_COMPANIONS.filter((c) =>
+      companionIds.includes(c.id),
+    );
+    const companionLabel =
+      formatCompanionLabel(companions, companionNames) ?? "Solo";
+    const lessonLabel =
+      TRIAL_LESSONS.find((l) => l.id === activeLessonId)?.label ?? "";
+    return { frame, pathLabel, companionLabel, lessonLabel };
+  }, [
+    path,
+    classicId,
+    momentId,
+    companionIds,
+    companionNames,
+    activeLessonId,
+  ]);
 
   function toggleCompanion(id: string) {
     setCompanionIds((prev) =>
@@ -298,10 +325,15 @@ export default function TrialStoryForm() {
           <button
             type="button"
             className="trial-form__skip"
-            onClick={() => finish(true)}
+            onClick={() => {
+              if (!validateName()) return;
+              setCompanionIds([]);
+              setCompanionNames("");
+              setStep("optional");
+            }}
             disabled={loading}
           >
-            {loading ? "Creando con IA…" : "Crear ya (sin extras)"}
+            Ver resumen y crear
           </button>
         </form>
       ) : (
@@ -383,6 +415,74 @@ export default function TrialStoryForm() {
             </p>
           ) : null}
 
+          <section className="trial-form__summary" aria-label="Resumen del cuento">
+            <h2 className="trial-form__summary-title">Así quedará tu cuento</h2>
+            <p className="trial-form__summary-hint">
+              Puedes editar los campos. Los chips de arriba también cambian el
+              resumen.
+            </p>
+
+            <label className="trial-form__summary-row">
+              <span>Protagonista</span>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={TRIAL_NAME_MAX}
+                disabled={loading}
+              />
+            </label>
+
+            <div className="trial-form__summary-row trial-form__summary-row--static">
+              <span>Tipo</span>
+              <p>
+                {summary.pathLabel}: <strong>{summary.frame}</strong>
+                <button
+                  type="button"
+                  className="trial-form__summary-edit"
+                  onClick={() => setStep("basics")}
+                  disabled={loading}
+                >
+                  Cambiar
+                </button>
+              </p>
+            </div>
+
+            <div className="trial-form__summary-row trial-form__summary-row--static">
+              <span>Acompañan</span>
+              <p>
+                <strong>{summary.companionLabel}</strong>
+              </p>
+            </div>
+
+            {companionIds.length > 0 ? (
+              <label className="trial-form__summary-row">
+                <span>Nombre(s) de quien acompaña</span>
+                <input
+                  value={companionNames}
+                  onChange={(e) => setCompanionNames(e.target.value)}
+                  placeholder="Ej. Carolina, o Ana y Tito"
+                  maxLength={TRIAL_COMPANION_NAME_MAX}
+                  disabled={loading}
+                />
+              </label>
+            ) : null}
+
+            <label className="trial-form__summary-row">
+              <span>Qué aprenden</span>
+              <select
+                value={activeLessonId}
+                onChange={(e) => setLessonId(e.target.value)}
+                disabled={loading}
+              >
+                {TRIAL_LESSONS.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </section>
+
           <button
             type="button"
             className="family-btn family-btn--primary w-full"
@@ -397,7 +497,7 @@ export default function TrialStoryForm() {
             onClick={() => finish(true)}
             disabled={loading}
           >
-            Saltar extras y crear
+            Crear sin acompañantes
           </button>
           <button
             type="button"

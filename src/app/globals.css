@@ -6909,6 +6909,82 @@ button.recipe-wizard__step-btn:hover {
   color: var(--color-coral);
 }
 
+.trial-form__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.9rem 0.85rem;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(255, 202, 92, 0.35);
+  background: rgba(255, 202, 92, 0.1);
+}
+
+.trial-form__summary-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-honey-glow);
+}
+
+.trial-form__summary-hint {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  text-align: center;
+  color: rgba(240, 230, 216, 0.75);
+}
+
+.trial-form__summary-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-cream-muted);
+}
+
+.trial-form__summary-row input,
+.trial-form__summary-row select {
+  border-radius: 0.65rem;
+  border: 1px solid rgba(255, 233, 184, 0.28);
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--color-cream);
+  padding: 0.55rem 0.7rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.trial-form__summary-row input:focus,
+.trial-form__summary-row select:focus {
+  outline: 2px solid rgba(255, 202, 92, 0.45);
+  outline-offset: 1px;
+}
+
+.trial-form__summary-row--static p {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.55rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-cream);
+}
+
+.trial-form__summary-edit {
+  border: none;
+  background: transparent;
+  color: var(--color-honey-glow);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  padding: 0;
+}
+
 .trial-form__skip,
 .trial-form__back {
   margin: 0;
