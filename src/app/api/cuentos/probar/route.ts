@@ -28,12 +28,15 @@ export const maxDuration = 60;
 type Body = {
   name?: string;
   path?: TrialPath;
+  ageBandId?: string | null;
   momentId?: string | null;
   classicId?: string | null;
   companionId?: string | null;
   companionIds?: string[] | null;
   companionNameById?: Record<string, string> | null;
   companionNames?: string | null;
+  petId?: string | null;
+  petName?: string | null;
   lessonId?: string | null;
 };
 
@@ -74,11 +77,14 @@ export async function POST(request: Request) {
   const input = {
     name,
     path,
+    ageBandId: body.ageBandId ?? null,
     momentId: path === "moment" ? body.momentId ?? null : null,
     classicId: path === "classic" ? body.classicId ?? null : null,
     companionIds,
     companionNameById,
     companionNames: body.companionNames ?? null,
+    petId: body.petId ?? null,
+    petName: body.petName ?? null,
     lessonId: body.lessonId ?? null,
   };
 
@@ -111,18 +117,23 @@ export async function POST(request: Request) {
     const response = NextResponse.json({
       name,
       path,
+      ageBandId: resolved.ageBand.id,
+      ageBandLabel: resolved.ageBand.label,
       momentId: input.momentId,
       classicId: input.classicId,
       companionId: companionIds[0] ?? null,
       companionIds,
       companionNameById: resolveCompanionNameById(input),
       companionNames: null,
+      petId: resolved.pet?.id ?? null,
+      petName: resolved.petName,
       lessonId: resolved.lesson.id,
       markdown: draft.bodyMarkdown,
       createdAt: new Date().toISOString(),
       frameLabel: resolved.frameLabel,
       lessonLabel: resolved.lesson.label,
       companionLabel: resolved.companionLabel,
+      petLabel: resolved.petLabel,
       source: draft.source,
     });
     response.headers.set("Set-Cookie", buildTrialAiCookie());

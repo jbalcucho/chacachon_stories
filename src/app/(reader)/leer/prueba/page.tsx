@@ -66,8 +66,10 @@ export default function LeerPruebaPage() {
           {payload.source && payload.source !== "mock" ? " con IA" : ""}
           {" · "}
           <strong>{payload.name}</strong>
+          {payload.ageBandLabel ? ` · ${payload.ageBandLabel}` : ""}
           {payload.frameLabel ? ` · ${payload.frameLabel}` : ""}
           {payload.companionLabel ? ` · con ${payload.companionLabel}` : ""}
+          {payload.petLabel ? ` · ${payload.petLabel}` : ""}
           {" · "}
           no se guarda.
         </p>

@@ -60,14 +60,37 @@ describe("trial-story", () => {
     const blurb = buildTrialStoryBlurb({
       name: "Nico",
       path: "moment",
+      ageBandId: "6-8",
       momentId: "pantallas",
       companionIds: ["mama", "papa"],
       companionNameById: { mama: "Carolina", papa: "Luis" },
       lessonId: "responsabilidad",
     });
     expect(blurb).toBe(
-      "Se va a crear una historia donde Nico junto a su mamá Carolina y a su papá Luis enfrenta el reto «Menos pantallas». En el camino practican responsabilidad.",
+      "Se va a crear una historia donde Nico, de 6 a 8 años, junto a su mamá Carolina y a su papá Luis enfrenta el reto «Menos pantallas». En el camino practican responsabilidad.",
     );
+  });
+
+  it("includes an optional pet in the blurb and recipe", () => {
+    const input = {
+      name: "Nico",
+      path: "moment" as const,
+      ageBandId: "3-5",
+      momentId: "compartir",
+      companionIds: ["mama"],
+      companionNameById: { mama: "Carolina" },
+      petId: "perro",
+      petName: "Bingo",
+      lessonId: "generosidad",
+    };
+    expect(buildTrialStoryBlurb(input)).toBe(
+      "Se va a crear una historia donde Nico, de 3 a 5 años, junto a su mamá Carolina, y con su perro Bingo enfrenta el reto «Debemos compartir». En el camino practican generosidad.",
+    );
+    const selection = buildTrialSelection(input);
+    expect(selection.mascota).toHaveLength(1);
+    expect(selection.mascota[0]?.label).toBe("Bingo");
+    expect(selection.mascota[0]?.hint).toBe("perro");
+    expect(selection.heroes[0]?.hint).toMatch(/3–5|3-5|Edad 3/i);
   });
 
   it("builds a recipe selection for classic AI prompts", () => {

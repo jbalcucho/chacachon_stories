@@ -108,6 +108,19 @@ export const TRIAL_COMPANIONS: TrialCompanion[] = [
   { id: "amigo", label: "Amigo/a" },
 ];
 
+export type TrialPet = {
+  id: string;
+  label: string;
+  /** Rol en frase: «su perro Bingo». */
+  role: string;
+};
+
+export const TRIAL_PETS: TrialPet[] = [
+  { id: "perro", label: "Perro", role: "perro" },
+  { id: "gato", label: "Gato", role: "gato" },
+  { id: "otro", label: "Otra", role: "mascota" },
+];
+
 export const TRIAL_LESSONS: TrialLesson[] = [
   { id: "respeto", label: "Respeto" },
   { id: "responsabilidad", label: "Responsabilidad" },
@@ -119,6 +132,43 @@ export const TRIAL_LESSONS: TrialLesson[] = [
   { id: "generosidad", label: "Generosidad" },
 ];
 
+export type TrialAgeBand = {
+  id: string;
+  /** Chip en el form: «6–8 años». */
+  label: string;
+  /** Frase natural: «de 6 a 8 años». */
+  blurbAge: string;
+  /** Instrucciones de tono para la IA. */
+  guidance: string;
+};
+
+/** Rangos alineados a neuroeducación / lectura compartida. */
+export const TRIAL_AGE_BANDS: TrialAgeBand[] = [
+  {
+    id: "3-5",
+    label: "3–5 años",
+    blurbAge: "de 3 a 5 años",
+    guidance:
+      "Edad 3–5: lectura en voz alta. Frases muy cortas, ritmo concreto y sensorial, repetición suave, humor visual de casa. Sin dilemas morales abstractos ni vocabulario difícil.",
+  },
+  {
+    id: "6-8",
+    label: "6–8 años",
+    blurbAge: "de 6 a 8 años",
+    guidance:
+      "Edad 6–8: lectura compartida. Frases cortas o medias, acción clara, emoción visible en el cuerpo, un misterio cotidiano suave. Tensión leve; el niño entiende sin explicaciones adultas.",
+  },
+  {
+    id: "9-12",
+    label: "9–12 años",
+    blurbAge: "de 9 a 12 años",
+    guidance:
+      "Edad 9–12: puede leer solo o con adulto. Oraciones un poco más ricas, motiva el porqué de las decisiones, empatía y dilema moral suave sin sermón. Humor de reconocimiento familiar.",
+  },
+];
+
+export const DEFAULT_TRIAL_AGE_BAND_ID = "6-8";
+
 /** @deprecated Prefer TRIAL_MOMENTS — kept for old tests/call sites. */
 export const TRIAL_CHALLENGES = TRIAL_MOMENTS.map((m) => ({
   id: m.id,
@@ -129,6 +179,8 @@ export const TRIAL_CHALLENGES = TRIAL_MOMENTS.map((m) => ({
 export type TrialStoryInput = {
   name: string;
   path: TrialPath;
+  /** Rango de edad del niño: 3-5 | 6-8 | 9-12. */
+  ageBandId?: string | null;
   momentId?: string | null;
   classicId?: string | null;
   /** Uno o varios roles (mamá, papá…). */
@@ -142,6 +194,10 @@ export type TrialStoryInput = {
   companionNames?: string | null;
   /** @deprecated usar companionIds */
   companionId?: string | null;
+  /** Una mascota opcional: perro, gato u otra. */
+  petId?: string | null;
+  /** Nombre opcional de la mascota. */
+  petName?: string | null;
   lessonId?: string | null;
 };
 
@@ -151,6 +207,8 @@ export type TrialStoryPayload = TrialStoryInput & {
   frameLabel: string;
   lessonLabel: string;
   companionLabel: string | null;
+  petLabel: string | null;
+  ageBandLabel: string;
   source?: "gemini" | "claude" | "mock";
 };
 
@@ -167,7 +225,7 @@ const CLASSIC_BEATS: Record<string, string> = {
 
 function ing(
   id: string,
-  kind: "persona" | "dilema" | "emocion" | "lugar" | "molde",
+  kind: "persona" | "mascota" | "dilema" | "emocion" | "lugar" | "molde",
   label: string,
   hint = "",
 ) {
@@ -177,7 +235,14 @@ function ing(
 /** Receta mínima para el prompt IA del trial. */
 export function buildTrialSelection(input: TrialStoryInput) {
   const resolved = resolveTrialDefaults(input);
-  const heroes = [ing("trial-hero", "persona", input.name)];
+  const heroes = [
+    ing(
+      "trial-hero",
+      "persona",
+      input.name,
+      resolved.ageBand.guidance,
+    ),
+  ];
   const aprenden = [
     ing(`trial-emo-${resolved.lesson.id}`, "emocion", resolved.lesson.label),
   ];
@@ -188,6 +253,16 @@ export function buildTrialSelection(input: TrialStoryInput) {
     const label = personal ? `${c.label} ${personal}` : c.label;
     return ing(`trial-comp-${c.id}`, "persona", label);
   });
+  const mascota = resolved.pet
+    ? [
+        ing(
+          `trial-pet-${resolved.pet.id}`,
+          "mascota",
+          resolved.petIngredientLabel,
+          resolved.pet.role,
+        ),
+      ]
+    : [];
 
   if (input.path === "classic") {
     const classic = getTrialClassic(input.classicId);
@@ -202,7 +277,7 @@ export function buildTrialSelection(input: TrialStoryInput) {
       ],
       aprenden,
       lugar,
-      mascota: [],
+      mascota,
       acompanantes,
       rolReto: [],
       objeto: [],
@@ -223,7 +298,7 @@ export function buildTrialSelection(input: TrialStoryInput) {
     reto: [ing(`trial-reto-${moment.id}`, "dilema", moment.label)],
     aprenden,
     lugar,
-    mascota: [],
+    mascota,
     acompanantes,
     rolReto: [],
     objeto: [],
@@ -338,24 +413,84 @@ export function formatCompanionAlongside(
   return `junto a ${parts.slice(0, -1).join(", a ")} y a ${parts[parts.length - 1]}`;
 }
 
+export function getTrialPet(id: string | null | undefined): TrialPet | null {
+  if (!id) return null;
+  return TRIAL_PETS.find((p) => p.id === id) ?? null;
+}
+
+export function resolvePetName(input: TrialStoryInput): string | null {
+  return normalizeCompanionNames(input.petName);
+}
+
+/** «su perro Bingo» / «su gato» / «su mascota Luna» */
+export function formatPetPossessive(
+  pet: TrialPet | null,
+  petName: string | null | undefined,
+): string | null {
+  if (!pet) return null;
+  const personal = normalizeCompanionNames(petName);
+  return personal ? `su ${pet.role} ${personal}` : `su ${pet.role}`;
+}
+
+/** Etiqueta corta para banner / mock: «Bingo» o «perro». */
+export function formatPetLabel(
+  pet: TrialPet | null,
+  petName: string | null | undefined,
+): string | null {
+  if (!pet) return null;
+  const personal = normalizeCompanionNames(petName);
+  if (personal) return personal;
+  return pet.role;
+}
+
+/**
+ * Compañía del héroe en el blurb:
+ * «junto a su mamá Carolina y a su papá Luis, y con su perro Bingo»
+ */
+export function formatCompanyPhrase(
+  companions: TrialCompanion[],
+  nameById: Record<string, string> | null | undefined,
+  pet: TrialPet | null,
+  petName: string | null | undefined,
+): string | null {
+  const people = formatCompanionAlongside(companions, nameById);
+  const petPhrase = formatPetPossessive(pet, petName);
+  if (!people && !petPhrase) return null;
+  if (!people) return `junto a ${petPhrase}`;
+  if (!petPhrase) return people;
+  return `${people}, y con ${petPhrase}`;
+}
+
 /** Resumen narrativo editable en la UI del trial. */
 export function buildTrialStoryBlurb(input: TrialStoryInput): string {
   const hero = input.name.trim() || "el protagonista";
   const resolved = resolveTrialDefaults(input);
-  const alongside = formatCompanionAlongside(
+  const company = formatCompanyPhrase(
     resolved.companions,
     resolveCompanionNameById(input),
+    resolved.pet,
+    resolved.petName,
   );
-  const withWho = alongside ? ` ${alongside}` : "";
+  const withWho = company ? `, ${company}` : "";
   const action =
     input.path === "classic"
       ? `entra en un cuento inspirado en «${resolved.frameLabel}»`
       : `enfrenta el reto «${resolved.frameLabel}»`;
-  return `Se va a crear una historia donde ${hero}${withWho} ${action}. En el camino practican ${resolved.lesson.label.toLowerCase()}.`;
+  return `Se va a crear una historia donde ${hero}, ${resolved.ageBand.blurbAge}${withWho} ${action}. En el camino practican ${resolved.lesson.label.toLowerCase()}.`;
 }
 
 export function getTrialLesson(id: string | null | undefined): TrialLesson {
   return TRIAL_LESSONS.find((l) => l.id === id) ?? TRIAL_LESSONS[0];
+}
+
+export function getTrialAgeBand(
+  id: string | null | undefined,
+): TrialAgeBand {
+  return (
+    TRIAL_AGE_BANDS.find((b) => b.id === id) ??
+    TRIAL_AGE_BANDS.find((b) => b.id === DEFAULT_TRIAL_AGE_BAND_ID) ??
+    TRIAL_AGE_BANDS[1]
+  );
 }
 
 export function resolveTrialDefaults(input: TrialStoryInput): {
@@ -364,6 +499,11 @@ export function resolveTrialDefaults(input: TrialStoryInput): {
   lesson: TrialLesson;
   companions: TrialCompanion[];
   companionLabel: string | null;
+  pet: TrialPet | null;
+  petName: string | null;
+  petLabel: string | null;
+  petIngredientLabel: string;
+  ageBand: TrialAgeBand;
 } {
   const companions = resolveCompanionIds(input)
     .map((id) => getTrialCompanion(id))
@@ -372,6 +512,13 @@ export function resolveTrialDefaults(input: TrialStoryInput): {
     companions,
     resolveCompanionNameById(input),
   );
+  const pet = getTrialPet(input.petId);
+  const petName = resolvePetName(input);
+  const petLabel = formatPetLabel(pet, petName);
+  const petIngredientLabel = pet
+    ? petName ?? (pet.id === "otro" ? "Mascota" : pet.label)
+    : "";
+  const ageBand = getTrialAgeBand(input.ageBandId);
 
   if (input.path === "classic") {
     const classic = getTrialClassic(input.classicId);
@@ -382,6 +529,11 @@ export function resolveTrialDefaults(input: TrialStoryInput): {
       lesson,
       companions,
       companionLabel,
+      pet,
+      petName,
+      petLabel,
+      petIngredientLabel,
+      ageBand,
     };
   }
   const moment = getTrialMoment(input.momentId);
@@ -392,12 +544,23 @@ export function resolveTrialDefaults(input: TrialStoryInput): {
     lesson,
     companions,
     companionLabel,
+    pet,
+    petName,
+    petLabel,
+    petIngredientLabel,
+    ageBand,
   };
 }
 
-function withCompanion(base: string, companionLabel: string | null): string {
-  if (!companionLabel) return base;
-  return `${base} ${companionLabel} iba cerca, sin apurar.`;
+function withExtras(
+  base: string,
+  companionLabel: string | null,
+  petLabel: string | null,
+): string {
+  let text = base;
+  if (companionLabel) text += ` ${companionLabel} iba cerca, sin apurar.`;
+  if (petLabel) text += ` Y ${petLabel} también tenía su momento.`;
+  return text;
 }
 
 function buildMomentStory(
@@ -405,6 +568,7 @@ function buildMomentStory(
   moment: TrialMoment,
   lesson: TrialLesson,
   companionLabel: string | null,
+  petLabel: string | null,
 ): string {
   const title = `${name} y ${moment.label.toLowerCase()}`;
 
@@ -437,7 +601,7 @@ function buildMomentStory(
     "",
     "## El comienzo",
     "",
-    withCompanion(open, companionLabel),
+    withExtras(open, companionLabel, petLabel),
     "",
     "## El reto",
     "",
@@ -462,6 +626,7 @@ function buildClassicStory(
   classic: TrialClassic,
   lesson: TrialLesson,
   companionLabel: string | null,
+  petLabel: string | null,
 ): string {
   if (classic.id === "cerditos") {
     return [
@@ -471,9 +636,10 @@ function buildClassicStory(
       "",
       "## El comienzo",
       "",
-      withCompanion(
+      withExtras(
         `Había una vez tres casitas cerca de ${classic.place}. ${name} quería construir la más firme de todas.`,
         companionLabel,
+        petLabel,
       ),
       "",
       "## El reto",
@@ -502,9 +668,10 @@ function buildClassicStory(
       "",
       "## El comienzo",
       "",
-      withCompanion(
+      withExtras(
         `${name} salió con una canasta hacia ${classic.place}. Había que llegar donde la abuela, sin perder el rumbo.`,
         companionLabel,
+        petLabel,
       ),
       "",
       "## El reto",
@@ -533,9 +700,10 @@ function buildClassicStory(
       "",
       "## El comienzo",
       "",
-      withCompanion(
+      withExtras(
         `Cerca de ${classic.place}, un renacuajo muy elegante se acomodó el cuello y dijo: «Hoy salgo a pasear». ${name} lo escuchó atento.`,
         companionLabel,
+        petLabel,
       ),
       "",
       "## El reto",
@@ -564,9 +732,10 @@ function buildClassicStory(
     "",
     "## El comienzo",
     "",
-    withCompanion(
+    withExtras(
       `En ${classic.place}, mamá cabra salió un ratito. «No abran si la voz no es la mía», dijo. ${name} quedó atento junto a los cabritos.`,
       companionLabel,
+      petLabel,
     ),
     "",
     "## El reto",
@@ -606,7 +775,7 @@ export function buildTrialStoryMarkdown(
         }
       : inputOrName;
 
-  const { lesson, companionLabel } = resolveTrialDefaults(input);
+  const { lesson, companionLabel, petLabel } = resolveTrialDefaults(input);
 
   if (input.path === "classic") {
     return buildClassicStory(
@@ -614,6 +783,7 @@ export function buildTrialStoryMarkdown(
       getTrialClassic(input.classicId),
       lesson,
       companionLabel,
+      petLabel,
     );
   }
 
@@ -622,6 +792,7 @@ export function buildTrialStoryMarkdown(
     getTrialMoment(input.momentId),
     lesson,
     companionLabel,
+    petLabel,
   );
 }
 
@@ -632,6 +803,7 @@ export function buildTrialPayload(input: TrialStoryInput): TrialStoryPayload {
   return {
     name: input.name,
     path: input.path,
+    ageBandId: resolved.ageBand.id,
     momentId: input.path === "moment" ? getTrialMoment(input.momentId).id : null,
     classicId:
       input.path === "classic" ? getTrialClassic(input.classicId).id : null,
@@ -639,12 +811,16 @@ export function buildTrialPayload(input: TrialStoryInput): TrialStoryPayload {
     companionNameById,
     companionNames: null,
     companionId: companionIds[0] ?? null,
+    petId: resolved.pet?.id ?? null,
+    petName: resolved.petName,
     lessonId: resolved.lesson.id,
     markdown: buildTrialStoryMarkdown(input),
     createdAt: new Date().toISOString(),
     frameLabel: resolved.frameLabel,
     lessonLabel: resolved.lesson.label,
     companionLabel: resolved.companionLabel,
+    petLabel: resolved.petLabel,
+    ageBandLabel: resolved.ageBand.label,
   };
 }
 

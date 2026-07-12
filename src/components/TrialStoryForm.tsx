@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
 import {
+  DEFAULT_TRIAL_AGE_BAND_ID,
+  TRIAL_AGE_BANDS,
   TRIAL_COMPANION_NAME_MAX,
   TRIAL_CLASSICS,
   TRIAL_COMPANIONS,
   TRIAL_LESSONS,
   TRIAL_MOMENTS,
   TRIAL_NAME_MAX,
+  TRIAL_PETS,
   buildTrialPayload,
   buildTrialStoryBlurb,
   getTrialClassic,
@@ -29,6 +32,7 @@ export default function TrialStoryForm() {
   const { data: session } = useSession();
   const [step, setStep] = useState<Step>("basics");
   const [name, setName] = useState("");
+  const [ageBandId, setAgeBandId] = useState(DEFAULT_TRIAL_AGE_BAND_ID);
   const [path, setPath] = useState<TrialPath>("moment");
   const [momentId, setMomentId] = useState(TRIAL_MOMENTS[0].id);
   const [classicId, setClassicId] = useState(TRIAL_CLASSICS[0].id);
@@ -36,7 +40,12 @@ export default function TrialStoryForm() {
   const [companionNameById, setCompanionNameById] = useState<
     Record<string, string>
   >({});
+  const [petId, setPetId] = useState<string | null>(null);
+  const [petName, setPetName] = useState("");
   const [lessonId, setLessonId] = useState<string | null>(null);
+  const [showCompanionNames, setShowCompanionNames] = useState(false);
+  const [showPetName, setShowPetName] = useState(false);
+  const [showLessonPicker, setShowLessonPicker] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -51,6 +60,8 @@ export default function TrialStoryForm() {
   }, [path, momentId, classicId, name]);
 
   const activeLessonId = lessonId ?? suggestedLessonId;
+  const activeLessonLabel =
+    TRIAL_LESSONS.find((l) => l.id === activeLessonId)?.label ?? "";
 
   const selectedCompanions = useMemo(
     () => TRIAL_COMPANIONS.filter((c) => companionIds.includes(c.id)),
@@ -62,19 +73,25 @@ export default function TrialStoryForm() {
       buildTrialStoryBlurb({
         name: name.trim() || "el protagonista",
         path,
+        ageBandId,
         momentId,
         classicId,
         companionIds,
         companionNameById,
+        petId,
+        petName,
         lessonId: activeLessonId,
       }),
     [
       name,
       path,
+      ageBandId,
       momentId,
       classicId,
       companionIds,
       companionNameById,
+      petId,
+      petName,
       activeLessonId,
     ],
   );
@@ -87,7 +104,9 @@ export default function TrialStoryForm() {
           delete next[id];
           return next;
         });
-        return prev.filter((x) => x !== id);
+        const nextIds = prev.filter((x) => x !== id);
+        if (nextIds.length === 0) setShowCompanionNames(false);
+        return nextIds;
       }
       return [...prev, id];
     });
@@ -100,6 +119,20 @@ export default function TrialStoryForm() {
   function clearCompanions() {
     setCompanionIds([]);
     setCompanionNameById({});
+    setShowCompanionNames(false);
+  }
+
+  function clearPet() {
+    setPetId(null);
+    setPetName("");
+    setShowPetName(false);
+  }
+
+  function clearExtras() {
+    clearCompanions();
+    clearPet();
+    setLessonId(null);
+    setShowLessonPicker(false);
   }
 
   function validateName(): string | null {
@@ -128,10 +161,13 @@ export default function TrialStoryForm() {
     const input = {
       name: normalized,
       path,
+      ageBandId,
       momentId: path === "moment" ? momentId : null,
       classicId: path === "classic" ? classicId : null,
       companionIds: skipExtras ? [] : companionIds,
       companionNameById: skipExtras ? null : companionNameById,
+      petId: skipExtras ? null : petId,
+      petName: skipExtras ? null : petName || null,
       lessonId: skipExtras ? null : activeLessonId,
     };
 
@@ -152,18 +188,23 @@ export default function TrialStoryForm() {
         saveTrialStory({
           name: data.name,
           path: data.path,
+          ageBandId: data.ageBandId ?? ageBandId,
+          ageBandLabel: data.ageBandLabel ?? "",
           momentId: data.momentId ?? null,
           classicId: data.classicId ?? null,
           companionId: data.companionId ?? data.companionIds?.[0] ?? null,
           companionIds: data.companionIds ?? [],
           companionNameById: data.companionNameById ?? null,
           companionNames: null,
+          petId: data.petId ?? null,
+          petName: data.petName ?? null,
           lessonId: data.lessonId ?? null,
           markdown: data.markdown,
           createdAt: data.createdAt,
           frameLabel: data.frameLabel,
           lessonLabel: data.lessonLabel,
           companionLabel: data.companionLabel ?? null,
+          petLabel: data.petLabel ?? null,
           source: data.source ?? "mock",
         });
         router.push("/leer/prueba");
@@ -188,6 +229,11 @@ export default function TrialStoryForm() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function createNowFromBasics() {
+    if (!validateName()) return;
+    void finish(true);
   }
 
   return (
@@ -250,6 +296,28 @@ export default function TrialStoryForm() {
               disabled={loading}
             />
           </label>
+
+          <fieldset className="trial-form__challenges">
+            <legend>Edad del niño</legend>
+            <div className="trial-form__challenge-list">
+              {TRIAL_AGE_BANDS.map((band) => (
+                <label
+                  key={band.id}
+                  className={`trial-form__chip${ageBandId === band.id ? " trial-form__chip--active" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="ageBand"
+                    value={band.id}
+                    checked={ageBandId === band.id}
+                    onChange={() => setAgeBandId(band.id)}
+                    disabled={loading}
+                  />
+                  {band.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
           <fieldset className="trial-form__challenges">
             <legend>¿Sobre qué armamos el cuento?</legend>
@@ -339,34 +407,50 @@ export default function TrialStoryForm() {
           ) : null}
 
           <button
-            type="submit"
+            type="button"
             className="family-btn family-btn--primary w-full"
+            onClick={createNowFromBasics}
             disabled={loading}
           >
-            Continuar
+            {loading ? "Creando con IA…" : "Crear con IA"}
           </button>
           <button
-            type="button"
+            type="submit"
             className="trial-form__skip"
-            onClick={() => {
-              if (!validateName()) return;
-              clearCompanions();
-              setStep("optional");
-            }}
             disabled={loading}
           >
-            Ver resumen y crear
+            Añadir familia (opcional)
           </button>
         </form>
       ) : (
         <div className="trial-form mt-4">
           <p className="trial-form__optional-lead">
-            Opcional — puedes saltarlo. Elige quién acompaña (uno o más) y qué
-            aprenden.
+            Opcional — puedes crear ya. Añade familia solo si quieres.
           </p>
 
+          <section className="trial-form__summary" aria-label="Resumen del cuento">
+            <h2 className="trial-form__summary-title">Así quedará tu cuento</h2>
+            <p className="trial-form__summary-blurb">{storyBlurb}</p>
+            <p className="trial-form__summary-meta">
+              {path === "classic" ? "Cuento clásico" : "Historia de casa"}:{" "}
+              <strong>
+                {path === "classic"
+                  ? getTrialClassic(classicId).label
+                  : getTrialMoment(momentId).label}
+              </strong>
+              <button
+                type="button"
+                className="trial-form__summary-edit"
+                onClick={() => setStep("basics")}
+                disabled={loading}
+              >
+                Cambiar
+              </button>
+            </p>
+          </section>
+
           <fieldset className="trial-form__challenges">
-            <legend>¿Quién acompaña? (puedes elegir varios)</legend>
+            <legend>¿Quién acompaña?</legend>
             <div className="trial-form__challenge-list">
               <label
                 className={`trial-form__chip${companionIds.length === 0 ? " trial-form__chip--active" : ""}`}
@@ -394,49 +478,145 @@ export default function TrialStoryForm() {
                 </label>
               ))}
             </div>
+            {selectedCompanions.length > 0 ? (
+              <div className="trial-form__advanced">
+                {!showCompanionNames ? (
+                  <button
+                    type="button"
+                    className="trial-form__advanced-toggle"
+                    onClick={() => setShowCompanionNames(true)}
+                    disabled={loading}
+                  >
+                    Nombrar acompañantes (opcional)
+                  </button>
+                ) : (
+                  <div className="trial-form__companion-names">
+                    {selectedCompanions.map((c) => (
+                      <label key={c.id} className="trial-form__field">
+                        {c.label}
+                        <input
+                          value={companionNameById[c.id] ?? ""}
+                          onChange={(e) =>
+                            setCompanionName(c.id, e.target.value)
+                          }
+                          placeholder={`Ej. nombre de ${c.label.toLowerCase()}`}
+                          maxLength={TRIAL_COMPANION_NAME_MAX}
+                          disabled={loading}
+                        />
+                      </label>
+                    ))}
+                    <button
+                      type="button"
+                      className="trial-form__advanced-toggle"
+                      onClick={() => setShowCompanionNames(false)}
+                      disabled={loading}
+                    >
+                      Ocultar nombres
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : null}
           </fieldset>
 
-          {selectedCompanions.length > 0 ? (
-            <div className="trial-form__companion-names">
-              <p className="trial-form__companion-names-lead">
-                Nombre de cada acompañante (opcional)
-              </p>
-              {selectedCompanions.map((c) => (
-                <label key={c.id} className="trial-form__field">
-                  {c.label}
-                  <input
-                    value={companionNameById[c.id] ?? ""}
-                    onChange={(e) => setCompanionName(c.id, e.target.value)}
-                    placeholder={`Ej. nombre de ${c.label.toLowerCase()}`}
-                    maxLength={TRIAL_COMPANION_NAME_MAX}
-                    disabled={loading}
-                  />
-                </label>
-              ))}
-            </div>
-          ) : null}
-
           <fieldset className="trial-form__challenges">
-            <legend>¿Qué aprenden? (sugerido, editable)</legend>
+            <legend>¿Hay una mascota?</legend>
             <div className="trial-form__challenge-list">
-              {TRIAL_LESSONS.map((l) => (
+              <label
+                className={`trial-form__chip${petId === null ? " trial-form__chip--active" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="pet"
+                  checked={petId === null}
+                  onChange={() => clearPet()}
+                  disabled={loading}
+                />
+                Ninguna
+              </label>
+              {TRIAL_PETS.map((p) => (
                 <label
-                  key={l.id}
-                  className={`trial-form__chip${activeLessonId === l.id ? " trial-form__chip--active" : ""}`}
+                  key={p.id}
+                  className={`trial-form__chip${petId === p.id ? " trial-form__chip--active" : ""}`}
                 >
                   <input
                     type="radio"
-                    name="lesson"
-                    value={l.id}
-                    checked={activeLessonId === l.id}
-                    onChange={() => setLessonId(l.id)}
+                    name="pet"
+                    checked={petId === p.id}
+                    onChange={() => {
+                      setPetId(p.id);
+                      setShowPetName(false);
+                    }}
                     disabled={loading}
                   />
-                  {l.label}
+                  {p.label}
                 </label>
               ))}
             </div>
+            {petId ? (
+              <div className="trial-form__advanced">
+                {!showPetName ? (
+                  <button
+                    type="button"
+                    className="trial-form__advanced-toggle"
+                    onClick={() => setShowPetName(true)}
+                    disabled={loading}
+                  >
+                    Nombrar mascota (opcional)
+                  </button>
+                ) : (
+                  <label className="trial-form__field">
+                    Nombre
+                    <input
+                      value={petName}
+                      onChange={(e) => setPetName(e.target.value)}
+                      placeholder="Ej. Bingo"
+                      maxLength={TRIAL_COMPANION_NAME_MAX}
+                      disabled={loading}
+                      autoFocus
+                    />
+                  </label>
+                )}
+              </div>
+            ) : null}
           </fieldset>
+
+          <div className="trial-form__lesson-soft">
+            <p>
+              Sugerido: <strong>{activeLessonLabel}</strong>
+              <button
+                type="button"
+                className="trial-form__summary-edit"
+                onClick={() => setShowLessonPicker((v) => !v)}
+                disabled={loading}
+              >
+                {showLessonPicker ? "Listo" : "Cambiar"}
+              </button>
+            </p>
+            {showLessonPicker ? (
+              <div className="trial-form__challenge-list">
+                {TRIAL_LESSONS.map((l) => (
+                  <label
+                    key={l.id}
+                    className={`trial-form__chip${activeLessonId === l.id ? " trial-form__chip--active" : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="lesson"
+                      value={l.id}
+                      checked={activeLessonId === l.id}
+                      onChange={() => {
+                        setLessonId(l.id);
+                        setShowLessonPicker(false);
+                      }}
+                      disabled={loading}
+                    />
+                    {l.label}
+                  </label>
+                ))}
+              </div>
+            ) : null}
+          </div>
 
           {error ? (
             <p className="trial-form__error" role="alert">
@@ -444,75 +624,13 @@ export default function TrialStoryForm() {
             </p>
           ) : null}
 
-          <section className="trial-form__summary" aria-label="Resumen del cuento">
-            <h2 className="trial-form__summary-title">Así quedará tu cuento</h2>
-            <p className="trial-form__summary-blurb">{storyBlurb}</p>
-            <p className="trial-form__summary-hint">
-              Cambia los chips de arriba o el nombre — el resumen se actualiza
-              solo.
-            </p>
-
-            <label className="trial-form__summary-row">
-              <span>Protagonista</span>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                maxLength={TRIAL_NAME_MAX}
-                disabled={loading}
-              />
-            </label>
-
-            <div className="trial-form__summary-row trial-form__summary-row--static">
-              <span>Tipo</span>
-              <p>
-                {path === "classic" ? "Cuento clásico" : "Historia de casa"}:{" "}
-                <strong>
-                  {path === "classic"
-                    ? getTrialClassic(classicId).label
-                    : getTrialMoment(momentId).label}
-                </strong>
-                <button
-                  type="button"
-                  className="trial-form__summary-edit"
-                  onClick={() => setStep("basics")}
-                  disabled={loading}
-                >
-                  Cambiar
-                </button>
-              </p>
-            </div>
-
-            <label className="trial-form__summary-row">
-              <span>Qué aprenden</span>
-              <select
-                value={activeLessonId}
-                onChange={(e) => setLessonId(e.target.value)}
-                disabled={loading}
-              >
-                {TRIAL_LESSONS.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </section>
-
           <button
             type="button"
             className="family-btn family-btn--primary w-full"
             onClick={() => finish(false)}
             disabled={loading}
           >
-            {loading ? "Creando con IA…" : "Crear cuento con IA"}
-          </button>
-          <button
-            type="button"
-            className="trial-form__skip"
-            onClick={() => finish(true)}
-            disabled={loading}
-          >
-            Crear sin acompañantes
+            {loading ? "Creando con IA…" : "Crear con IA"}
           </button>
           <button
             type="button"

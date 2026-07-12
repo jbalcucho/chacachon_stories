@@ -6785,6 +6785,59 @@ button.recipe-wizard__step-btn:hover {
   padding: 0.6rem 0.8rem;
 }
 
+.trial-form__advanced {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.55rem;
+}
+
+.trial-form__advanced-toggle {
+  border: none;
+  background: transparent;
+  color: var(--color-honey-glow);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  padding: 0.15rem 0;
+}
+
+.trial-form__advanced-toggle:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.trial-form__advanced .trial-form__field {
+  width: 100%;
+  max-width: 20rem;
+}
+
+.trial-form__lesson-soft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  text-align: center;
+}
+
+.trial-form__lesson-soft > p {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-cream-muted);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem 0.55rem;
+}
+
+.trial-form__lesson-soft strong {
+  color: var(--color-cream);
+}
+
 .trial-form__field input {
   border-radius: 0.75rem;
   border: 1px solid rgba(255, 233, 184, 0.28);
@@ -6961,6 +7014,23 @@ button.recipe-wizard__step-btn:hover {
   line-height: 1.55;
   font-weight: 600;
   text-align: center;
+  color: var(--color-cream);
+}
+
+.trial-form__summary-meta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-cream-muted);
+  text-align: center;
+}
+
+.trial-form__summary-meta strong {
   color: var(--color-cream);
 }
 

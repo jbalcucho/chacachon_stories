@@ -22,6 +22,10 @@ export function describeRecipe(selection: RecipeSelectionSlice): string[] {
 
   if (selection.heroes.length > 0) {
     lines.push(`Protagonistas: ${names(selection.heroes)}.`);
+    const ageHint = selection.heroes.find((h) => h.hint)?.hint;
+    if (ageHint) {
+      lines.push(`Edad / tono de lectura: ${ageHint}`);
+    }
   }
   if (selection.reto[0]) {
     lines.push(`Reto o dilema central: ${selection.reto[0].label}.`);
