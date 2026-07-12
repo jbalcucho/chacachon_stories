@@ -10,6 +10,7 @@ import {
   TRIAL_LESSONS,
   TRIAL_MOMENTS,
   TRIAL_NAME_MAX,
+  TRIAL_COMPANION_NAME_MAX,
   buildTrialPayload,
   normalizeTrialName,
   resolveTrialDefaults,
@@ -28,7 +29,8 @@ export default function TrialStoryForm() {
   const [path, setPath] = useState<TrialPath>("moment");
   const [momentId, setMomentId] = useState(TRIAL_MOMENTS[0].id);
   const [classicId, setClassicId] = useState(TRIAL_CLASSICS[0].id);
-  const [companionId, setCompanionId] = useState<string | null>(null);
+  const [companionIds, setCompanionIds] = useState<string[]>([]);
+  const [companionNames, setCompanionNames] = useState("");
   const [lessonId, setLessonId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -44,6 +46,12 @@ export default function TrialStoryForm() {
   }, [path, momentId, classicId, name]);
 
   const activeLessonId = lessonId ?? suggestedLessonId;
+
+  function toggleCompanion(id: string) {
+    setCompanionIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  }
 
   function validateName(): string | null {
     const normalized = normalizeTrialName(name);
@@ -73,7 +81,8 @@ export default function TrialStoryForm() {
       path,
       momentId: path === "moment" ? momentId : null,
       classicId: path === "classic" ? classicId : null,
-      companionId: skipExtras ? null : companionId,
+      companionIds: skipExtras ? [] : companionIds,
+      companionNames: skipExtras ? null : companionNames || null,
       lessonId: skipExtras ? null : activeLessonId,
     };
 
@@ -96,7 +105,9 @@ export default function TrialStoryForm() {
           path: data.path,
           momentId: data.momentId ?? null,
           classicId: data.classicId ?? null,
-          companionId: data.companionId ?? null,
+          companionId: data.companionId ?? data.companionIds?.[0] ?? null,
+          companionIds: data.companionIds ?? [],
+          companionNames: data.companionNames ?? null,
           lessonId: data.lessonId ?? null,
           markdown: data.markdown,
           createdAt: data.createdAt,
@@ -296,21 +307,20 @@ export default function TrialStoryForm() {
       ) : (
         <div className="trial-form mt-4">
           <p className="trial-form__optional-lead">
-            Opcional — puedes saltarlo. Así se siente Chacachón: familia y
-            enseñanza, sin obligarte.
+            Opcional — puedes saltarlo. Elige quién acompaña (uno o más) y qué
+            aprenden.
           </p>
 
           <fieldset className="trial-form__challenges">
-            <legend>¿Quién acompaña? (opcional)</legend>
+            <legend>¿Quién acompaña? (puedes elegir varios)</legend>
             <div className="trial-form__challenge-list">
               <label
-                className={`trial-form__chip${companionId === null ? " trial-form__chip--active" : ""}`}
+                className={`trial-form__chip${companionIds.length === 0 ? " trial-form__chip--active" : ""}`}
               >
                 <input
-                  type="radio"
-                  name="companion"
-                  checked={companionId === null}
-                  onChange={() => setCompanionId(null)}
+                  type="checkbox"
+                  checked={companionIds.length === 0}
+                  onChange={() => setCompanionIds([])}
                   disabled={loading}
                 />
                 Solo
@@ -318,14 +328,12 @@ export default function TrialStoryForm() {
               {TRIAL_COMPANIONS.map((c) => (
                 <label
                   key={c.id}
-                  className={`trial-form__chip${companionId === c.id ? " trial-form__chip--active" : ""}`}
+                  className={`trial-form__chip${companionIds.includes(c.id) ? " trial-form__chip--active" : ""}`}
                 >
                   <input
-                    type="radio"
-                    name="companion"
-                    value={c.id}
-                    checked={companionId === c.id}
-                    onChange={() => setCompanionId(c.id)}
+                    type="checkbox"
+                    checked={companionIds.includes(c.id)}
+                    onChange={() => toggleCompanion(c.id)}
                     disabled={loading}
                   />
                   {c.label}
@@ -333,6 +341,19 @@ export default function TrialStoryForm() {
               ))}
             </div>
           </fieldset>
+
+          {companionIds.length > 0 ? (
+            <label className="trial-form__field trial-form__field--centered">
+              Nombre(s) de quien acompaña (opcional)
+              <input
+                value={companionNames}
+                onChange={(e) => setCompanionNames(e.target.value)}
+                placeholder="Ej. Carolina, o Ana y Tito"
+                maxLength={TRIAL_COMPANION_NAME_MAX}
+                disabled={loading}
+              />
+            </label>
+          ) : null}
 
           <fieldset className="trial-form__challenges">
             <legend>¿Qué aprenden? (sugerido, editable)</legend>

@@ -11,8 +11,9 @@ import {
 } from "@/lib/story-markdown";
 import type { PersonalizedStoryContent } from "@/lib/story-reader";
 
-export const TRIAL_STORY_STORAGE_KEY = "chacachon.trialStory.v2";
+export const TRIAL_STORY_STORAGE_KEY = "chacachon.trialStory.v3";
 export const TRIAL_NAME_MAX = 24;
+export const TRIAL_COMPANION_NAME_MAX = 40;
 
 export type TrialPath = "moment" | "classic";
 
@@ -51,7 +52,7 @@ export const TRIAL_MOMENTS: TrialMoment[] = [
   {
     id: "dormir",
     label: "Es hora de dormir",
-    lessonId: "calma",
+    lessonId: "empatia",
     place: "el apartamento",
   },
   {
@@ -73,7 +74,7 @@ export const TRIAL_CLASSICS: TrialClassic[] = [
     id: "cerditos",
     label: "Los tres cerditos",
     hint: "Con tu niño como héroe",
-    lessonId: "constancia",
+    lessonId: "valentia",
     place: "las casitas del barrio",
   },
   {
@@ -87,7 +88,7 @@ export const TRIAL_CLASSICS: TrialClassic[] = [
     id: "renacuajo",
     label: "El renacuajo paseador",
     hint: "Clásico de Pombo, con tu casa",
-    lessonId: "escuchar",
+    lessonId: "respeto",
     place: "el charco del parque",
   },
   {
@@ -103,25 +104,26 @@ export const TRIAL_COMPANIONS: TrialCompanion[] = [
   { id: "mama", label: "Mamá" },
   { id: "papa", label: "Papá" },
   { id: "hermano", label: "Hermano/a" },
-  { id: "bingo", label: "Bingo" },
+  { id: "abuelo", label: "Abuelo/a" },
+  { id: "amigo", label: "Amigo/a" },
 ];
 
 export const TRIAL_LESSONS: TrialLesson[] = [
-  { id: "calma", label: "Calma" },
+  { id: "respeto", label: "Respeto" },
   { id: "responsabilidad", label: "Responsabilidad" },
-  { id: "generosidad", label: "Generosidad" },
   { id: "habitos", label: "Buenos hábitos" },
-  { id: "constancia", label: "Constancia" },
   { id: "prudencia", label: "Prudencia" },
-  { id: "escuchar", label: "Escuchar con cariño" },
   { id: "valentia", label: "Valentía" },
+  { id: "empatia", label: "Empatía" },
+  { id: "autoestima", label: "Autoestima" },
+  { id: "generosidad", label: "Generosidad" },
 ];
 
 /** @deprecated Prefer TRIAL_MOMENTS — kept for old tests/call sites. */
 export const TRIAL_CHALLENGES = TRIAL_MOMENTS.map((m) => ({
   id: m.id,
   label: m.label,
-  lesson: TRIAL_LESSONS.find((l) => l.id === m.lessonId)?.label ?? "Calma",
+  lesson: TRIAL_LESSONS.find((l) => l.id === m.lessonId)?.label ?? "Respeto",
 }));
 
 export type TrialStoryInput = {
@@ -129,6 +131,11 @@ export type TrialStoryInput = {
   path: TrialPath;
   momentId?: string | null;
   classicId?: string | null;
+  /** Uno o varios roles (mamá, papá…). */
+  companionIds?: string[] | null;
+  /** Nombre(s) libres opcionales: «Carolina» o «Ana y Tito». */
+  companionNames?: string | null;
+  /** @deprecated usar companionIds */
   companionId?: string | null;
   lessonId?: string | null;
 };
@@ -170,15 +177,12 @@ export function buildTrialSelection(input: TrialStoryInput) {
     ing(`trial-emo-${resolved.lesson.id}`, "emocion", resolved.lesson.label),
   ];
   const lugar = [ing("trial-lugar", "lugar", resolved.place)];
-  const acompanantes = resolved.companion
-    ? [
-        ing(
-          `trial-comp-${resolved.companion.id}`,
-          "persona",
-          resolved.companion.label,
-        ),
-      ]
-    : [];
+  const nameParts = splitCompanionNames(input.companionNames);
+  const acompanantes = resolved.companions.map((c, index) => {
+    const personal = nameParts[index];
+    const label = personal ? `${c.label} ${personal}` : c.label;
+    return ing(`trial-comp-${c.id}`, "persona", label);
+  });
 
   if (input.path === "classic") {
     const classic = getTrialClassic(input.classicId);
@@ -229,6 +233,23 @@ export function normalizeTrialName(raw: string): string | null {
   return name;
 }
 
+export function normalizeCompanionNames(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const name = raw.trim().replace(/\s+/g, " ");
+  if (name.length < 1 || name.length > TRIAL_COMPANION_NAME_MAX) return null;
+  if (moderateUserText(name)) return null;
+  return name;
+}
+
+function splitCompanionNames(raw: string | null | undefined): string[] {
+  const normalized = normalizeCompanionNames(raw);
+  if (!normalized) return [];
+  return normalized
+    .split(/,| y /i)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
 export function getTrialMoment(id: string | null | undefined): TrialMoment {
   return TRIAL_MOMENTS.find((m) => m.id === id) ?? TRIAL_MOMENTS[0];
 }
@@ -244,6 +265,43 @@ export function getTrialCompanion(
   return TRIAL_COMPANIONS.find((c) => c.id === id) ?? null;
 }
 
+export function resolveCompanionIds(input: TrialStoryInput): string[] {
+  if (input.companionIds && input.companionIds.length > 0) {
+    return input.companionIds.filter((id) => getTrialCompanion(id));
+  }
+  if (input.companionId && getTrialCompanion(input.companionId)) {
+    return [input.companionId];
+  }
+  return [];
+}
+
+export function formatCompanionLabel(
+  companions: TrialCompanion[],
+  namesRaw: string | null | undefined,
+): string | null {
+  if (companions.length === 0) return null;
+  const names = normalizeCompanionNames(namesRaw);
+  const nameParts = splitCompanionNames(namesRaw);
+
+  if (companions.length === 1) {
+    const role = companions[0].label;
+    if (names) return `${role} ${names}`;
+    return role;
+  }
+
+  if (nameParts.length >= companions.length) {
+    return companions
+      .map((c, i) => `${c.label} ${nameParts[i]}`)
+      .join(" y ");
+  }
+
+  if (names) {
+    return `${companions.map((c) => c.label).join(" y ")} (${names})`;
+  }
+
+  return companions.map((c) => c.label).join(" y ");
+}
+
 export function getTrialLesson(id: string | null | undefined): TrialLesson {
   return TRIAL_LESSONS.find((l) => l.id === id) ?? TRIAL_LESSONS[0];
 }
@@ -252,9 +310,14 @@ export function resolveTrialDefaults(input: TrialStoryInput): {
   frameLabel: string;
   place: string;
   lesson: TrialLesson;
-  companion: TrialCompanion | null;
+  companions: TrialCompanion[];
+  companionLabel: string | null;
 } {
-  const companion = getTrialCompanion(input.companionId);
+  const companions = resolveCompanionIds(input)
+    .map((id) => getTrialCompanion(id))
+    .filter((c): c is TrialCompanion => Boolean(c));
+  const companionLabel = formatCompanionLabel(companions, input.companionNames);
+
   if (input.path === "classic") {
     const classic = getTrialClassic(input.classicId);
     const lesson = getTrialLesson(input.lessonId ?? classic.lessonId);
@@ -262,7 +325,8 @@ export function resolveTrialDefaults(input: TrialStoryInput): {
       frameLabel: classic.label,
       place: classic.place,
       lesson,
-      companion,
+      companions,
+      companionLabel,
     };
   }
   const moment = getTrialMoment(input.momentId);
@@ -271,20 +335,21 @@ export function resolveTrialDefaults(input: TrialStoryInput): {
     frameLabel: moment.label,
     place: moment.place,
     lesson,
-    companion,
+    companions,
+    companionLabel,
   };
 }
 
-function withCompanion(base: string, companion: TrialCompanion | null): string {
-  if (!companion) return base;
-  return `${base} ${companion.label} iba cerca, sin apurar.`;
+function withCompanion(base: string, companionLabel: string | null): string {
+  if (!companionLabel) return base;
+  return `${base} ${companionLabel} iba cerca, sin apurar.`;
 }
 
 function buildMomentStory(
   name: string,
   moment: TrialMoment,
   lesson: TrialLesson,
-  companion: TrialCompanion | null,
+  companionLabel: string | null,
 ): string {
   const title = `${name} y ${moment.label.toLowerCase()}`;
 
@@ -317,7 +382,7 @@ function buildMomentStory(
     "",
     "## El comienzo",
     "",
-    withCompanion(open, companion),
+    withCompanion(open, companionLabel),
     "",
     "## El reto",
     "",
@@ -341,7 +406,7 @@ function buildClassicStory(
   name: string,
   classic: TrialClassic,
   lesson: TrialLesson,
-  companion: TrialCompanion | null,
+  companionLabel: string | null,
 ): string {
   if (classic.id === "cerditos") {
     return [
@@ -353,7 +418,7 @@ function buildClassicStory(
       "",
       withCompanion(
         `Había una vez tres casitas cerca de ${classic.place}. ${name} quería construir la más firme de todas.`,
-        companion,
+        companionLabel,
       ),
       "",
       "## El reto",
@@ -384,7 +449,7 @@ function buildClassicStory(
       "",
       withCompanion(
         `${name} salió con una canasta hacia ${classic.place}. Había que llegar donde la abuela, sin perder el rumbo.`,
-        companion,
+        companionLabel,
       ),
       "",
       "## El reto",
@@ -415,7 +480,7 @@ function buildClassicStory(
       "",
       withCompanion(
         `Cerca de ${classic.place}, un renacuajo muy elegante se acomodó el cuello y dijo: «Hoy salgo a pasear». ${name} lo escuchó atento.`,
-        companion,
+        companionLabel,
       ),
       "",
       "## El reto",
@@ -446,7 +511,7 @@ function buildClassicStory(
     "",
     withCompanion(
       `En ${classic.place}, mamá cabra salió un ratito. «No abran si la voz no es la mía», dijo. ${name} quedó atento junto a los cabritos.`,
-      companion,
+      companionLabel,
     ),
     "",
     "## El reto",
@@ -486,14 +551,14 @@ export function buildTrialStoryMarkdown(
         }
       : inputOrName;
 
-  const { lesson, companion } = resolveTrialDefaults(input);
+  const { lesson, companionLabel } = resolveTrialDefaults(input);
 
   if (input.path === "classic") {
     return buildClassicStory(
       input.name,
       getTrialClassic(input.classicId),
       lesson,
-      companion,
+      companionLabel,
     );
   }
 
@@ -501,25 +566,28 @@ export function buildTrialStoryMarkdown(
     input.name,
     getTrialMoment(input.momentId),
     lesson,
-    companion,
+    companionLabel,
   );
 }
 
 export function buildTrialPayload(input: TrialStoryInput): TrialStoryPayload {
   const resolved = resolveTrialDefaults(input);
+  const companionIds = resolveCompanionIds(input);
   return {
     name: input.name,
     path: input.path,
     momentId: input.path === "moment" ? getTrialMoment(input.momentId).id : null,
     classicId:
       input.path === "classic" ? getTrialClassic(input.classicId).id : null,
-    companionId: resolved.companion?.id ?? null,
+    companionIds,
+    companionNames: normalizeCompanionNames(input.companionNames),
+    companionId: companionIds[0] ?? null,
     lessonId: resolved.lesson.id,
     markdown: buildTrialStoryMarkdown(input),
     createdAt: new Date().toISOString(),
     frameLabel: resolved.frameLabel,
     lessonLabel: resolved.lesson.label,
-    companionLabel: resolved.companion?.label ?? null,
+    companionLabel: resolved.companionLabel,
   };
 }
 
@@ -559,4 +627,5 @@ export function clearTrialStory(): void {
   if (typeof window === "undefined") return;
   window.sessionStorage.removeItem(TRIAL_STORY_STORAGE_KEY);
   window.sessionStorage.removeItem("chacachon.trialStory.v1");
+  window.sessionStorage.removeItem("chacachon.trialStory.v2");
 }

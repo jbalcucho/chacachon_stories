@@ -6735,6 +6735,7 @@ button.recipe-wizard__step-btn:hover {
   font-size: 0.84rem;
   line-height: 1.45;
   color: var(--color-cream-muted);
+  text-align: center;
 }
 
 .trial-form__field {
@@ -6744,6 +6745,17 @@ button.recipe-wizard__step-btn:hover {
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--color-cream-muted);
+}
+
+.trial-form__field--centered {
+  text-align: center;
+  align-items: center;
+}
+
+.trial-form__field--centered input {
+  width: 100%;
+  max-width: 20rem;
+  text-align: center;
 }
 
 .trial-form__field input {
@@ -6772,6 +6784,8 @@ button.recipe-wizard__step-btn:hover {
   font-weight: 700;
   color: var(--color-cream-muted);
   margin-bottom: 0.55rem;
+  text-align: center;
+  width: 100%;
 }
 
 .trial-form__path-list {
@@ -6816,12 +6830,16 @@ button.recipe-wizard__step-btn:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  justify-content: center;
 }
 
 .trial-form__classic-list {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+  max-width: 22rem;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .trial-form__classic {

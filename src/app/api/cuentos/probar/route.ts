@@ -16,6 +16,8 @@ import {
   getTrialClassic,
   getTrialMoment,
   normalizeTrialName,
+  normalizeCompanionNames,
+  resolveCompanionIds,
   resolveTrialDefaults,
   type TrialPath,
 } from "@/lib/trial-story";
@@ -29,6 +31,8 @@ type Body = {
   momentId?: string | null;
   classicId?: string | null;
   companionId?: string | null;
+  companionIds?: string[] | null;
+  companionNames?: string | null;
   lessonId?: string | null;
 };
 
@@ -58,12 +62,21 @@ export async function POST(request: Request) {
     getTrialMoment(body.momentId);
   }
 
+  const companionIds = resolveCompanionIds({
+    name,
+    path,
+    companionIds: body.companionIds,
+    companionId: body.companionId,
+  });
+  const companionNames = normalizeCompanionNames(body.companionNames);
+
   const input = {
     name,
     path,
     momentId: path === "moment" ? body.momentId ?? null : null,
     classicId: path === "classic" ? body.classicId ?? null : null,
-    companionId: body.companionId ?? null,
+    companionIds,
+    companionNames,
     lessonId: body.lessonId ?? null,
   };
 
@@ -98,13 +111,15 @@ export async function POST(request: Request) {
       path,
       momentId: input.momentId,
       classicId: input.classicId,
-      companionId: resolved.companion?.id ?? null,
+      companionId: companionIds[0] ?? null,
+      companionIds,
+      companionNames,
       lessonId: resolved.lesson.id,
       markdown: draft.bodyMarkdown,
       createdAt: new Date().toISOString(),
       frameLabel: resolved.frameLabel,
       lessonLabel: resolved.lesson.label,
-      companionLabel: resolved.companion?.label ?? null,
+      companionLabel: resolved.companionLabel,
       source: draft.source,
     });
     response.headers.set("Set-Cookie", buildTrialAiCookie());

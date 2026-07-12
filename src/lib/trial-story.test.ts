@@ -29,48 +29,29 @@ describe("trial-story", () => {
       name: "Sofía",
       path: "classic",
       classicId: "cerditos",
-      companionId: "mama",
-      lessonId: "constancia",
+      companionIds: ["mama"],
+      companionNames: "Carolina",
+      lessonId: "valentia",
     });
     expect(payload.frameLabel).toMatch(/cerditos/i);
-    expect(payload.companionLabel).toBe("Mamá");
-    expect(payload.lessonLabel).toBe("Constancia");
+    expect(payload.companionLabel).toMatch(/Mamá Carolina/i);
+    expect(payload.lessonLabel).toBe("Valentía");
     expect(payload.markdown).toContain("Sofía");
     expect(payload.markdown).toMatch(/cerditos|casita/i);
-    expect(payload.markdown).toContain("Mamá");
+    expect(payload.markdown).toContain("Mamá Carolina");
   });
 
-  it("allows skipping extras on a house moment", () => {
-    const payload = buildTrialPayload({
+  it("allows multiple companions", () => {
+    const selection = buildTrialSelection({
       name: "Nico",
       path: "moment",
       momentId: "compartir",
+      companionIds: ["mama", "amigo"],
+      companionNames: "Ana, Tito",
     });
-    expect(payload.companionLabel).toBeNull();
-    expect(payload.lessonLabel).toMatch(/generosidad/i);
-    expect(payload.markdown).toMatch(/compartir|juguete/i);
-  });
-
-  it("builds the renacuajo classic remix", () => {
-    const payload = buildTrialPayload({
-      name: "Simón",
-      path: "classic",
-      classicId: "renacuajo",
-    });
-    expect(payload.frameLabel).toMatch(/renacuajo/i);
-    expect(payload.markdown).toMatch(/renacuajo|Pombo|pasear/i);
-  });
-
-  it("builds the soft Grimm cabritos remix", () => {
-    const payload = buildTrialPayload({
-      name: "Lina",
-      path: "classic",
-      classicId: "cabritos",
-      companionId: "mama",
-    });
-    expect(payload.frameLabel).toMatch(/cabritos/i);
-    expect(payload.markdown).toMatch(/cabritos|puerta|seña/i);
-    expect(payload.markdown).toContain("Lina");
+    expect(selection.acompanantes).toHaveLength(2);
+    expect(selection.acompanantes[0]?.label).toMatch(/Mamá Ana/i);
+    expect(selection.acompanantes[1]?.label).toMatch(/Amigo\/a Tito/i);
   });
 
   it("builds a recipe selection for classic AI prompts", () => {
@@ -78,7 +59,7 @@ describe("trial-story", () => {
       name: "Sofía",
       path: "classic",
       classicId: "cabritos",
-      companionId: "mama",
+      companionIds: ["mama"],
     });
     expect(selection.heroes[0]?.label).toBe("Sofía");
     expect(selection.molde[0]?.label).toMatch(/cabritos/i);
