@@ -38,7 +38,3 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 export async function getSessionUserId(): Promise<string | null> {
   return (await getSessionUser())?.id ?? null;
 }
-
-export async function requireSessionUser(): Promise<SessionUser | null> {
-  return getSessionUser();
-}

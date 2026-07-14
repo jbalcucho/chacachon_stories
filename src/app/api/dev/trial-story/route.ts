@@ -16,7 +16,7 @@ type Body = {
   note?: string | null;
 };
 
-/** Guarda un trial ya en sessionStorage (p. ej. el cuento actual) en `.tmp/`. */
+/** Guarda un trial ya en sessionStorage (p. ej. el cuento actual) en `tmp/trial-stories/`. */
 export async function POST(request: Request) {
   if (
     process.env.NODE_ENV === "production" &&

@@ -36,7 +36,7 @@ Solo se muestra cuando `shareable` en `StoryReader` (slug de catálogo, sin `/`)
 ## Verificar en producción
 
 1. Desplegar con `NEXTAUTH_URL` correcto.
-2. Pegar `https://chacachon-stories.vercel.app/leer/operacion-a-dormir` en WhatsApp.
+2. Pegar `https://chacachon-stories.vercel.app/leer/<slug-publicado>` en WhatsApp (`operacion-a-dormir` era solo ilustrativo — hoy no hay cuentos `PUBLISHED` en el seed; usar un slug real una vez exista corpus, Fase 2 del plan de trabajo).
 3. Debe verse título del cuento + tarjeta con ilustración Chacachón.
 
 Herramientas útiles: [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/), caché de WhatsApp puede tardar unos minutos.

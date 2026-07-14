@@ -3681,6 +3681,8 @@ html.route-fade-exit body::after {
   color: #2c2418;
   overflow-wrap: anywhere;
   word-break: break-word;
+  font-family: var(--font-literata), Georgia, serif;
+  font-weight: 400;
 }
 
 .book-page__body p + p,

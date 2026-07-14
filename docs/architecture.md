@@ -63,7 +63,7 @@
 | Código | Inglés (`schema`, `lib/`) | Convención Balcu |
 | UI / copy | Español (`es`) | Producto Colombia |
 
-Documentación relacionada: [StackTecnico.md](../StackTecnico.md) · [database.md](./database.md) · [PerfilFamiliar.md](../PerfilFamiliar.md)
+Documentación relacionada: [StackTecnico.md](./legacy/StackTecnico.md) (archivado) · [database.md](./database.md) · [PerfilFamiliar.md](../PerfilFamiliar.md)
 
 ---
 
@@ -111,7 +111,7 @@ Rutas protegidas (middleware): `/familia/*`, `/admin/*` (Sprint 1+).
 
 | Carpeta | Uso |
 |---------|-----|
-| `cuentos/*.md` | Fuente editorial, versionado en Git |
+| `cuentos/*.md` | Fuente editorial, versionado en Git — **vacío hoy**, ver Fase 2 de `docs/plan-trabajo-chacachon.md` |
 | `public/cuentos/*.html` | Lo que lee el usuario en pantalla |
 | `perfiles/*.json` | Pruebas locales; **no** exponer en `public/` |
 | `prisma/seed.ts` | Catálogo en BD (`stories`) |

@@ -2,8 +2,8 @@
  * Plantillas clásicas → pre-llenado del wizard (`?plantilla=slug`).
  * Ver docs/crear-flow.md (B4).
  *
- * Vacío a propósito mientras no hay demos publicados en el estante.
- * Al publicar un cuento demo nuevo, añadir aquí el prefill correspondiente.
+ * Corpus semilla de clásicos publicado en Fase 2 (docs/plan-trabajo-chacachon.md).
+ * Al publicar un clásico nuevo, añadir aquí el prefill correspondiente.
  */
 
 export type PlantillaPrefill = {
@@ -16,7 +16,26 @@ export type PlantillaPrefill = {
 };
 
 /** Solo clásicos van en `/crear/plantillas`. */
-export const CLASSIC_PLANTILLAS: readonly PlantillaPrefill[] = [];
+export const CLASSIC_PLANTILLAS: readonly PlantillaPrefill[] = [
+  {
+    slug: "cerditos-la-torre-bien-hecha",
+    moldeId: "mol-cerditos",
+    dilemaId: "dil-orden",
+    label: "Los tres cerditos",
+  },
+  {
+    slug: "caperucita-el-camino-del-mandado",
+    moldeId: "mol-caperucita",
+    dilemaId: "dil-respeto",
+    label: "Caperucita Roja",
+  },
+  {
+    slug: "ricitos-las-cosas-prestadas",
+    moldeId: "mol-ositos",
+    dilemaId: "dil-respeto",
+    label: "Ricitos y los ositos",
+  },
+];
 
 /**
  * Prefills extra (cuentos propios Chacachón).

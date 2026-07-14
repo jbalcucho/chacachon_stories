@@ -21,7 +21,7 @@ export default function LeerPruebaPage() {
     setPayload(story);
     if (!story?.markdown) return;
 
-    // En local, copia el cuento actual a `.tmp/trial-stories/` para revisión conjunta.
+    // En local, copia el cuento actual a `tmp/trial-stories/` para revisión conjunta.
     void fetch("/api/dev/trial-story", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

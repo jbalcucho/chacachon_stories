@@ -31,12 +31,20 @@ function publishedChacachonSlugs(seed) {
 }
 
 const published = publishedChacachonSlugs(seedSource);
+const allowEmpty = process.env.ALLOW_EMPTY_CATALOG === "1";
 
 if (published.length === 0) {
-  console.log(
-    "validate-story-quality: OK (estante Chacachón vacío — sin demos publicados)",
+  if (allowEmpty) {
+    console.log(
+      "validate-story-quality: OK (estante Chacachón vacío — ALLOW_EMPTY_CATALOG=1)",
+    );
+    process.exit(0);
+  }
+  console.error(
+    "validate-story-quality: estante Chacachón vacío (0 cuentos publicados) — falla para evitar falso positivo.\n" +
+      "Si es esperado (rama de desarrollo temprano), corre con ALLOW_EMPTY_CATALOG=1.",
   );
-  process.exit(0);
+  process.exit(1);
 }
 
 let failed = false;

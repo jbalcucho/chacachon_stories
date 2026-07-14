@@ -44,7 +44,7 @@ Este documento define qué es el perfil familiar, cómo se estructura, y **cómo
 **MongoDB (u otra BD documental aparte)** solo para el perfil:
 
 - Segundo sistema que operar (backups, auth, costos, consistencia).
-- El stack elegido es **Neon Postgres + Prisma** (ver [StackTecnico.md](./StackTecnico.md)), alineado con rotatudisfraz.
+- El stack elegido es **Neon Postgres + Prisma** (ver [StackTecnico.md](./docs/legacy/StackTecnico.md), archivado), alineado con rotatudisfraz.
 - La autorización de datos familiares se hace en la aplicación (sesión + queries), no con RLS de Supabase.
 
 ### Recomendación: **PostgreSQL + JSONB** (estilo Mongo, sin Mongo)

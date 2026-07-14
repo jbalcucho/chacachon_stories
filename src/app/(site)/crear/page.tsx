@@ -3,6 +3,7 @@ import Link from "next/link";
 import BrandIllustration from "@/components/BrandIllustration";
 import CrearHub, { type CrearHubOption } from "@/components/CrearHub";
 import CrearPageActions from "@/components/CrearPageActions";
+import TrialImportBridge from "@/components/TrialImportBridge";
 import {
   familyProfileEssentialSchema,
   type FamilyProfileDocument,
@@ -157,6 +158,8 @@ export default async function CrearPage() {
           .
         </p>
       )}
+
+      <TrialImportBridge />
 
       <CrearHub
         options={options}

@@ -18,7 +18,6 @@ export type StoryQualityMetrics = {
   dialogueLineCount: number;
   dialogueRatio: number;
   sensoryAnchorCount: number;
-  regulationSignalCount: number;
   sermonHitCount: number;
   abstractHitCount: number;
 };
@@ -30,7 +29,7 @@ export type StoryQualityReport = {
   passed: boolean;
 };
 
-const WORD_MIN = 350;
+const WORD_MIN = 400;
 const WORD_MAX = 600;
 const SCENE_MIN = 3;
 const SCENE_MAX = 5;
@@ -81,23 +80,6 @@ const SENSORY_PATTERNS = [
   /\bestómago\b/i,
   /\bpecho\b/i,
   /\bhombros\b/i,
-];
-
-const REGULATION_PATTERNS = [
-  /\bpatalet(a|ó|ando)\b/i,
-  /\bberrinche\b/i,
-  /\bse puso brav[oa]\b/i,
-  /\b¡?no+!?/i,
-  /\bcara de tomate\b/i,
-  /\bpate(ó|ando)\b/i,
-  /\btir(ó|arse) al piso\b/i,
-  /\bme ayudas\b/i,
-  /\bsuspiro\b/i,
-  /\brespir(ar|ó|ación)\b/i,
-  /\bcontó hasta tres\b/i,
-  /\bpuños?\b/i,
-  /\bnudo\b/i,
-  /\bcerró los ojos\b/i,
 ];
 
 function stripFrontmatter(raw: string): string {
@@ -154,10 +136,6 @@ export function analyzeStoryMarkdown(raw: string): StoryQualityReport {
     sentenceCount > 0 ? dialogueLineCount / sentenceCount : 0;
 
   const sensoryAnchorCount = SENSORY_PATTERNS.reduce(
-    (sum, re) => sum + (body.match(re)?.length ?? 0),
-    0,
-  );
-  const regulationSignalCount = REGULATION_PATTERNS.reduce(
     (sum, re) => sum + (body.match(re)?.length ?? 0),
     0,
   );
@@ -224,14 +202,6 @@ export function analyzeStoryMarkdown(raw: string): StoryQualityReport {
     });
   }
 
-  if (regulationSignalCount < 2) {
-    findings.push({
-      id: "regulation-low",
-      severity: "info",
-      message: `Poco modelado de regulación emocional (${regulationSignalCount}; ideal ≥ 2)`,
-    });
-  }
-
   if (sermonHitCount > 0) {
     findings.push({
       id: "sermon",
@@ -274,7 +244,6 @@ export function analyzeStoryMarkdown(raw: string): StoryQualityReport {
       dialogueLineCount,
       dialogueRatio,
       sensoryAnchorCount,
-      regulationSignalCount,
       sermonHitCount,
       abstractHitCount,
     },

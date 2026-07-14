@@ -81,6 +81,8 @@ Archivos:
 
 **Regla editorial:** solo cuentos `PUBLISHED` deben tener HTML en `public/cuentos/`. Ver [cuentos/README.md](../cuentos/README.md).
 
+**Excepción actual:** las 3 muestras guest (`demo-noche-en-casa`, `demo-el-trancon`, `demo-bingo-detective`) son HTML estático servido directo, sin fila `Story` `PUBLISHED` detrás (el seed no inserta nada). No pasan por esta regla hasta que el corpus real de Fase 2 las reemplace o las formalice.
+
 ---
 
 ## Futuro (no en Sprint 0)

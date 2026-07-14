@@ -1,4 +1,8 @@
 
+> **Archivado 2026-07-14 (Fase 1 del plan de trabajo).** Contexto legado de planeación temprana;
+> no cruzado con el estado real del código. Ver `docs/brief-proyecto-chacachon.md` y
+> `docs/estado-proyecto-2026-07-13.md` como fuentes vigentes.
+
 Aquí tienes el contexto del problema y la solución estructurada en los tres pilares fundamentales para salir al mercado con un producto a prueba de balas:
 
 1. El Contexto de la Idea (El Problema y la Oportunidad)

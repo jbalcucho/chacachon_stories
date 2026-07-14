@@ -21,7 +21,7 @@ function isTrialStoryDebugSaveEnabled(): boolean {
 }
 
 /**
- * Guarda el markdown del trial en `.tmp/` para revisión local conjunta.
+ * Guarda el markdown del trial en `tmp/trial-stories/` (carpeta visible) para revisión local.
  * No-op en producción salvo SAVE_TRIAL_STORIES=1.
  */
 export async function saveTrialStoryDebugSnapshot(
@@ -30,7 +30,7 @@ export async function saveTrialStoryDebugSnapshot(
   if (!isTrialStoryDebugSaveEnabled()) return null;
   if (!snapshot.markdown?.trim()) return null;
 
-  const dir = path.join(process.cwd(), ".tmp", "trial-stories");
+  const dir = path.join(process.cwd(), "tmp", "trial-stories");
   await mkdir(dir, { recursive: true });
 
   const createdAt = snapshot.createdAt ?? new Date().toISOString();

@@ -35,18 +35,37 @@ const ingredients = {
 };
 
 describe("story-plantillas", () => {
-  it("no tiene plantillas clásicas mientras el estante está vacío", () => {
-    expect(CLASSIC_PLANTILLAS).toHaveLength(0);
-    expect(getPlantillaPrefill("cerditos-del-edificio")).toBeNull();
-    expect(hasPlantillaMolde("el-lobo-y-las-palabras")).toBe(false);
-    expect(isClassicPlantillaSlug("cerditos-del-edificio")).toBe(false);
-    expect(plantillaSlugToMoldeId("operacion-a-dormir")).toBeNull();
-    expect(plantillaSlugToDilemaId("operacion-a-dormir")).toBeNull();
+  it("tiene los 3 clásicos del corpus semilla (Fase 2)", () => {
+    expect(CLASSIC_PLANTILLAS).toHaveLength(3);
+    expect(getPlantillaPrefill("cerditos-la-torre-bien-hecha")).toEqual({
+      slug: "cerditos-la-torre-bien-hecha",
+      moldeId: "mol-cerditos",
+      dilemaId: "dil-orden",
+      label: "Los tres cerditos",
+    });
+    expect(hasPlantillaMolde("cerditos-la-torre-bien-hecha")).toBe(true);
+    expect(isClassicPlantillaSlug("caperucita-el-camino-del-mandado")).toBe(
+      true,
+    );
+    expect(plantillaSlugToMoldeId("ricitos-las-cosas-prestadas")).toBe(
+      "mol-ositos",
+    );
+    expect(plantillaSlugToDilemaId("ricitos-las-cosas-prestadas")).toBe(
+      "dil-respeto",
+    );
+  });
+
+  it("slug desconocido devuelve null / false", () => {
+    expect(getPlantillaPrefill("no-existe")).toBeNull();
+    expect(hasPlantillaMolde("no-existe")).toBe(false);
+    expect(isClassicPlantillaSlug("no-existe")).toBe(false);
+    expect(plantillaSlugToMoldeId("no-existe")).toBeNull();
+    expect(plantillaSlugToDilemaId("no-existe")).toBeNull();
   });
 
   it("arma href del wizard", () => {
-    expect(plantillaAdaptarHref("cerditos-del-edificio")).toBe(
-      "/crear/adaptar?plantilla=cerditos-del-edificio",
+    expect(plantillaAdaptarHref("cerditos-la-torre-bien-hecha")).toBe(
+      "/crear/adaptar?plantilla=cerditos-la-torre-bien-hecha",
     );
   });
 });

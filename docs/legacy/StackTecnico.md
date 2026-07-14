@@ -1,3 +1,7 @@
+> **Archivado 2026-07-14 (Fase 1 del plan de trabajo).** Contexto legado: partes de este documento
+> asumen Claude como proveedor primario de IA; el código real usa Gemini-first desde jul 2026
+> (`src/lib/story-generation.server.ts`). Ver `docs/ia-generacion.md` para el stack vigente.
+
 # Stack Técnico y Consideraciones de Arquitectura — Chacachón
 
 > Documento de referencia técnico para la plataforma web de cuentos infantiles hiperlocalizados con IA.  

@@ -136,13 +136,12 @@ ESTE PRODUCTO NO ES UN MANUAL DE RUTINA:
 - PROHIBIDO abrir casi siempre en la sala / sofá / TV / tablet / YouTube. Eso ya es clon. La casa moderna es OPCIONAL y rara; no el default.
 - PROHIBIDO cerrar casi siempre con el niño en la cama y mamá/papá diciendo «dulces sueños» / «a dormir». Deja el ritual de noche al adulto lector.
 
-TOQUE DE CUENTO (obligatorio):
-- Empieza el cuerpo (tras el \`## \`) con «Había una vez…» o «Era una vez…» como LAS PRIMERAS PALABRAS del primer párrafo.
-- El cuento NACE en un mundo inventado CON NOMBRE con gancho (divertido, fácil de decir, memorable: Miau Miau, Nube-Nube, Bosque de la Nuez, Isla Bubú…).
-- PROHIBIDO nombres flojos/genéricos de fantasía IA: «Trueno Verde», «bosque de plata», «reino eterno», «valle de cristal», «árboles de plata» sin más.
-- Presenta a la familia (nombres de la receta) como habitantes de ESE mundo.
-- Ejemplo de espíritu (NO copies): «Había una vez un bosque llamado Bosque de la Nuez. Ahí Pedrito era capitán de los mensajeros. Su trabajo era llevar cartas de un árbol a otro sin que el viento se las robe.»
-- El protagonista NO tiene que ser “un niño pequeño”: puede ser jefe de clan, capitán, explorador, guardián, cocinero real, piloto…
+PUENTE CASA-FANTASÍA (principio central, obligatorio):
+- El cuento ANCLA primero el moment real de casa (dormir, pantallas, verduras, compartir…) en 1–2 frases reconocibles para un padre colombiano, y LUEGO esa misma situación se RECREA dentro de un mundo de fantasía con nombre con gancho. La fantasía es la piel; lo real de casa es la sustancia — nunca al revés.
+- Si al quitarle el disfraz fantástico al cuento no queda una escena doméstica reconocible debajo (el niño no quiere dormir/soltar la pantalla/compartir/comer algo), el cuento FALLÓ este pilar.
+- PROHIBIDO que los adultos reales del niño (mamá, papá, abuela…) se disuelvan en roles fantásticos irreconocibles («el Gran Sabio», «la Navegante del Viento Solar»). Deben seguir apareciendo, al menos una vez, con su nombre/rol real y su voz de siempre (la misma que usan todas las noches), aunque también tengan un papel dentro del mundo fantástico.
+- Ejemplo de espíritu (NO copies): «Había una vez un niño llamado Nico que vivía en un apartamento donde olía a café y pan tostado. Esa noche, su cuarto se convirtió en el Faro de las Mil Estrellas, y su tarea era apagar el último farol antes de que el sueño se escapara volando. —Nico, ya casi es hora del farol —dijo su mamá desde la puerta, con la misma voz de todas las noches.»
+- El rol del protagonista NACE del moment específico, NUNCA de un catálogo fijo — varía: mensajero, farolero, cocinera, exploradora, guardiana del puente… PROHIBIDO que "capitán" (o cualquier otro rol) se repita cuento tras cuento como comodín por defecto.
 - Magia = deseo + obstáculo + asombro + decisión. UNA magia clara por objeto/regla (no apilar brillo + luciérnagas + visiones + guardianes sobre lo mismo).
 - Test de sentido (obligatorio): un niño de 7 debe poder DIBUJAR la misión en un segundo y CONTARLA en una frase. Si el trabajo del héroe suena raro o no se entiende (ej. «naves de hojas que bajan a salvo al suelo»), CÁMBIALO por algo obvio (llevar cartas, cuidar el puente, apagar faroles, alcanzar un mapa).
 - HUMOR COLOMBIANO DE CUENTO (obligatorio, 1–2 beats, sin exagerar):
@@ -180,7 +179,7 @@ LECCIÓN SIN MANUAL (cualquier reto / edad):
 - Respeto y buenas costumbres se MUESTRAN en hechos de la aventura. Nunca “la moraleja es…”.
 
 CULTURA Y FAMILIA (con delicadeza):
-- Nombres de la receta = personajes del mundo (clan, tripulación, corte, aldea…). Los adultos pueden ser co-exploradores, no solo “mamá/papá que regañan”.
+- Nombres de la receta = personajes del mundo, pero los adultos (mamá, papá, abuela…) conservan su vínculo y su voz real con el niño — pueden tener un papel dentro de la fantasía, pero no son solo "quien regaña" ni pierden su identidad de siempre.
 - No satures marcas, influencers reales ni apps. Si aparece lo digital, que sea invento del mundo (espejo-trampa, caja de luces…) —no TV de sala.
 - Humor cálido de cuento colombiano; límites sin humillación.
 
@@ -224,7 +223,7 @@ Reglas de formato:
 - \`## \` = etiquetas cortas de escena (2–5 palabras). Línea en blanco antes y después. Nunca narración en el \`## \`.
 - Negrita solo énfasis puntual (1–3 palabras). Sin listas ni notas del autor.
 
-Extensión: 400–700 palabras (si hay reglas de edad en el mensaje de usuario, prevalecen; no escribas telegramas).`;
+Extensión: 400–600 palabras (si hay reglas de edad en el mensaje de usuario, prevalecen; no escribas telegramas).`;
 
 /** Reglas extra cuando el héroe trae tono 3–5 (lectura en voz alta a peques). */
 export const AGE_3_5_USER_RULES = `REGLAS EXTRA — EDAD 3–5:
@@ -234,7 +233,7 @@ export const AGE_3_5_USER_RULES = `REGLAS EXTRA — EDAD 3–5:
 - Una magia por objeto. Colorín colorado al final. Sin sala/TV ni dulces sueños.`;
 
 export const AGE_6_8_USER_RULES = `REGLAS EXTRA — EDAD 6–8 (CRÍTICO — lectura en voz alta):
-- Extensión: 420–650 palabras.
+- Extensión: 420–600 palabras.
 - Nombre de mundo memorable (Nube-Nube, Bosque de la Nuez…), NUNCA Trueno Verde / plata / cristal genérico.
 - Misión del héroe en UNA frase clara (llevar cartas, cuidar puente, atrapar mapa…).
 - Frases cortas: mayoría ≤ 12–15 palabras. Prohibido “que…, y que…, según…”.
@@ -244,7 +243,7 @@ export const AGE_6_8_USER_RULES = `REGLAS EXTRA — EDAD 6–8 (CRÍTICO — lec
 - Colorín colorado al final. Sin sala→cama.`;
 
 export const AGE_9_12_USER_RULES = `REGLAS EXTRA — EDAD 9–12:
-- Extensión: 480–720 palabras. Más porqué, pero sigue oral y claro (sin poesía vacía ni misiones confusas).
+- Extensión: 480–600 palabras. Más porqué, pero sigue oral y claro (sin poesía vacía ni misiones confusas).
 - Nombres con gancho; humor colombiano; colorín colorado.
 - Sin plantilla doméstica sala→enojo→cama.`;
 
@@ -315,7 +314,7 @@ const CLOSING_SEEDS = [
   "el clan se reúne un segundo; última línea: Colorín colorado.",
   "un objeto concreto queda; cierra con: Y colorín colorado, este cuento se ha terminado.",
   "siguen el viaje; última línea obligatoria: Y se acabó el cuento. / Colorín colorado.",
-  "un “lo lograste, capitán” y acto seguido: Y colorín colorado, este cuento se ha terminado.",
+  "un “lo lograste” de alguien real de la familia y acto seguido: Y colorín colorado, este cuento se ha terminado.",
 ];
 
 const HABIT_RESPECT_SEEDS = [

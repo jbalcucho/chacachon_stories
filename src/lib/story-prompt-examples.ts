@@ -9,23 +9,23 @@ type FewShotSet = {
   adventure: string;
 };
 
+// Fragmentos reales extraídos del corpus semilla curado (cuentos/joaquin-el-rincon-oscuro.md),
+// el mejor puntuado (100/100) de la primera camada — Fase 2 del plan de trabajo.
 const NEUTRO_EXAMPLES: FewShotSet = {
-  opening: `Había una vez un bosque llamado Bosque de la Nuez. Ahí Pedrito era capitán de los mensajeros. Su trabajo era llevar cartas de un árbol a otro sin que el viento se las robe. Con él iban su hermano y sus papás.`,
-  dialogue: `—Pedrito —dijo papá—, antes de la ronda de la noche toca el plato de brócoli.
-—En el bosque le decimos Florecitas Verdes —sonrió mamá—. Saben un poquito amargas.
-—Hago la cara rara, pero me las como —dijo Pedrito.`,
-  adventure: `Una carta se le escapó. ¡El viento!
-Pedrito corrió. Tropezó. Casi se va de cara.
-—¡Qué capitán tan menso! —dijo una ardilla.
-Iba la bruja del cerro en escoba último modelo y, en la curva, contra un poste.
-—Qué bruja tan mensa —dijo Pedrito, y siguió.
-Alcanzó el mapa. Volvió. Se comió el brócoli sin discurso.
+  opening: `Había una vez un niño llamado Joaquín que vivía en un apartamento con olor a café y a libros viejos. Esa noche, el pasillo largo se convirtió en el Reino del Rincón Oscuro, un lugar donde las sombras bailaban como fantasmas. Joaquín tenía una misión: recuperar el Peluche Perdido que se había quedado atrapado detrás del armario grande.`,
+  dialogue: `—Tranquilo, Rocky —susurró Joaquín.
+—¡Qué sombra tan mensa! —dijo Rocky, ladrándole a la pared—. ¡Solo es el perchero de papá con los abrigos!
+Joaquín miró bien. Rocky tenía razón. La sombra era un malentendido de la luz.`,
+  adventure: `De repente, desde la cocina, se escuchó la voz de mamá.
+—Joaquín, ¿estás bien? ¿Necesitas ayuda con el rincón?
+Era la misma voz de siempre, la que lo llamaba a merendar o a ponerse el saco. Joaquín sonrió, iluminando el camino de vuelta con su linterna. Ya no había monstruos, solo el pasillo de su casa.
 
 Y colorín colorado, este cuento se ha terminado.`,
 };
 
+// Apertura real extraída de cuentos/isabella-el-valle-de-los-ecos.md (corpus semilla, Fase 2).
 const BOGOTA_ROLO_EXAMPLES: FewShotSet = {
-  opening: `Había una vez una ciudad llamada Zigzag. Nico era capitán de un equipo que encontraba mapas. Su trabajo era claro: si el mapa se pierde, lo busca. Con él iba su familia.`,
+  opening: `Había una vez una niña llamada Isabella que vivía en un apartamento con ventanas altas que daban a los tejados de la ciudad. Una tarde, su tablet se iluminó con un resplandor extraño y, de repente, la sala se transformó. Las paredes se cubrieron de enredaderas luminosas y el piso se convirtió en el Valle de los Ecos Perdidos.`,
   dialogue: `—Parce, pilas —dijo papá—: esta noche el mapa se duerme temprano.
 —¿Aunque falte un callejón? —preguntó Nico.
 —Aunque falte —guiñó mamá.`,

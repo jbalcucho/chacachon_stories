@@ -1,3 +1,7 @@
+> **Archivado 2026-07-14 (Fase 1 del plan de trabajo).** Contexto legado de planeación temprana;
+> no cruzado con el estado real del código. Ver `docs/brief-proyecto-chacachon.md` y
+> `docs/estado-proyecto-2026-07-13.md` como fuentes vigentes.
+
 # **Plan de Negocio: Plataforma Web de Cuentos Infantiles Personalizados con IA**
 
 Este documento consolida la visión, arquitectura técnica y estrategia de lanzamiento para un modelo de negocio innovador que transforma la narración infantil. La plataforma utiliza Inteligencia Artificial para adaptar historias nostálgicas y clásicas a contextos culturales hiperlocales, integrando lecciones de vida prácticas y un humor diseñado tanto para los niños como para los padres.

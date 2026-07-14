@@ -46,11 +46,11 @@ Ver [docs/database.md](./docs/database.md) y [docs/architecture.md](./docs/archi
 | [docs/ia-generacion.md](./docs/ia-generacion.md) | IA: Gemini POC gratis, Vercel, API, persistencia |
 | [docs/biblia-editorial.md](./docs/biblia-editorial.md) | Voz, estructura y calidad de cuentos (prompt editorial) |
 | [docs/database.md](./docs/database.md) | Schema Prisma, seed, migraciones |
-| [StackTecnico.md](./StackTecnico.md) | Stack completo, roadmap, seguridad |
 | [PerfilFamiliar.md](./PerfilFamiliar.md) | Perfil familiar JSONB, onboarding, interpolación |
 | [GuiaAcentos.md](./GuiaAcentos.md) | Acentos, tiers, reglas anti-caricatura |
-| [ContextoChacachon.md](./ContextoChacachon.md) | Plan de negocio, IP, GTM |
-| [contextonew.md](./contextonew.md) | Schema relacional futuro (páginas, acentos) |
+| [docs/legacy/StackTecnico.md](./docs/legacy/StackTecnico.md) | Archivado — stack/roadmap histórico (Claude-first, desactualizado) |
+| [docs/legacy/ContextoChacachon.md](./docs/legacy/ContextoChacachon.md) | Archivado — plan de negocio original |
+| [docs/legacy/contextonew.md](./docs/legacy/contextonew.md) | Archivado — schema relacional propuesto, no implementado tal cual |
 | [cuentos/](./cuentos/) | Fuentes editoriales (.md) y HTML legacy |
 | [perfiles/](./perfiles/) | JSON de prueba + plantillas |
 

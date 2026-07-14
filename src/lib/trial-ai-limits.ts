@@ -1,6 +1,10 @@
 /**
  * Cuota anónima para 1 cuento IA de prueba / día (cookie + IP).
  *
+ * Dos capas, no un límite doble: la cookie da 1 cuento/navegador/día (lo que
+ * ve un usuario normal); el tope de IP (default 2, `TRIAL_AI_DAILY_PER_IP`)
+ * es solo un techo de seguridad para redes compartidas, no la cuota anunciada.
+ *
  * Apagar temporalmente en pruebas:
  *   TRIAL_AI_LIMITS_DISABLED=1
  * Volver a encender: quitar la variable o ponerla en 0/false.

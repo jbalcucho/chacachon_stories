@@ -30,7 +30,7 @@ Modelo federado Balcu: DB, auth y deploy propios; hub solo vitrina.
 
 - **Muestras guest** (jul 2026): `demo-noche-en-casa`, `demo-el-trancon`, `demo-bingo-detective` en `public/cuentos/` + `DEMO_SHOWCASE_STORIES`.
 - Perfil de marca Chacachón en `perfiles/familia-chacachon.json`.
-- Fuentes editoriales en `cuentos/*.md`; manifest en `src/data/story-content-manifest.json`.
+- Fuentes editoriales en `cuentos/*.md`; manifest en `src/data/story-content-manifest.json`. **Actualmente vacío** (0 cuentos) — corpus semilla es Fase 2 del plan de trabajo (`docs/plan-trabajo-chacachon.md`).
 - Home guest: leer primero; **Crear gratis** → `/probar`; login secundario. Ver `docs/demo-mode.md`.
 
 ---

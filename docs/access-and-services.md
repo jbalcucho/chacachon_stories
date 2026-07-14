@@ -10,7 +10,7 @@
 |-------|--------|-------------------|
 | **Neon DB `chacachon`** | ✅ Creada | Mismo proyecto que rotatudisfraz (`withered-cake-28248560`) |
 | **Migraciones Prisma** | ✅ Aplicadas | `npm run db:deploy` (incl. `generated_stories`) |
-| **Seed cuentos** | ✅ 4+ historias | `npm run db:seed` |
+| **Seed cuentos** | ❌ 0 (seed limpia el catálogo, no inserta) | `npm run db:seed` — corpus real es Fase 2 del plan |
 | **`.env.local` local** | ✅ DB + auth + Gemini | `fetch-neon-env.mjs` + vars manuales |
 | **Google OAuth local** | ⚠️ Revisar | Mismo client que rotatudisfraz; redirect `localhost:3000` |
 | **Vercel proyecto** | ✅ | https://chacachon-stories.vercel.app |

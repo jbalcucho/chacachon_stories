@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka, Nunito } from "next/font/google";
+import { Fredoka, Literata, Nunito } from "next/font/google";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
@@ -13,6 +13,13 @@ const fredoka = Fredoka({
   subsets: ["latin"],
   variable: "--font-fredoka",
   weight: ["500", "600", "700"],
+});
+
+/** Cuerpo del cuento en el lector: serif pensada para lectura larga (vs. Fredoka en títulos/UI). */
+const literata = Literata({
+  subsets: ["latin"],
+  variable: "--font-literata",
+  weight: ["400", "500", "600"],
 });
 
 const siteUrl = getSiteUrl();
@@ -72,7 +79,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${nunito.variable} ${fredoka.variable}`}>
+    <html
+      lang="es"
+      className={`${nunito.variable} ${fredoka.variable} ${literata.variable}`}
+    >
       <body className="page-bg flex min-h-screen flex-col font-sans text-cream">
         <ServiceWorkerRegister />
         {children}

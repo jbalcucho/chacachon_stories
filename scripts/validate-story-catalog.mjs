@@ -23,7 +23,15 @@ const redirectDestinations = new Set(
   redirects.map((r) => r.destination.replace(/^\/leer\//, "")),
 );
 
+const allowEmpty = process.env.ALLOW_EMPTY_CATALOG === "1";
 const errors = [];
+
+if (manifestSlugs.size === 0 && !allowEmpty) {
+  errors.push(
+    "manifest vacío (0 cuentos) — falla para evitar falso positivo. " +
+      "Si es esperado (rama de desarrollo temprano), corre con ALLOW_EMPTY_CATALOG=1.",
+  );
+}
 
 for (const slug of manifestSlugs) {
   const source = manifest.sources[slug];

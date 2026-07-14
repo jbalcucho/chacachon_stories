@@ -109,7 +109,7 @@ Flujo: `/crear/plantillas` → `/crear/adaptar?plantilla=<slug>`.
 | Badge + paso «Clásico» promovido | `StoryRecipeBuilder` si hay `moldeId` |
 
 Clásicos actuales: `cerditos-del-edificio`, `el-lobo-y-las-palabras`.  
-Cuentos propios (`operacion-a-dormir`, etc.) también aceptan `?plantilla=` (solo dilema), pero no salen en el listado tradicional.
+Cuentos propios del corpus (slug ilustrativo: `operacion-a-dormir` — aún no existe ninguno publicado, ver Fase 2 del plan de trabajo) también aceptarían `?plantilla=` (solo dilema) una vez publicados, pero no saldrían en el listado tradicional.
 
 ---
 

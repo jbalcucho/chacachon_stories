@@ -1,4 +1,83 @@
 {
-  "generatedAt": "2026-07-12T03:18:49.271Z",
-  "sources": {}
+  "generatedAt": "2026-07-14T16:52:33.074Z",
+  "sources": {
+    "andres-el-reino-de-las-hortalizas": {
+      "slug": "andres-el-reino-de-las-hortalizas",
+      "kind": "markdown",
+      "filePath": "cuentos/andres-el-reino-de-las-hortalizas.md",
+      "familyTag": "chacachon"
+    },
+    "camila-el-valle-de-los-bolos-saltarines": {
+      "slug": "camila-el-valle-de-los-bolos-saltarines",
+      "kind": "markdown",
+      "filePath": "cuentos/camila-el-valle-de-los-bolos-saltarines.md",
+      "familyTag": "chacachon"
+    },
+    "caperucita-el-camino-del-mandado": {
+      "slug": "caperucita-el-camino-del-mandado",
+      "kind": "markdown",
+      "filePath": "cuentos/caperucita-el-camino-del-mandado.md",
+      "familyTag": "chacachon"
+    },
+    "cerditos-la-torre-bien-hecha": {
+      "slug": "cerditos-la-torre-bien-hecha",
+      "kind": "markdown",
+      "filePath": "cuentos/cerditos-la-torre-bien-hecha.md",
+      "familyTag": "chacachon"
+    },
+    "emiliano-el-guardian-de-la-ciudad-zigzag": {
+      "slug": "emiliano-el-guardian-de-la-ciudad-zigzag",
+      "kind": "markdown",
+      "filePath": "cuentos/emiliano-el-guardian-de-la-ciudad-zigzag.md",
+      "familyTag": "chacachon"
+    },
+    "isabella-el-valle-de-los-ecos": {
+      "slug": "isabella-el-valle-de-los-ecos",
+      "kind": "markdown",
+      "filePath": "cuentos/isabella-el-valle-de-los-ecos.md",
+      "familyTag": "chacachon"
+    },
+    "joaquin-el-rincon-oscuro": {
+      "slug": "joaquin-el-rincon-oscuro",
+      "kind": "markdown",
+      "filePath": "cuentos/joaquin-el-rincon-oscuro.md",
+      "familyTag": "chacachon"
+    },
+    "luciana-el-reino-de-las-piezas-perdidas": {
+      "slug": "luciana-el-reino-de-las-piezas-perdidas",
+      "kind": "markdown",
+      "filePath": "cuentos/luciana-el-reino-de-las-piezas-perdidas.md",
+      "familyTag": "chacachon"
+    },
+    "manuela-el-banquete-del-valle-colorido": {
+      "slug": "manuela-el-banquete-del-valle-colorido",
+      "kind": "markdown",
+      "filePath": "cuentos/manuela-el-banquete-del-valle-colorido.md",
+      "familyTag": "chacachon"
+    },
+    "ricitos-las-cosas-prestadas": {
+      "slug": "ricitos-las-cosas-prestadas",
+      "kind": "markdown",
+      "filePath": "cuentos/ricitos-las-cosas-prestadas.md",
+      "familyTag": "chacachon"
+    },
+    "samuel-el-sendero-de-las-luciernagas": {
+      "slug": "samuel-el-sendero-de-las-luciernagas",
+      "kind": "markdown",
+      "filePath": "cuentos/samuel-el-sendero-de-las-luciernagas.md",
+      "familyTag": "chacachon"
+    },
+    "tomas-el-espejo-de-los-ecos": {
+      "slug": "tomas-el-espejo-de-los-ecos",
+      "kind": "markdown",
+      "filePath": "cuentos/tomas-el-espejo-de-los-ecos.md",
+      "familyTag": "chacachon"
+    },
+    "valentina-el-valle-de-los-susurros": {
+      "slug": "valentina-el-valle-de-los-susurros",
+      "kind": "markdown",
+      "filePath": "cuentos/valentina-el-valle-de-los-susurros.md",
+      "familyTag": "chacachon"
+    }
+  }
 }
