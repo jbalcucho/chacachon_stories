@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -11,7 +10,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import BookSpine from "@/components/BookSpine";
-import CreateStorySlot from "@/components/CreateStorySlot";
+import CreateStoryStar from "@/components/CreateStoryStar";
 import StoryBook from "@/components/StoryBook";
 import { isReadableLibraryStory, type StoryCard } from "@/lib/stories";
 import { CREATE_STORY_SLUG } from "@/lib/create-story";
@@ -79,6 +78,12 @@ type Props = {
   guestMode?: boolean;
 };
 
+/** Ancho aproximado de un lomo + separación, por breakpoint (ver globals.css). */
+const SPINE_UNIT_PX_MOBILE = 31;
+const SPINE_UNIT_PX_DESKTOP = 44;
+/** Mínimo de lomos "asomados" a cada lado aunque el espacio sea muy angosto. */
+const MIN_FIT_PER_SIDE = 1;
+
 export default function StoryBookshelf({
   stories: storiesProp,
   label = "Mi biblioteca",
@@ -93,6 +98,26 @@ export default function StoryBookshelf({
     [storiesProp],
   );
   const router = useRouter();
+  const leftStackRef = useRef<HTMLDivElement | null>(null);
+  const rightStackRef = useRef<HTMLDivElement | null>(null);
+  const [fitPerSide, setFitPerSide] = useState(MIN_FIT_PER_SIDE);
+
+  useEffect(() => {
+    const els = [leftStackRef.current, rightStackRef.current].filter(
+      (el): el is HTMLDivElement => el !== null,
+    );
+    if (els.length === 0) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const spineUnit =
+        window.innerWidth < 640 ? SPINE_UNIT_PX_MOBILE : SPINE_UNIT_PX_DESKTOP;
+      const width = Math.min(...entries.map((entry) => entry.contentRect.width));
+      const fit = Math.max(MIN_FIT_PER_SIDE, Math.floor(width / spineUnit));
+      setFitPerSide((prev) => (prev === fit ? prev : fit));
+    });
+    for (const el of els) observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
   const catalogSlug =
     initialSlug === CREATE_STORY_SLUG ? null : (initialSlug ?? null);
   const [activeIndex, setActiveIndex] = useState(() =>
@@ -217,14 +242,15 @@ export default function StoryBookshelf({
   const activeOpenPath = activeStory?.openPath ?? null;
   const canOpenActive = Boolean(activeOpenPath);
 
-  const { left, right } = getBalancedStackedSides(stories, activeIndex);
-  const leftBookCount = left.filter((entry) => !isStackSpacer(entry)).length;
-  const rightBookCount = right.filter((entry) => !isStackSpacer(entry)).length;
+  // +1 más allá de lo que cabe: se recorta con overflow:hidden y queda
+  // "asomado" para indicar que hay más libros de ese lado (ver revisión UX).
+  const { left, right } = getBalancedStackedSides(
+    stories,
+    activeIndex,
+    fitPerSide + 1,
+  );
 
-  function renderStackEntry(
-    entry: (typeof left)[number],
-    bookCount: number,
-  ) {
+  function renderStackEntry(entry: (typeof left)[number]) {
     if (isStackSpacer(entry)) {
       return (
         <span
@@ -241,7 +267,6 @@ export default function StoryBookshelf({
       <BookSpine
         key={entry.story.slug}
         story={entry.story}
-        narrow={bookCount >= 4}
         onClick={() => {
           if (!isBookTransitioning) navigateTo(entry.index);
         }}
@@ -281,12 +306,7 @@ export default function StoryBookshelf({
       >
         {allowCreate ? (
           <div className="bookshelf-header__with-sub">
-            <div className="flex flex-col items-center gap-1 sm:flex-row sm:items-baseline sm:gap-3">
-              <p className="bookshelf-label">{label}</p>
-              <Link href="/crear" className="bookshelf-create-link">
-                ✨ Crear cuento
-              </Link>
-            </div>
+            <p className="bookshelf-label bookshelf-label--solo">{label}</p>
             {subtitle ? (
               <p className="bookshelf-subtitle">{subtitle}</p>
             ) : null}
@@ -332,23 +352,25 @@ export default function StoryBookshelf({
           onTouchEnd={(e) => handleTouchEnd(e.changedTouches[0].clientX)}
         >
           <div className="library-cubby__lintel" aria-hidden="true" />
-          <div
-            className={
-              allowCreate
-                ? "library-cubby__compartment library-cubby__compartment--create-both"
-                : "library-cubby__compartment library-cubby__compartment--create-end"
-            }
-          >
-            {allowCreate ? (
-              <CreateStorySlot variant="mirror" fadeNavigate />
-            ) : null}
+          {allowCreate ? (
+            <CreateStoryStar fadeNavigate />
+          ) : (
+            <CreateStoryStar
+              href="/probar"
+              label="Crear HistorIA"
+              ariaLabel="Crear HistorIA gratis: cuento de prueba con tu nombre"
+              fadeNavigate
+            />
+          )}
+          <div className="library-cubby__compartment">
             <div className="library-cubby__stacks" role="list">
               <div
+                ref={leftStackRef}
                 className="book-spine-stack book-spine-stack--left"
                 data-count={left.length}
                 role="presentation"
               >
-                {left.map((entry) => renderStackEntry(entry, leftBookCount))}
+                {left.map((entry) => renderStackEntry(entry))}
               </div>
 
               <div className="library-cubby__center" role="listitem">
@@ -370,24 +392,14 @@ export default function StoryBookshelf({
               </div>
 
               <div
+                ref={rightStackRef}
                 className="book-spine-stack book-spine-stack--right"
                 data-count={right.length}
                 role="presentation"
               >
-                {right.map((entry) => renderStackEntry(entry, rightBookCount))}
+                {right.map((entry) => renderStackEntry(entry))}
               </div>
             </div>
-            {allowCreate ? (
-              <CreateStorySlot variant="primary" fadeNavigate />
-            ) : (
-              <CreateStorySlot
-                variant="primary"
-                href="/probar"
-                label="Crear HistorIA"
-                ariaLabel="Crear HistorIA gratis: cuento de prueba con tu nombre"
-                fadeNavigate
-              />
-            )}
             <div className="library-cubby__shelf" aria-hidden="true" />
           </div>
           <div className="library-cubby__base" aria-hidden="true" />

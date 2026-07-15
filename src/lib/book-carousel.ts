@@ -30,17 +30,22 @@ export function getCircularOffset(
   return offset;
 }
 
-export function getMaxSpinesPerSide(count: number): number {
+/** Techo de seguridad: nunca renderizar más lomos que esto por lado,
+ * sin importar cuánto quepa físicamente (catálogos futuros muy grandes). */
+const SAFETY_MAX_SPINES_PER_SIDE = 10;
+
+export function getMaxSpinesPerSide(count: number, cap = SAFETY_MAX_SPINES_PER_SIDE): number {
   if (count <= 1) return 0;
-  return Math.floor((count - 1) / 2);
+  return Math.min(Math.floor((count - 1) / 2), cap);
 }
 
 export function getStackedSides(
   stories: StoryCard[],
   activeIndex: number,
+  maxPerSide?: number,
 ): { left: StackItem[]; right: StackItem[] } {
   const count = stories.length;
-  const maxOffset = getMaxSpinesPerSide(count);
+  const maxOffset = getMaxSpinesPerSide(count, maxPerSide);
   const left: StackItem[] = [];
   const right: StackItem[] = [];
 
@@ -61,8 +66,9 @@ export function getStackedSides(
 export function getBalancedStackedSides(
   stories: StoryCard[],
   activeIndex: number,
+  maxPerSide?: number,
 ): { left: StackEntry[]; right: StackEntry[] } {
-  const { left, right } = getStackedSides(stories, activeIndex);
+  const { left, right } = getStackedSides(stories, activeIndex, maxPerSide);
   const target = Math.max(left.length, right.length);
   const padLeft = target - left.length;
   const padRight = target - right.length;
