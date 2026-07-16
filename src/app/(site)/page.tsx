@@ -33,9 +33,6 @@ export default async function HomePage({
           <p className="home-tagline">
             Cuentos de fantasía inspirados en tu hogar
           </p>
-          <p className="intro-copy mx-auto mt-2 max-w-lg text-sm sm:mt-3 sm:text-base">
-            Para leer juntos en casa, de paseo o en cualquier momento.
-          </p>
         </header>
 
         <StoryBookshelf
