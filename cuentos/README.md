@@ -4,7 +4,7 @@ Fuente de verdad narrativa en Git. El estante lee metadata desde Neon (`stories`
 
 ## Estado actual
 
-**Catálogo vacío.** No hay demos publicados. El próximo cuento se añade aquí solo cuando el contexto y el texto estén listos.
+**13 cuentos publicados** (corpus semilla, Fase 2 del plan de trabajo). Todos con `status: PUBLISHED`, revisión editorial completa y `npm run validate:quality` en verde. El próximo cuento se añade aquí solo cuando el contexto y el texto estén listos.
 
 ## Flujo md → manifest → seed
 

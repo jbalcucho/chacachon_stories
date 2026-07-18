@@ -7,6 +7,7 @@ import RecipeGenerationPreview, {
 } from "@/components/RecipeGenerationPreview";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useRotatingMessage } from "@/lib/use-rotating-message";
 import {
   buildCustomRecipeIngredient,
   RECIPE_CUSTOM_LABEL_MAX,
@@ -436,6 +437,15 @@ export default function StoryRecipeBuilder({
   const [notice, setNotice] = useState<string | null>(null);
   const [pulseTokenId, setPulseTokenId] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
+  const loadingMessages = useMemo(
+    () => [
+      `Imaginando el mundo de ${selection.heroes[0]?.label ?? "tu peque"}…`,
+      "Puliendo el cierre del cuento…",
+      "Revisando que quede perfecto…",
+    ],
+    [selection.heroes],
+  );
+  const loadingMessage = useRotatingMessage(loadingMessages, generating);
   const [showGenerationPreview, setShowGenerationPreview] = useState(false);
   const [liveQuota, setLiveQuota] = useState<GenerationQuota | null>(
     generationQuota,
@@ -931,7 +941,7 @@ export default function StoryRecipeBuilder({
                 onClick={handleGenerate}
               >
                 {generating
-                  ? "Creando tu cuento…"
+                  ? loadingMessage
                   : !isLoggedIn
                     ? "Entrar para crear"
                     : quotaBlocksGenerate

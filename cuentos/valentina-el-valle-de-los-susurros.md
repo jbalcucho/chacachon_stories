@@ -5,14 +5,14 @@ familyTag: chacachon
 # Valentina y la linterna del Valle de los Susurros
 > Una noche para encontrar el camino de vuelta a casa
 
-Había una vez una niña llamada Valentina que vivía en un apartamento con olor a madera fresca. Afuera, la ciudad era un trancón de luces, pero en su cuarto el suelo se transformó en el **Valle de los Susurros**. Ese lugar era un vergel de musgo que brillaba al tacto. Valentina, nuestra exploradora, debía rescatar el rayo de luz perdido antes de que el valle se quedara sin brillo. Toby, su perro, la acompañaba con una capa hecha de media vieja.
+Había una vez una niña llamada Valentina que vivía en un apartamento donde las tablas del piso crujían un poquito con cada paso. Afuera, la ciudad era un trancón de luces, pero en su cuarto el suelo se transformó en el **Valle de los Susurros**. Ese lugar era un vergel de musgo que brillaba al tacto. Valentina, nuestra exploradora, debía rescatar el rayo de luz perdido antes de que el valle se quedara sin brillo. Toby, su perro, la acompañaba con una capa hecha de media vieja.
 
 ## La linterna y el lío
-—Valentina, el brillo del valle se está apagando —dijo mamá desde la puerta, con esa voz de siempre—. Hay que guardar la luz en la linterna.
+—Valentina, el brillo del valle se está apagando —dijo mamá, asomada apenas por la rendija de la puerta—. Hay que guardar la luz en la linterna.
 Valentina tomó su linterna roja. Era un objeto mágico que solo encendía cuando ella respiraba profundo. La misión era sencilla: llevar la luz al Gran Árbol del Descanso para que el valle durmiera tranquilo. Valentina corría entre los cojines, que ahora eran montañas de algodón. Toby corría detrás, intentando morder el haz de luz que saltaba por todas partes.
 
 ## Un encuentro curioso
-Valentina se detuvo en seco. Por un pelo se va de cara contra una almohada gigante. Un pequeño búho de peluche, con anteojos de cartón, estaba enredado en una enredadera de sábanas.
+Valentina se detuvo en seco, frenando tan rápido que las rodillas le rozaron una almohada gigante. Un pequeño búho de peluche, con anteojos de cartón, estaba enredado en una enredadera de sábanas.
 —¡Ayuda! —decía el búho—. Me he quedado pegado porque soy muy bruto para volar de noche.
 Valentina se rió, pero Toby ladró confundido, mirando a todos lados.
 —¿Acaso alguien me llamó a mí? —preguntó Toby con su voz de perro serio—. ¿O es que el búho me estaba hablando?

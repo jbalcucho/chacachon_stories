@@ -5,10 +5,12 @@ familyTag: chacachon
 # El Reino de las Hortalizas Gigantes
 > La misión de Andrés en la huerta del abuelo
 
+Había una vez un niño llamado Andrés que ayudaba a su abuela todas las tardes en la huerta de la finca.
+
 ## Un almuerzo en la finca
 Andrés vivía en una casa de campo donde el aire olía a tierra mojada y leña. Esa tarde, la huerta detrás de la casa se transformó en el Reino de las Hortalizas Gigantes. Andrés debía llevar el Caldo de la Abuela, un brebaje dorado que daba fuerza a las plantas, hasta el centro del huerto antes de que se escondiera el sol.
 
-—Andrés, trae el plato con el caldo —dijo la abuela desde el corredor, con su voz de siempre—. No dejes ni una gota por el camino.
+—Andrés, trae el plato con el caldo —dijo la abuela desde el corredor, secándose las manos en el delantal—. No dejes ni una gota por el camino.
 
 ## El camino al centro
 El terreno estaba lleno de zanahorias tan grandes como pilares de casa. Andrés caminaba con cuidado. Si el caldo se derramaba, las plantas perderían su brillo. De repente, una lechuga enorme bloqueó el paso. 
@@ -28,13 +30,13 @@ Andrés se detuvo en seco y las miró muy serio.
 Las espinacas se pusieron rojas como tomates de la vergüenza.
 —¡Ay, no! Decíamos que son muy brutos… para encontrar el camino al huerto, claro. ¡Qué despiste el nuestro!
 
-Andrés soltó una carcajada. Casi se va de cara por la risa, pero sujetó el plato con fuerza. Por un pelo no se le cae el caldo al suelo.
+Andrés soltó una carcajada y se dobló hacia adelante, aguantándose de un tallo para no caer. El plato tembló entre sus manos, pero el caldo se quedó quieto adentro.
 
 ## La entrega final
-Llegó al centro del reino, justo donde crecía la calabaza más grande del mundo. Vertió el caldo con cuidado en la raíz principal. Al instante, una luz tibia cubrió todo el lugar. Andrés sintió una paz gigante. Ya no tenía miedo de probar nada, porque sabía que todo lo que crece en la tierra es un regalo que merece ser compartido.
+Llegó al centro del reino, justo donde crecía la calabaza más grande del mundo. Vertió el caldo con cuidado en la raíz principal. Al instante, una luz tibia cubrió todo el lugar. Andrés sintió una paz gigante. Se limpió las manos en el pantalón y miró el huerto entero, contento.
 
 La abuela se acercó y le dio un abrazo. 
-—Te vi, mi niño —dijo ella—. Fuiste muy honesto con el reparto. 
+—Te vi, mi niño —dijo ella, apretándole el hombro—. Así se hace. 
 Andrés sonrió y se sentó a comer un plato de caldo humeante, saboreando cada verdura como si fuera un tesoro recién descubierto. El Reino de las Hortalizas Gigantes volvió a ser, poco a poco, la huerta tranquila de siempre. La cuchara reposaba al fondo del plato, limpia y brillante. 
 
 Y colorín colorado, este cuento se ha terminado.

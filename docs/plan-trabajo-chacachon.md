@@ -71,6 +71,20 @@ Estas son tuyas, de negocio — el plan solo las deja explícitas para que no se
 
 ---
 
+## Fase 5 — futuro: gate semántico por capas según volumen (no implementar todavía)
+
+Contexto (2026-07-16): se construyó un gate semántico LLM-as-judge (Haiku, `story-quality-judge.ts`) que complementa el gate de regex (Fix 4, `story-quality.ts`) — detecta sermón disfrazado, puente casa-fantasía roto y adultos disueltos en fantasía, cosas que el regex no puede anticipar por sí solo. Datos reales medidos: ~$0.0025 USD por llamada al juez, pero **~7-9 segundos de latencia** (muy por encima de la hipótesis inicial de 1-2s).
+
+**Decisión actual (tráfico bajo por trial limits de Fase 0):** `SEMANTIC_GATE_ENABLED=100` — bloqueante con reintento en el 100% del tráfico, con un margen de gracia de 5s (`JUDGE_GRACE_TIMEOUT_MS` en `story-generation.server.ts`) que sirve el cuento sin esperar si el juez tarda más, logueando el veredicto tardío solo para medición. Se prioriza calidad narrativa (la ventaja competitiva del producto) sobre latencia mientras el volumen es bajo.
+
+**Cuando el tráfico crezca de verdad** (más usuarios simultáneos, la latencia de 7-9s por generación deja de ser aceptable a escala), migrar a una estrategia por capas:
+- **Síncrono + bloqueante** solo para la primera generación de un usuario nuevo en `/probar` (mayor impacto en primera impresión/conversión — vale la pena la espera ahí).
+- **Async, log-only** (sin bloquear, sin reintento) para generaciones posteriores de usuarios ya registrados en `/crear` — se sigue midiendo la tasa de violaciones sin pagar la latencia en cada cuento.
+
+No implementar esto todavía — solo queda documentado para no perder la decisión cuando el volumen lo justifique.
+
+---
+
 ## Cómo dividir el trabajo entre Home y Code
 
 - **Home (aquí):** decisiones editoriales, redacción/revisión fina de cuentos, resolver ambigüedades de negocio, aprobar antes de que algo se materialice en el repo

@@ -141,12 +141,13 @@ PUENTE CASA-FANTASÍA (principio central, obligatorio):
 - Si al quitarle el disfraz fantástico al cuento no queda una escena doméstica reconocible debajo (el niño no quiere dormir/soltar la pantalla/compartir/comer algo), el cuento FALLÓ este pilar.
 - PROHIBIDO que los adultos reales del niño (mamá, papá, abuela…) se disuelvan en roles fantásticos irreconocibles («el Gran Sabio», «la Navegante del Viento Solar»). Deben seguir apareciendo, al menos una vez, con su nombre/rol real y su voz de siempre (la misma que usan todas las noches), aunque también tengan un papel dentro del mundo fantástico.
 - Ejemplo de espíritu (NO copies): «Había una vez un niño llamado Nico que vivía en un apartamento donde olía a café y pan tostado. Esa noche, su cuarto se convirtió en el Faro de las Mil Estrellas, y su tarea era apagar el último farol antes de que el sueño se escapara volando. —Nico, ya casi es hora del farol —dijo su mamá desde la puerta, con la misma voz de todas las noches.»
+- APERTURA OBLIGATORIA: la primera oración SIEMPRE empieza con «Había una vez» o «Era una vez» — sin excepción, cualquiera sea el mundo, el moment o la edad. Esta regla tiene la misma fuerza que CIERRE OBLIGATORIO.
 - El rol del protagonista NACE del moment específico, NUNCA de un catálogo fijo — varía: mensajero, farolero, cocinera, exploradora, guardiana del puente… PROHIBIDO que "capitán" (o cualquier otro rol) se repita cuento tras cuento como comodín por defecto.
 - Magia = deseo + obstáculo + asombro + decisión. UNA magia clara por objeto/regla (no apilar brillo + luciérnagas + visiones + guardianes sobre lo mismo).
 - Test de sentido (obligatorio): un niño de 7 debe poder DIBUJAR la misión en un segundo y CONTARLA en una frase. Si el trabajo del héroe suena raro o no se entiende (ej. «naves de hojas que bajan a salvo al suelo»), CÁMBIALO por algo obvio (llevar cartas, cuidar el puente, apagar faroles, alcanzar un mapa).
 - HUMOR COLOMBIANO DE CUENTO (obligatorio, 1–2 beats, sin exagerar):
   · Dos venas (elige 1, máx. 2 en total):
-    1) Colombianada × magia: arepa/empanada, escoba “último modelo” contra un poste, perfume que hace estornudar, “qué bruja tan mensa”.
+    1) Colombianada × magia: arepa/empanada, escoba “último modelo” contra un poste, perfume que hace estornudar, un comentario seco de un villano/objeto sobre SU PROPIO error (varía la frase — “qué bruja tan mensa”, “qué chambón”, “vaya lío”… no repitas siempre la misma).
     2) Humor tipo Chavo/Chapulín (espíritu, NO frases mexicanas): malentendido inocente, pie de la letra, juego de palabras simple — solo si el setup lo justifica.
   · Todo en español colombiano (neutro o acento elegido). PROHIBIDO: “se me chispoteó”, “chanfle”, “no contaban con mi astucia”, etc.
   · UNA pizca. No sketch.
@@ -159,7 +160,7 @@ FANTASÍA NATURAL + LENGUAJE ORAL COLOMBIANO (obligatorio):
 - Fantasía sí; confusión no. Cada invento debe tener lógica casera: qué es, para qué sirve, qué pasa si falla.
 - Frases CORTAS. Meta: la mayoría ≤ 12–15 palabras. Prohibido el párrafo-serpiente con “que…, y que…, según…, daba…”.
 - Mundos: la MAYORÍA son bosque, aldea, vereda, reino, isla, pueblo, río, montaña, ciudad inventada. Naves/galaxias/espacio = excepción rara (no el default).
-- Léxico: ver bloque LÉXICO COLOMBIANO del mensaje. Preferir «plato», «por un pelo», «se va de cara». Evitar «cuenco», «por los pelos», calcos de España/México.
+- Léxico: ver bloque LÉXICO COLOMBIANO del mensaje. Preferir «plato» (no «cuenco», ni calcos de España/México). Para el tropiezo y el comentario de mishap, varía la frase cada vez — usa las opciones de SEMILLA DE VARIEDAD del mensaje de usuario en vez de repetir siempre «por un pelo» / «se va de cara» / «qué menso» como si fueran la única fórmula correcta.
 - MAL: «debía cuidar que las naves de hojas que bajaban de los árboles llegaran a salvo al suelo».
 - MAL: «esquivó el golpe por los pelos» / «tomó el cuenco de Florecitas».
 - BIEN: «Pedrito llevaba cartas de un árbol a otro.» / «Esquivó el golpe por un pelo.» / «Tomó el plato.»
@@ -237,7 +238,7 @@ export const AGE_6_8_USER_RULES = `REGLAS EXTRA — EDAD 6–8 (CRÍTICO — lec
 - Nombre de mundo memorable (Nube-Nube, Bosque de la Nuez…), NUNCA Trueno Verde / plata / cristal genérico.
 - Misión del héroe en UNA frase clara (llevar cartas, cuidar puente, atrapar mapa…).
 - Frases cortas: mayoría ≤ 12–15 palabras. Prohibido “que…, y que…, según…”.
-- Oral colombiano: plato, correr, qué menso, se va de cara — no impregnado/emitían/cuenco/fortalecer la vista.
+- Oral colombiano: plato, correr — no impregnado/emitían/cuenco/fortalecer la vista. Para el tropiezo y el comentario de mishap usa las opciones de SEMILLA DE VARIEDAD (p. ej. «qué menso», «qué chambón», «por un pelo», «por poquito»…): son ejemplos entre varios, no la única fórmula — no la repitas igual en cada cuento.
 - Una sola magia simple por verdura/objeto/regla.
 - Humor: colombianada y/o malentendido tipo Chavo (setup justo), sin frases mexicanas.
 - Colorín colorado al final. Sin sala→cama.`;
@@ -342,6 +343,22 @@ const HUMOR_SEEDS = [
   "perfume/olor fuerte → estornudo en el peor momento (sin lastimar de verdad)",
 ];
 
+const STUMBLE_PHRASE_SEEDS = [
+  "por un pelo",
+  "por poquito",
+  "de puro milagro",
+  "a punto de irse de bruces",
+  "al filo, pero no se cayó",
+];
+
+const MISHAP_COMMENT_SEEDS = [
+  "qué menso/a",
+  "qué torpe salió",
+  "qué chambón",
+  "vaya lío que armó",
+  "eso sí fue un chasco",
+];
+
 function pickSeed(list: string[]): string {
   return list[Math.floor(Math.random() * list.length)] ?? list[0];
 }
@@ -355,7 +372,7 @@ function pickWorldSeed(): string {
 export function buildVarietySeedBlock(selection: RecipeSelectionSlice): string {
   return [
     "SEMILLA DE VARIEDAD (úsala; no copies few-shots ni plantillas domésticas):",
-    `- Mundo con nombre CON GANCHO (NACE aquí; casi nunca nave/galaxia): ${pickWorldSeed()}.`,
+    `- Mundo con nombre CON GANCHO — aparece DESPUÉS de anclar 1–2 frases del moment real de casa; NUNCA es la primera línea del cuento (casi nunca nave/galaxia): ${pickWorldSeed()}.`,
     `- Rol/misión CLARA en una frase: ${pickSeed(HERO_ROLE_SEEDS)}.`,
     `- Deseo / falta: ${pickSeed(DESIRE_SEEDS)}.`,
     `- Acción del nudo: ${pickSeed(ACTION_SEEDS)}.`,
@@ -364,7 +381,7 @@ export function buildVarietySeedBlock(selection: RecipeSelectionSlice): string {
     `- Cierre + colorín: ${pickSeed(CLOSING_SEEDS)}.`,
     `- Sabor de costumbre (implícito): ${pickSeed(HABIT_RESPECT_SEEDS)}.`,
     "- Frases ≤ 12–15 palabras. Una magia por objeto. Misión dibujable.",
-    "- Léxico: plato (no cuenco); por un pelo (no por los pelos). Sin Trueno Verde/plata/impregnado.",
+    `- Léxico: plato (no cuenco); ${pickSeed(STUMBLE_PHRASE_SEEDS)} (para el tropiezo); ${pickSeed(MISHAP_COMMENT_SEEDS)} (comentario de un villano/objeto/secundario sobre SU PROPIO error — NUNCA que el niño protagonista se autodescriba así).`,
     "- OBLIGATORIO colorín colorado. Sin sala/TV ni dulces sueños. Sin naves en serie. Sin frases mexicanas del Chavo.",
   ].join("\n");
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
+import { useRotatingMessage } from "@/lib/use-rotating-message";
 import {
   DEFAULT_TRIAL_AGE_BAND_ID,
   TRIAL_AGE_BANDS,
@@ -48,6 +49,16 @@ export default function TrialStoryForm() {
   const [showLessonPicker, setShowLessonPicker] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const loadingMessages = useMemo(
+    () => [
+      `Imaginando el mundo de ${name || "tu peque"}…`,
+      "Puliendo el cierre del cuento…",
+      "Revisando que quede perfecto…",
+    ],
+    [name],
+  );
+  const loadingMessage = useRotatingMessage(loadingMessages, loading);
 
   const suggestedLessonId = useMemo(() => {
     const defaults = resolveTrialDefaults({
@@ -412,7 +423,7 @@ export default function TrialStoryForm() {
             onClick={createNowFromBasics}
             disabled={loading}
           >
-            {loading ? "Creando con IA…" : "Crear con IA"}
+            {loading ? loadingMessage : "Crear con IA"}
           </button>
           <button
             type="submit"
@@ -630,7 +641,7 @@ export default function TrialStoryForm() {
             onClick={() => finish(false)}
             disabled={loading}
           >
-            {loading ? "Creando con IA…" : "Crear con IA"}
+            {loading ? loadingMessage : "Crear con IA"}
           </button>
           <button
             type="button"

@@ -89,8 +89,8 @@ describe("buildStoryPrompt", () => {
     });
     expect(accentCode).toBe("bogota_cachaco");
     expect(system).toContain("cachaco");
+    expect(system).toMatch(/ah carachas/i);
     expect(user).toContain("Bogotano cachaco");
-    expect(user).toContain("Ah carachas");
   });
 
   it("ignora accentCode inválido y vuelve a neutro", () => {

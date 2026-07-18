@@ -5,10 +5,10 @@ familyTag: chacachon
 # Samuel y el Sendero de las Luciérnagas
 > El farolero de los destellos en la finca
 
-Había una vez un niño llamado Samuel. Vivía en una finca donde el aire olía a pasto húmedo y a leña. Esa noche, el prado se convirtió en el Reino del Cerro de la Arepa. Samuel era el Farolero del Sendero. Debía encender las luces para que las hadas encontraran el camino a salvo.
+Había una vez un niño llamado Samuel que vivía en una finca donde las tardes traían olor a pasto húmedo y humo de leña. Esa noche, el prado se convirtió en el Reino del Cerro de la Arepa. Samuel era el Farolero del Sendero. Debía encender las luces para que las hadas encontraran el camino a salvo.
 
 ## La misión de Samuel
-—Samuel, hijo —dijo papá con su voz de siempre—, el sendero necesita brillo.
+—Samuel, hijo —dijo papá, con la linterna de mano ya encendida—, el sendero necesita brillo.
 Samuel miró hacia la oscuridad del campo. El miedo le hizo temblar un poco. Pero vio a su gata Michu. Ella ronroneaba cerca de sus pies. Michu tenía ojos que brillaban como linternas pequeñas.
 
 —Tú me ayudas, Michu —susurró Samuel.
@@ -16,10 +16,10 @@ Su misión era clara: debía colgar diez faroles de papel antes de que la niebla
 
 ## Una carrera contra la niebla
 Samuel corrió por el sendero. Sus pies descalzos sentían la hierba fría y húmeda, y el olor a leña de la cocina se mezclaba con el aroma dulce del pasto recién cortado.
-—¡Rápido, Samuel! —dijo mamá desde la puerta, con su voz de todas las noches.
-De repente, una lechuza graznó muy fuerte. Samuel se asustó. Se le enredó el cordón del zapato en una piedra. Casi se va de cara contra el suelo.
+—¡Rápido, Samuel! —dijo mamá, colgando faroles de repuesto en la baranda del corredor.
+De repente, una lechuza graznó muy fuerte. Samuel se asustó. Se le enredó el cordón del zapato en una piedra y dio un traspié, pero se enderezó con los brazos abiertos.
 
-—¡Por un pelo no me caigo! —dijo Samuel riendo bajito.
+—¡Uy, casi! —dijo Samuel, riendo bajito.
 Al lado, Michu se puso a cazar una sombra y terminó dando una voltereta. Se quedó con una hoja seca pegada en la oreja. Samuel se rió tanto que el miedo se le olvidó. Qué gata tan chistosa, pensó.
 
 ## El sendero iluminado
