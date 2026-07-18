@@ -1,4 +1,6 @@
+import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { getProviderOverrideForAdmin } from "@/lib/dev-provider-override";
 import { saveGeneratedStory } from "@/lib/generated-stories.server";
 import { guardGenerateStoryRequest } from "@/lib/generate-story-guards";
 import {
@@ -55,11 +57,17 @@ export async function POST(request: Request) {
   try {
     const slice = toSelectionSlice(guarded.data.selection);
     const { perfil } = await getReaderProfile(sessionUser.id);
-    const draft = await generateStory({
-      selection: slice,
-      perfil,
-      accentCode: guarded.data.accentCode,
-    });
+    const forceProvider = await getProviderOverrideForAdmin(
+      sessionUser.role === UserRole.ADMIN,
+    );
+    const draft = await generateStory(
+      {
+        selection: slice,
+        perfil,
+        accentCode: guarded.data.accentCode,
+      },
+      { forceProvider },
+    );
     const id = await saveGeneratedStory({
       ...draft,
       userId: sessionUser.id,

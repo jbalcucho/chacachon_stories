@@ -20,6 +20,11 @@ export type StoryGenerationContext = {
 
 export type StorySource = "gemini" | "claude" | "mock";
 
+/** Fuerza un proveedor específico (comparación A/B en desarrollo) saltando el otro
+ * por completo -- si el forzado falla o no tiene key, cae directo a mock en vez de
+ * probar el proveedor no elegido. Ver /admin y src/lib/dev-provider-override.ts. */
+export type ProviderOverride = "gemini" | "claude" | null;
+
 export type GeneratedStoryDraft = {
   title: string;
   bodyMarkdown: string;
@@ -330,6 +335,10 @@ async function callGemini(
  *   2. Claude   (ANTHROPIC_API_KEY)
  *   3. Plantilla local (mock)      — sin ninguna key.
  * Si el proveedor elegido falla (error de red/API), se cae al siguiente.
+ * `opts.forceProvider` (solo admin, ver /admin) salta ese orden por completo:
+ * si el forzado falla o no tiene key configurada, cae directo a mock en vez
+ * de probar el otro proveedor — así la comparación A/B nunca se contamina
+ * con una llamada silenciosa al proveedor no elegido.
  *
  * Además, cada generación pasa por dos gates de calidad (biblia editorial):
  *   Gate 1 — regex (story-quality.ts): apertura, sermón literal, autoburla…
@@ -345,14 +354,18 @@ async function callGemini(
  */
 export async function generateStory(
   ctx: StoryGenerationContext,
+  opts?: { forceProvider?: ProviderOverride },
 ): Promise<GeneratedStoryDraft> {
   const geminiKey = process.env.GEMINI_API_KEY?.trim();
   const anthropicKey = process.env.ANTHROPIC_API_KEY?.trim();
+  const forceProvider = opts?.forceProvider ?? null;
+  const tryGemini = Boolean(geminiKey) && forceProvider !== "claude";
+  const tryClaude = Boolean(anthropicKey) && forceProvider !== "gemini";
   const fallbackTitle = "Un cuento de Chacachón";
   const heroName = ctx.selection.heroes[0]?.label ?? null;
   let qualityGateBlocked = false;
 
-  if (geminiKey) {
+  if (tryGemini && geminiKey) {
     try {
       const first = await callGemini(ctx, geminiKey);
       let bodyMarkdown = sanitizeFairyTaleBookends(first.markdown.trim());
@@ -421,7 +434,7 @@ export async function generateStory(
     }
   }
 
-  if (anthropicKey && !qualityGateBlocked) {
+  if (tryClaude && anthropicKey && !qualityGateBlocked) {
     try {
       const first = await callClaude(ctx, anthropicKey);
       let bodyMarkdown = sanitizeFairyTaleBookends(first.markdown.trim());
