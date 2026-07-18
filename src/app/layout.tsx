@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka, Literata, Nunito } from "next/font/google";
+import RouteFadeReset from "@/components/RouteFadeReset";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
@@ -85,6 +86,7 @@ export default function RootLayout({
     >
       <body className="page-bg flex min-h-screen flex-col font-sans text-cream">
         <ServiceWorkerRegister />
+        <RouteFadeReset />
         {children}
       </body>
     </html>

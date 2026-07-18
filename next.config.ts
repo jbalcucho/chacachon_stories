@@ -22,6 +22,13 @@ const contentSecurityPolicy = [
 ].join("; ");
 
 const config: NextConfig = {
+  env: {
+    // Sello de versión visible en el footer: fecha de build + commit corto
+    // (VERCEL_GIT_COMMIT_SHA existe en builds de Vercel; en local queda "dev").
+    NEXT_PUBLIC_BUILD_TIME: new Date().toISOString(),
+    NEXT_PUBLIC_COMMIT_SHA:
+      process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "dev",
+  },
   // Los cuentos se leen con readFile en runtime; sin esto Vercel no los empaqueta
   // en la función serverless y /leer/[slug] falla con ENOENT en producción.
   outputFileTracingIncludes: {
