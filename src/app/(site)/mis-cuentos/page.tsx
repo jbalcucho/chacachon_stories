@@ -3,11 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import BrandIllustration from "@/components/BrandIllustration";
 import CrearPageActions from "@/components/CrearPageActions";
+import GeneratedStoryList from "@/components/GeneratedStoryList";
 import { listGeneratedStoriesForUser } from "@/lib/generated-stories.server";
-import {
-  formatGeneratedStoryDate,
-  labelGeneratedStorySource,
-} from "@/lib/generated-story-labels";
 import { getGenerationDailyLimit } from "@/lib/generation-limits";
 import { getSessionUser } from "@/lib/session";
 
@@ -62,22 +59,15 @@ export default async function MisCuentosPage() {
           </Link>
         </section>
       ) : (
-        <ul className="crear-template-list mt-8">
-          {stories.map((story) => (
-            <li key={story.id}>
-              <Link
-                href={`/leer/generado/${story.id}`}
-                className="crear-template-item"
-              >
-                <span className="crear-template-item__title">{story.title}</span>
-                <span className="crear-template-item__desc">
-                  {formatGeneratedStoryDate(story.createdAt)} ·{" "}
-                  {labelGeneratedStorySource(story.source)}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <GeneratedStoryList
+          stories={stories.map((story) => ({
+            id: story.id,
+            title: story.title,
+            source: story.source,
+            createdAt: story.createdAt.toISOString(),
+            hiddenAt: story.hiddenAt ? story.hiddenAt.toISOString() : null,
+          }))}
+        />
       )}
 
       {stories.length > 0 ? (

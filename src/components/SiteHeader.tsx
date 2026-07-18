@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import AccountMenu from "@/components/AccountMenu";
 import BrandIllustration from "@/components/BrandIllustration";
 import ActiveProfileNav from "@/components/family/ActiveProfileNav";
 import LoginButton from "@/components/LoginButton";
@@ -59,32 +60,23 @@ export default function SiteHeader() {
           {session?.user ? (
             <>
               <ActiveProfileNav />
-              <Link
-                href="/mis-cuentos"
-                className="hidden text-xs font-semibold text-cream-muted transition hover:text-cream sm:inline"
-              >
-                Mis cuentos
-              </Link>
-              <Link
-                href="/familia"
-                className="hidden text-xs font-semibold text-cream-muted transition hover:text-cream sm:inline"
-              >
-                Mi familia
-              </Link>
+              <AccountMenu />
             </>
           ) : (
-            <Link
-              href="/probar"
-              className="site-header__cta-free"
-              onClick={(event) => {
-                event.preventDefault();
-                navigateWithFade((path) => router.push(path), "/probar");
-              }}
-            >
-              Crear gratis
-            </Link>
+            <>
+              <Link
+                href="/probar"
+                className="site-header__cta-free"
+                onClick={(event) => {
+                  event.preventDefault();
+                  navigateWithFade((path) => router.push(path), "/probar");
+                }}
+              >
+                Crear gratis
+              </Link>
+              <LoginButton />
+            </>
           )}
-          <LoginButton />
         </div>
       </div>
     </header>

@@ -4450,6 +4450,63 @@ html.route-fade-exit body::after {
   color: var(--color-cream-muted);
 }
 
+.crear-template-item--hidden {
+  opacity: 0.55;
+}
+
+.generated-story-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.generated-story-row__badge {
+  margin-left: 0.5rem;
+  display: inline-block;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.05rem 0.5rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-cream-muted);
+  vertical-align: middle;
+}
+
+.generated-story-row__actions {
+  display: flex;
+  gap: 0.4rem;
+  padding-left: 0.2rem;
+}
+
+.generated-story-row__action {
+  border: none;
+  background: transparent;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--color-cream-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.generated-story-row__action:hover:not(:disabled) {
+  color: var(--color-honey-glow);
+}
+
+.generated-story-row__action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.generated-story-row__action--danger:hover:not(:disabled) {
+  color: #f87171;
+}
+
 /* ——— Wizard de receta (paso a paso) ——— */
 
 .recipe-wizard {
@@ -7135,6 +7192,88 @@ button.recipe-wizard__step-btn:hover {
 
 .book-reader__end-conversion-cta:hover {
   background: #fbbf24;
+}
+
+/* ——— Menú de cuenta (engranaje) ——— */
+
+.account-menu {
+  position: relative;
+}
+
+.account-menu__trigger {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 233, 184, 0.28);
+  background: rgba(255, 248, 242, 0.08);
+  color: var(--color-cream-muted);
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.account-menu__trigger svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.account-menu__trigger:hover,
+.account-menu__trigger[aria-expanded="true"] {
+  border-color: rgba(255, 202, 92, 0.5);
+  background: rgba(255, 202, 92, 0.12);
+  color: var(--color-cream);
+}
+
+.account-menu__panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 60;
+  display: flex;
+  min-width: 12rem;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #1c2a4d;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.account-menu__who {
+  padding: 0.3rem 0.6rem 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-cream-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-menu__item {
+  display: block;
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-cream);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.account-menu__item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.account-menu__item--danger {
+  color: #fca5a5;
 }
 
 

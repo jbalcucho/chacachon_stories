@@ -10,6 +10,7 @@ export type StoredGeneratedStory = {
   bodyMarkdown: string;
   source: string;
   createdAt: Date;
+  hiddenAt: Date | null;
 };
 
 export type SaveGeneratedStoryInput = GeneratedStoryDraft & {
@@ -22,6 +23,7 @@ export type GeneratedStoryListItem = {
   title: string;
   source: string;
   createdAt: Date;
+  hiddenAt: Date | null;
 };
 
 /**
@@ -67,6 +69,7 @@ function saveToMemory(input: SaveGeneratedStoryInput): string {
     bodyMarkdown: input.bodyMarkdown,
     source: input.source,
     createdAt: new Date(),
+    hiddenAt: null,
   });
   return id;
 }
@@ -118,6 +121,7 @@ export async function getGeneratedStory(
           bodyMarkdown: true,
           source: true,
           createdAt: true,
+          hiddenAt: true,
         },
       });
       if (row) return row;
@@ -126,6 +130,99 @@ export async function getGeneratedStory(
     }
   }
   return memoryStore.get(id) ?? null;
+}
+
+/** Dueño único que puede editar/ocultar/borrar -- null (legacy/anon) nunca califica. */
+function assertOwnedByUser(
+  story: StoredGeneratedStory | null,
+  userId: string,
+): story is StoredGeneratedStory {
+  return Boolean(story) && story!.userId === userId;
+}
+
+export type UpdateGeneratedStoryInput = {
+  title?: string;
+  bodyMarkdown?: string;
+};
+
+/** El dueño edita el texto de su propio cuento (ver docs/plan-trabajo-chacachon.md). */
+export async function updateGeneratedStory(
+  id: string,
+  userId: string,
+  input: UpdateGeneratedStoryInput,
+): Promise<boolean> {
+  const data: Record<string, string> = {};
+  if (input.title !== undefined) data.title = input.title;
+  if (input.bodyMarkdown !== undefined) data.bodyMarkdown = input.bodyMarkdown;
+  if (Object.keys(data).length === 0) return true;
+
+  if (hasDatabase()) {
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      const result = await prisma.generatedStory.updateMany({
+        where: { id, userId },
+        data,
+      });
+      return result.count > 0;
+    } catch (error) {
+      if (isProduction()) throw error;
+    }
+  }
+
+  const story = memoryStore.get(id) ?? null;
+  if (!assertOwnedByUser(story, userId)) return false;
+  memoryStore.set(id, { ...story, ...input });
+  return true;
+}
+
+/** Ocultar/reactivar sin borrar -- reversible por el dueño en cualquier momento. */
+export async function setGeneratedStoryHidden(
+  id: string,
+  userId: string,
+  hidden: boolean,
+): Promise<boolean> {
+  const hiddenAt = hidden ? new Date() : null;
+
+  if (hasDatabase()) {
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      const result = await prisma.generatedStory.updateMany({
+        where: { id, userId },
+        data: { hiddenAt },
+      });
+      return result.count > 0;
+    } catch (error) {
+      if (isProduction()) throw error;
+    }
+  }
+
+  const story = memoryStore.get(id) ?? null;
+  if (!assertOwnedByUser(story, userId)) return false;
+  memoryStore.set(id, { ...story, hiddenAt });
+  return true;
+}
+
+/** Borrado definitivo -- el dueño confirma explícitamente en la UI (no hay deshacer). */
+export async function deleteGeneratedStory(
+  id: string,
+  userId: string,
+): Promise<boolean> {
+  if (hasDatabase()) {
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      const result = await prisma.generatedStory.deleteMany({
+        where: { id, userId },
+      });
+      return result.count > 0;
+    } catch (error) {
+      if (isProduction()) throw error;
+    }
+  }
+
+  const story = memoryStore.get(id) ?? null;
+  if (!assertOwnedByUser(story, userId)) return false;
+  memoryStore.delete(id);
+  return true;
 }
 
 export async function getGeneratedStoryForReader(
@@ -148,7 +245,13 @@ export async function listGeneratedStoriesForUser(
       return prisma.generatedStory.findMany({
         where: { userId },
         orderBy: { createdAt: "desc" },
-        select: { id: true, title: true, source: true, createdAt: true },
+        select: {
+          id: true,
+          title: true,
+          source: true,
+          createdAt: true,
+          hiddenAt: true,
+        },
       });
     } catch {
       // cae al store en memoria (dev sin migración)
@@ -158,10 +261,11 @@ export async function listGeneratedStoriesForUser(
   return [...memoryStore.values()]
     .filter((story) => story.userId === userId)
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-    .map(({ id, title, source, createdAt }) => ({
+    .map(({ id, title, source, createdAt, hiddenAt }) => ({
       id,
       title,
       source,
       createdAt,
+      hiddenAt,
     }));
 }

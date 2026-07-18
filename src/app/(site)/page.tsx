@@ -14,7 +14,10 @@ async function buildHomeStories(
     listGeneratedStoriesForUser(userId),
   ]);
 
-  const latest = generated[0];
+  // Un cuento oculto (ver Mis cuentos) nunca se propone como el destacado
+  // del home, aunque sea el más reciente -- esa es justo la intención de
+  // ocultarlo.
+  const latest = generated.find((story) => !story.hiddenAt);
   if (!latest) {
     return { stories: catalog, hasFeaturedNew: false };
   }
