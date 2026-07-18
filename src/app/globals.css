@@ -5887,6 +5887,7 @@ button.recipe-wizard__step-btn:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  min-width: 0;
   max-width: 100%;
   padding: 0.4rem 0.65rem 0.4rem 0.45rem;
   border-radius: 999px;
