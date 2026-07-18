@@ -701,8 +701,20 @@ export default function StoryRecipeBuilder({
     <div className="recipe-wizard">
       {profileSource === "demo" ? (
         <p className="crear-banner crear-banner--info">
-          Estás viendo la familia demo Chacachón. Entra y completa tu perfil para
-          usar los nombres de tu casa.
+          {isLoggedIn ? (
+            <>
+              Estás creando con la familia demo Chacachón.{" "}
+              <Link href="/familia" className="font-bold underline">
+                Completa tu perfil
+              </Link>{" "}
+              para que la IA use los nombres de tu casa.
+            </>
+          ) : (
+            <>
+              Estás viendo la familia demo Chacachón. Entra y completa tu perfil
+              para usar los nombres de tu casa.
+            </>
+          )}
         </p>
       ) : null}
 

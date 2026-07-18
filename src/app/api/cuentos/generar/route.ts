@@ -14,6 +14,10 @@ import { getReaderProfile } from "@/lib/reader-profile";
 import { getSessionUser } from "@/lib/session";
 import { generateStory } from "@/lib/story-generation.server";
 
+// Generación + gate semántico (7-9s del juez, con posible reintento) superan
+// el timeout default de Vercel; mismo margen que /api/cuentos/probar.
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   const user = await getSessionUser();
 

@@ -55,26 +55,24 @@ function buildOptions(
 ): CrearHubOption[] {
   const vida: CrearHubOption = {
     id: "vida",
-    href:
-      user && profileReady ? "/crear/adaptar" : user ? "/familia" : "/crear/adaptar",
-    primary: user ? profileReady : true,
+    href: "/crear/adaptar",
+    primary: true,
     kicker: user
       ? profileReady
         ? "Recomendado"
-        : "Requiere perfil"
+        : "Empieza ya"
       : "Modo demo",
     emoji: "✨",
     title: "Inspirado en tu vida",
     body: user
-      ? "Arma la receta con tu familia, el reto del día y —si quieres— un molde clásico. La IA escribe con sus nombres y su tono."
+      ? profileReady
+        ? "Arma la receta con tu familia, el reto del día y —si quieres— un molde clásico. La IA escribe con sus nombres y su tono."
+        : "Crea tu primer cuento ya mismo con la familia demo Chacachón. Completa tu perfil cuando quieras para que la IA use los nombres de tu casa."
       : "Prueba el asistente con la familia demo Chacachón. Entra con Google para guardar y usar tus nombres.",
     cta: user
-      ? profileReady
-        ? "Armar mi receta →"
-        : "Completa tu familia →"
+      ? "Armar mi receta →"
       : "Probar con familia demo →",
     preview: previews.vida,
-    locked: user && !profileReady,
   };
 
   const tradicional: CrearHubOption = {
@@ -92,7 +90,7 @@ function buildOptions(
   const perfil: CrearHubOption = {
     id: "perfil",
     href: "/familia",
-    primary: !profileReady && user,
+    primary: false,
     kicker: "Perfil",
     emoji: "👤",
     title: "Edita tu perfil de cuentos",
@@ -102,7 +100,7 @@ function buildOptions(
   };
 
   if (user && !profileReady) {
-    return [perfil, tradicional, vida];
+    return [vida, perfil, tradicional];
   }
 
   return [vida, tradicional, perfil];
@@ -168,7 +166,7 @@ export default async function CrearPage() {
       />
 
       <p className="crear-footnote mt-8 text-center text-xs text-cream-muted">
-        La IA escribe pronto · hoy puedes armar la receta y tu perfil.
+        Hasta 3 cuentos con IA al día · los encuentras siempre en Mis cuentos.
       </p>
 
       <CrearPageActions showCrear={false} />
