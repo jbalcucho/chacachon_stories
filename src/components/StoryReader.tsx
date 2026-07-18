@@ -30,6 +30,8 @@ type Props = {
   };
   /** Chip de estado en la toolbar (ej. «Prueba»). Si no hay, usa Tu familia / Muestra. */
   statusBadge?: string | null;
+  /** Descargar PDF (solo con sesión, ver docs/plan-mejoras-competitivas.md C1.1). */
+  pdfHref?: string | null;
 };
 
 type TurnDirection = "next" | "prev";
@@ -77,6 +79,7 @@ export default function StoryReader({
   loginCallbackUrl,
   endConversion,
   statusBadge,
+  pdfHref = null,
 }: Props) {
   const [fontSize, setFontSize] = useState(initialFontSize);
   const [paper, setPaper] = useState<PaperStyle>("cuento");
@@ -255,6 +258,19 @@ export default function StoryReader({
           <div className="story-reader__toolbar-actions">
             {shareable ? (
               <StoryShareButton title={storyTitle} />
+            ) : null}
+
+            {pdfHref ? (
+              <a
+                href={pdfHref}
+                download
+                className="story-reader__pdf-btn"
+                aria-label="Descargar cuento en PDF"
+                title="Descargar PDF"
+              >
+                <span aria-hidden="true">⬇</span>
+                <span className="story-reader__pdf-label">PDF</span>
+              </a>
             ) : null}
 
             <div

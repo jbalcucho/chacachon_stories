@@ -5,13 +5,7 @@ import {
   canReadGeneratedStory,
   getGeneratedStory,
 } from "@/lib/generated-stories.server";
-import type { PersonalizedStoryContent } from "@/lib/story-reader";
-import {
-  parseBodyBlocks,
-  parseStoryHeader,
-  sanitizeFairyTaleBookends,
-  splitBlocksForPagination,
-} from "@/lib/story-markdown";
+import { generatedStoryMarkdownToContent } from "@/lib/story-reader";
 import { getSessionUserId } from "@/lib/session";
 
 type PageProps = {
@@ -33,16 +27,6 @@ export async function generateMetadata({
   };
 }
 
-function toContent(markdown: string): PersonalizedStoryContent {
-  const cleaned = sanitizeFairyTaleBookends(markdown);
-  const parsed = parseStoryHeader(cleaned);
-  return {
-    title: parsed.title,
-    subtitle: null,
-    blocks: splitBlocksForPagination(parseBodyBlocks(parsed.body)),
-  };
-}
-
 export default async function LeerGeneradoPage({ params }: PageProps) {
   const { id } = await params;
   const userId = await getSessionUserId();
@@ -58,7 +42,7 @@ export default async function LeerGeneradoPage({ params }: PageProps) {
     notFound();
   }
 
-  const content = toContent(story.bodyMarkdown);
+  const content = generatedStoryMarkdownToContent(story.bodyMarkdown);
 
   return (
     <StoryReader
@@ -68,6 +52,7 @@ export default async function LeerGeneradoPage({ params }: PageProps) {
       storySlug={`generado/${id}`}
       backHref="/mis-cuentos"
       backLabel="Mis cuentos"
+      pdfHref={`/api/cuentos/pdf/generado/${id}`}
     />
   );
 }

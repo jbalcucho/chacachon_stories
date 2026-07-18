@@ -44,6 +44,7 @@ export default async function LeerPage({ params }: PageProps) {
       storySlug={slug}
       shareable
       loginCallbackUrl={`/leer/${slug}`}
+      pdfHref={userId ? `/api/cuentos/pdf/${slug}` : null}
     />
   );
 }

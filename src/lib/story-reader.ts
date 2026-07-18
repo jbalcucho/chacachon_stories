@@ -3,7 +3,12 @@ import { parseFrontmatter } from "@/lib/markdown-frontmatter";
 import { personalizeStoryText } from "@/lib/story-personalization";
 import { readStorySourceFile } from "@/lib/story-content-loader.server";
 import { getStoryContentSource } from "@/lib/story-content-index";
-import { parseBodyBlocks, parseStoryHeader, splitBlocksForPagination } from "@/lib/story-markdown";
+import {
+  parseBodyBlocks,
+  parseStoryHeader,
+  sanitizeFairyTaleBookends,
+  splitBlocksForPagination,
+} from "@/lib/story-markdown";
 import type { StoryBlock } from "@/lib/story-markdown";
 
 export type { StoryBlock } from "@/lib/story-markdown";
@@ -67,5 +72,19 @@ export async function loadPersonalizedStory(
     title,
     subtitle: null,
     blocks: bodyBlocks,
+  };
+}
+
+/** Mismo parseo que usa `/leer/generado/[id]` -- factorizado para que la
+ * exportación a PDF (story-pdf.server.tsx) no duplique la lógica. */
+export function generatedStoryMarkdownToContent(
+  bodyMarkdown: string,
+): PersonalizedStoryContent {
+  const cleaned = sanitizeFairyTaleBookends(bodyMarkdown);
+  const parsed = parseStoryHeader(cleaned);
+  return {
+    title: parsed.title,
+    subtitle: null,
+    blocks: splitBlocksForPagination(parseBodyBlocks(parsed.body)),
   };
 }
