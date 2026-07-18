@@ -209,10 +209,40 @@ export function bookGlowStyle(theme: BookTheme): Record<string, string> {
   return { "--book-glow": theme.glow };
 }
 
+// El lomo tiene más alto disponible del que este límite usa (el CSS del
+// lomo ya recorta con text-overflow: ellipsis por si aun así no cabe) —
+// mejor pasarse un poco aquí que cortar el título a 2 palabras siempre.
+const SPINE_TITLE_MAX_CHARS = 34;
+
 export function spineTitle(title: string): string {
+  if (title.length <= SPINE_TITLE_MAX_CHARS) return title;
+
   const words = title.split(/\s+/);
-  if (words.length <= 4) return title;
-  return `${words[0]} ${words[1]}…`;
+  let result = "";
+  for (const word of words) {
+    const next = result ? `${result} ${word}` : word;
+    if (next.length > SPINE_TITLE_MAX_CHARS) break;
+    result = next;
+  }
+  if (!result) result = title.slice(0, SPINE_TITLE_MAX_CHARS);
+  return `${result}…`;
+}
+
+/**
+ * Frase corta bajo el título en la portada abierta. Los 3 demos de invitado
+ * traen `moraleja` como oración completa (gancho de marketing); el catálogo
+ * curado trae `moraleja` como una sola palabra temática ("calma", "respeto")
+ * y guarda el gancho real en `description` (ver prisma/seed.ts) -- por eso
+ * el resumen se veía en modo invitado y no en modo logueado. Prioriza la
+ * frase que de verdad se lea como resumen.
+ */
+export function bookTeaser(story: {
+  moraleja: string | null;
+  description: string | null;
+}): string | null {
+  const moraleja = story.moraleja?.trim() || null;
+  if (moraleja && moraleja.includes(" ")) return moraleja;
+  return story.description?.trim() || moraleja;
 }
 
 export function isStorySoon(status: string, openPath?: string | null): boolean {

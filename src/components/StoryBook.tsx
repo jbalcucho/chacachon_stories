@@ -1,6 +1,7 @@
 import type { StoryCard } from "@/lib/stories";
 import {
   bookGlowStyle,
+  bookTeaser,
   getBookTheme,
   isStorySoon,
 } from "@/lib/book-theme";
@@ -26,6 +27,7 @@ export default function StoryBook({
   const isCreate = isCreateStoryCard(story);
   const isDemo = isDemoShowcaseStory(story);
   const theme = getBookTheme(story);
+  const teaser = bookTeaser(story);
 
   const bookInner = (
     <>
@@ -63,9 +65,7 @@ export default function StoryBook({
           ) : null}
         </div>
         <h2 className="book-title">{story.title}</h2>
-        {story.moraleja ? (
-          <p className="book-moraleja">{story.moraleja}</p>
-        ) : null}
+        {teaser ? <p className="book-moraleja">{teaser}</p> : null}
       </div>
     </>
   );

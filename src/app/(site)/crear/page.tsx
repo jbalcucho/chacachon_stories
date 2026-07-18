@@ -148,17 +148,20 @@ export default async function CrearPage() {
           para guardar cuentos y usar tu perfil.
         </p>
       ) : (
-        <p className="crear-banner crear-banner--info mt-6" role="status">
-          Elige{" "}
-          <Link href="/perfiles" className="font-bold text-honey-glow underline">
-            quién crea hoy
-          </Link>{" "}
-          y encuentra tus cuentos en{" "}
-          <Link href="/mis-cuentos" className="font-bold text-honey-glow underline">
-            Mis cuentos
-          </Link>
-          .
-        </p>
+        <div className="crear-banner crear-banner--info mt-6 space-y-1.5" role="status">
+          <p>
+            ¿Hoy crea otro niño de la casa?{" "}
+            <Link href="/perfiles" className="font-bold text-honey-glow underline">
+              Cambiar de perfil →
+            </Link>
+          </p>
+          <p>
+            Todo lo que ya armaste está en{" "}
+            <Link href="/mis-cuentos" className="font-bold text-honey-glow underline">
+              Mis cuentos →
+            </Link>
+          </p>
+        </div>
       )}
 
       <TrialImportBridge />
