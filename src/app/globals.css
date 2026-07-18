@@ -1236,7 +1236,8 @@ html.route-fade-exit body::after {
     transform: rotateY(3deg);
   }
 
-  .book-spine-stack__demo-seal {
+  .book-spine-stack__demo-seal,
+  .book-spine-stack__new-seal {
     font-size: 0.28rem;
     height: 0.92rem;
     min-width: 1rem;
@@ -2011,6 +2012,41 @@ html.route-fade-exit body::after {
   white-space: nowrap;
 }
 
+/* Clon de .book-spine-stack__demo-seal con paleta ámbar (vs. verde de "Muestra"). */
+.book-spine-stack__new-seal {
+  position: absolute;
+  bottom: 8%;
+  top: auto;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 1.15rem;
+  height: 1.05rem;
+  padding: 0 0.2rem;
+  transform: translateX(-50%) rotate(-90deg);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.32rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: #78350f;
+  background:
+    radial-gradient(circle at 32% 28%, #fde68a 0%, #fbbf24 42%, #d97706 100%);
+  border: 1.5px solid #fff;
+  box-shadow:
+    0 0 0 1.5px #b45309,
+    inset 0 -2px 3px rgba(0, 0, 0, 0.2),
+    inset 0 2px 3px rgba(255, 255, 255, 0.4),
+    0 2px 5px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 .book-spine-stack__text {
   position: absolute;
   top: 10%;
@@ -2587,6 +2623,18 @@ html.route-fade-exit body::after {
   letter-spacing: 0.04em;
   text-transform: none;
   font-weight: 800;
+}
+
+.book-badge--new {
+  color: #fff;
+  background: rgba(56, 189, 248, 0.9);
+  padding: 0.15rem 0.35rem;
+  border-radius: 999px;
+  font-size: 0.48rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
 }
 
 .book-badge--demo {
@@ -4008,6 +4056,60 @@ html.route-fade-exit body::after {
 .crear-card--animate {
   animation: crear-card-enter 0.45s ease backwards;
   animation-delay: calc(var(--card-index, 0) * 0.12s);
+}
+
+/* Ajuste/personalización (ej. editar perfil) — deliberadamente distinto de
+   .crear-card: sin icono grande ni fondo destacado, para no leerse como una
+   tercera forma de crear un cuento. */
+.crear-utility-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crear-utility-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  background: transparent;
+  text-decoration: none;
+  color: var(--color-cream-muted);
+  transition:
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.crear-utility-link:hover,
+.crear-utility-link:focus-visible {
+  border-color: rgba(255, 255, 255, 0.32);
+  color: var(--color-cream);
+}
+
+.crear-utility-link__icon {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.crear-utility-link__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.8rem;
+}
+
+.crear-utility-link__text strong {
+  font-size: 0.85rem;
+  color: inherit;
+}
+
+.crear-utility-link__cta {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 0.85rem;
 }
 
 @keyframes crear-card-enter {

@@ -22,8 +22,14 @@ export default function BookSpine({ story, onClick, narrow = false }: Props) {
       className={`book-spine-stack__item book-spine-stack__item--${theme.id}${narrow ? " book-spine-stack__item--narrow" : ""}`}
       style={bookGlowStyle(theme)}
       onClick={onClick}
-      aria-label={`Elegir ${story.title}${isDemo ? " (muestra)" : ""}`}
-      title={isDemo ? `${story.title} · Muestra` : story.title}
+      aria-label={`Elegir ${story.title}${isDemo ? " (muestra)" : story.isNew ? " (nuevo)" : ""}`}
+      title={
+        isDemo
+          ? `${story.title} · Muestra`
+          : story.isNew
+            ? `${story.title} · Nuevo`
+            : story.title
+      }
     >
       <span
         className={`book-spine-stack__spine bg-gradient-to-b ${theme.spine}`}
@@ -33,6 +39,10 @@ export default function BookSpine({ story, onClick, narrow = false }: Props) {
         {isDemo ? (
           <span className="book-spine-stack__demo-seal" aria-hidden="true">
             Muestra
+          </span>
+        ) : story.isNew ? (
+          <span className="book-spine-stack__new-seal" aria-hidden="true">
+            Nuevo
           </span>
         ) : null}
         <span className="book-spine-stack__text">{spineTitle(story.title)}</span>

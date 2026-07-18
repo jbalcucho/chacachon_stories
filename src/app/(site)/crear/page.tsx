@@ -87,9 +87,17 @@ function buildOptions(
     preview: previews.tradicional,
   };
 
+  // Para usuarios logueados el medidor de perfil arriba del hub (crear-profile-meter)
+  // ya cubre esta misma acción -> no la dupliques como si fuera una tercera forma de
+  // crear un cuento. Solo aparece para invitados, que no ven ese medidor.
+  if (user) {
+    return [vida, tradicional];
+  }
+
   const perfil: CrearHubOption = {
     id: "perfil",
     href: "/familia",
+    variant: "utility",
     primary: false,
     kicker: "Perfil",
     emoji: "👤",
@@ -98,10 +106,6 @@ function buildOptions(
     cta: "Ir a mi familia →",
     preview: previews.perfil,
   };
-
-  if (user && !profileReady) {
-    return [vida, perfil, tradicional];
-  }
 
   return [vida, tradicional, perfil];
 }

@@ -12,6 +12,8 @@ export type StoryCard = {
   openPath: string | null;
   variant: StoryVariant;
   status: StoryStatus;
+  /** El cuento generado con IA más reciente del usuario — destacado en el home. */
+  isNew?: boolean;
 };
 
 /** Fallback when DATABASE_URL is not configured (local preview, CI build). */

@@ -15,6 +15,8 @@ export type CrearHubOption = {
   cta: string;
   preview: string;
   locked?: boolean;
+  /** "utility" = ajuste/personalización (ej. editar perfil), no una forma de crear un cuento. */
+  variant?: "create" | "utility";
 };
 
 type ProfileCompletionData = {
@@ -40,6 +42,9 @@ export default function CrearHub({
   const resetPreview = useCallback(() => {
     setActivePreview(defaultPreview);
   }, [defaultPreview]);
+
+  const createOptions = options.filter((o) => o.variant !== "utility");
+  const utilityOptions = options.filter((o) => o.variant === "utility");
 
   return (
     <>
@@ -87,7 +92,7 @@ export default function CrearHub({
       </p>
 
       <div className="crear-grid mt-6" role="list">
-        {options.map((opt, index) => (
+        {createOptions.map((opt, index) => (
           <Link
             key={opt.id}
             href={opt.href}
@@ -120,10 +125,29 @@ export default function CrearHub({
         ))}
       </div>
 
-      {options.some((o) => o.locked) ? (
+      {createOptions.some((o) => o.locked) ? (
         <p id="crear-locked-hint" className="sr-only">
           Completa tu perfil familiar para usar Inspirado en tu vida.
         </p>
+      ) : null}
+
+      {utilityOptions.length > 0 ? (
+        <div className="crear-utility-list mt-4">
+          {utilityOptions.map((opt) => (
+            <Link key={opt.id} href={opt.href} className="crear-utility-link">
+              <span className="crear-utility-link__icon" aria-hidden="true">
+                {opt.emoji}
+              </span>
+              <span className="crear-utility-link__text">
+                <strong>{opt.title}</strong>
+                <span>{opt.body}</span>
+              </span>
+              <span className="crear-utility-link__cta" aria-hidden="true">
+                →
+              </span>
+            </Link>
+          ))}
+        </div>
       ) : null}
     </>
   );

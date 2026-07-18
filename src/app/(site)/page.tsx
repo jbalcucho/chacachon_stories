@@ -1,9 +1,40 @@
 import BrandIllustration from "@/components/BrandIllustration";
 import PageEnterFade from "@/components/PageEnterFade";
 import StoryBookshelf from "@/components/StoryBookshelf";
+import { listGeneratedStoriesForUser } from "@/lib/generated-stories.server";
 import { DEMO_SHOWCASE_STORIES } from "@/lib/onboarding";
 import { getSessionUser } from "@/lib/session";
 import { getLibraryStories, type StoryCard } from "@/lib/stories";
+
+async function buildHomeStories(
+  userId: string,
+): Promise<{ stories: StoryCard[]; hasFeaturedNew: boolean }> {
+  const [catalog, generated] = await Promise.all([
+    getLibraryStories(),
+    listGeneratedStoriesForUser(userId),
+  ]);
+
+  const latest = generated[0];
+  if (!latest) {
+    return { stories: catalog, hasFeaturedNew: false };
+  }
+
+  // Destacar el último cuento creado con IA al frente del estante, con
+  // seña "Nuevo" (ver BookSpine/StoryBook), hasta que se cree otro.
+  const newCard: StoryCard = {
+    slug: latest.id,
+    title: latest.title,
+    description: null,
+    moraleja: null,
+    familyTag: null,
+    htmlPath: null,
+    openPath: `/leer/generado/${latest.id}`,
+    variant: "NARRATIVE",
+    status: "PUBLISHED",
+    isNew: true,
+  };
+  return { stories: [newCard, ...catalog], hasFeaturedNew: true };
+}
 
 export default async function HomePage({
   searchParams,
@@ -14,9 +45,9 @@ export default async function HomePage({
   const { libro } = await searchParams;
   const isGuest = !user;
 
-  const stories: StoryCard[] = user
-    ? await getLibraryStories()
-    : (DEMO_SHOWCASE_STORIES as StoryCard[]);
+  const { stories, hasFeaturedNew } = user
+    ? await buildHomeStories(user.id)
+    : { stories: DEMO_SHOWCASE_STORIES as StoryCard[], hasFeaturedNew: false };
 
   return (
     <PageEnterFade>
@@ -41,7 +72,7 @@ export default async function HomePage({
           label="Mi biblioteca"
           subtitle="¿Qué vamos a leer hoy?"
           allowCreate={Boolean(user)}
-          preferFirst={isGuest}
+          preferFirst={isGuest || hasFeaturedNew}
           guestMode={isGuest}
         />
       </main>

@@ -586,6 +586,10 @@ export default function StoryRecipeBuilder({
     return [...EXTRA_ZONE_KEYS, "molde"];
   }, [promoteMolde]);
 
+  const hasExtrasSelected = extraZoneKeys.some(
+    (key) => selection[key].length > 0,
+  );
+
   const goNext = useCallback(() => {
     setFurthestConfirmedIndex((prev) => Math.max(prev, stepIndex));
     setStepIndex((i) => Math.min(wizardSteps.length - 1, i + 1));
@@ -983,9 +987,13 @@ export default function StoryRecipeBuilder({
               }
               onClick={goNext}
             >
-              {isExtrasStep || (currentStep.optional && stepBlocker)
-                ? "Omitir y continuar →"
-                : "Siguiente →"}
+              {isExtrasStep
+                ? hasExtrasSelected
+                  ? "Siguiente →"
+                  : "Omitir y continuar →"
+                : currentStep.optional && stepBlocker
+                  ? "Omitir y continuar →"
+                  : "Siguiente →"}
             </button>
           )}
         </footer>

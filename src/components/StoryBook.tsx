@@ -58,6 +58,8 @@ export default function StoryBook({
             <span className="book-badge book-badge--demo" aria-label="Muestra">
               <span className="book-badge__demo-text">Muestra</span>
             </span>
+          ) : story.isNew ? (
+            <span className="book-badge book-badge--new">Nuevo</span>
           ) : null}
         </div>
         <h2 className="book-title">{story.title}</h2>
